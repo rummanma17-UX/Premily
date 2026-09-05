@@ -1,0 +1,7 @@
+!This whole file is written in programming language in my head so you might wont Understand. My brain is compiled on saperate programming language so you need to download that first  
+
+*Understanding env
+ZOD validation -> dotenv -> compiles to "process.env" (universal file)-> 
+*Middlewere
+mainly core middlewere is used at the top of codes so it becomes avaliable for all code so I dont have to use that specific method in everywhere
+but it doesnt necessarily has to be like This there are customs middlewere like { errorhandler } for executing and handling something in anywhere to checking or validating something
