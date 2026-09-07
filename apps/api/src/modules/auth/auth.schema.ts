@@ -7,4 +7,10 @@ export const registerSchema = z.object({
   role: z.enum(["CUSTOMER", "SELLER"]),
 });
 
-export type registerInput = z.infer<typeof registerSchema>;
+
+export const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(1)
+})
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
