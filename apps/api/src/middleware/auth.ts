@@ -3,7 +3,7 @@ import { verifyToken } from "../modules/auth/auth.utils.js";
 
 export interface AuthRequest extends Request {
   user?: {
-    userId: String;
+    userId: string;
     role: "CUSTOMER" | "SELLER" | "ADMIN";
   };
 }

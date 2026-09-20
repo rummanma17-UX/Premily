@@ -33,6 +33,17 @@ export async function createProduct(
   });
 }
 
+export async function getProductBySlug(slug: string) {
+  return prisma.product.findUnique({
+    where: { slug },
+    include: {
+      variants: true,
+      images: true,
+      category: true,
+    },
+  });
+}
+
 export async function getAllProducts() {
   return prisma.product.findMany({
     include: {
@@ -41,5 +52,17 @@ export async function getAllProducts() {
       category: true,
     },
     orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getMyProducts(sellerId: string) {
+  return prisma.product.findMany({
+    where: { sellerId },
+    include: {
+      variants: true,
+      images: true,
+      category: true,
+    },
+    orderBy: {createdAt: "desc"}
   });
 }

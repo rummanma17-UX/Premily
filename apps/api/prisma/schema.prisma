@@ -21,7 +21,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@map("users")
-}enum Role {
+}
+
+enum Role {
   CUSTOMER
   ADMIN
   SELLER
