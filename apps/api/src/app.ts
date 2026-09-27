@@ -4,7 +4,9 @@ import express, { type Express } from "express";
 import { requireAuth, type AuthRequest } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
+import { cartRouter } from "./modules/cart/cart.routes.js";
 import { categoriesRouter } from "./modules/categories/categories.routes.js";
+import { ordersRouter } from "./modules/orders/orders.routes.js";
 import { productsRouter } from "./modules/products/products.routes.js";
 
 const app: Express = express();
@@ -20,6 +22,8 @@ app.use(cookieParser());
 app.use("/api/categories", categoriesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/orders", ordersRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });

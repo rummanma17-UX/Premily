@@ -19,7 +19,7 @@ A production-grade e-commerce platform built for the Bangladesh market, architec
 - Argon2id password hashing, HTTP-only secure cookies
 
 **Payments** (planned, Bangladesh-focused)
-- SSLCommerz, bKash, Nagad
+- SSLCommerz, bKash, Nagad, 
 
 **Infrastructure**
 - Docker Compose (local Postgres)
@@ -44,7 +44,7 @@ Premily/
 │ │ ├── middleware/
 │ │ │ └── error-handler.ts
 │ │ └── modules/
-│ │ └── categories/ # routes → controller → service → schema
+│ │ └── categories/ # routes → controller → service → schema 
 │ └── prisma.config.ts # CLI-side DB connection config (Prisma 7)
 ├── docker-compose.yml # Local Postgres 17 container
 └── pnpm-workspace.yaml

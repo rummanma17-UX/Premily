@@ -10,3 +10,4 @@ export async function getAllCategories() {
 export async function createCategory(data: CreateCategoryInput) {
   return prisma.category.create({ data });
 }
+
