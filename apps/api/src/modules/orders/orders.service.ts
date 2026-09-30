@@ -1,6 +1,6 @@
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
-import type { CheckoutInput } from "./orders.schema.js";
+import type { CheckoutInput, PaymentProofInput } from "./orders.schema.js";
 
 const FLAT_SHIPPING_COST = 150;
 
@@ -62,16 +62,21 @@ async function createOrderFromItemsTx(
       userId,
       subtotal,
       shippingCost: FLAT_SHIPPING_COST,
+      total,
       shippingName: shipping.shippingName,
       shippingPhone: shipping.shippingPhone,
       shippingAddress: shipping.shippingAddress,
       shippingCity: shipping.shippingCity,
-      total,
       items: { create: snapshots },
+      payment: {
+        create: {
+          method: shipping.paymentMethod,
+          amount: total,
+        },
+      },
     },
-    include: { items: true },
+    include: { items: true, payment: true },
   });
-
   for (const line of lines) {
     await tx.productVariant.update({
       where: { id: line.variantId },
@@ -133,9 +138,68 @@ export async function getOrderById(userId: string, orderId: string) {
     include: { items: true },
   });
 
-  if (!order || order.userId !== order.userId) {
+  if (!order || order.userId !== userId) {
     return null;
   }
 
   return order;
+}
+
+export async function submitPaymentProof(
+  userid: string,
+  orderId: string,
+  proof: PaymentProofInput,
+) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { payment: true },
+  });
+
+  if (!order || order.userId !== userid) {
+    throw new Error("ORDER_NOT_FOUND");
+  }
+
+  if (!order.payment || order.payment.method === "CASH_ON_DELIVERY") {
+    throw new Error("NOT_MOBILE_PAYMENT");
+  }
+
+  if (order.payment.status === "VERIFIED") {
+    throw new Error("ALREADY_VERIFIED");
+  }
+
+  return prisma.payment.update({
+    where: { orderId },
+    data: {
+      transactionId: proof.transactionId,
+      senderNumber: proof.senderNumber,
+    },
+  });
+}
+
+export async function verifyPayment(verifierId: string, orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { payment: true },
+  });
+
+  if (!order || !order.payment) {
+    throw new Error("ORDER_NOT_FOUND");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    await tx.payment.update({
+      where: { orderId },
+      data: {
+        status: "VERIFIED",
+        verifiedAt: new Date(),
+        verifierBy: verifierId,
+      },
+    });
+
+    return tx.order.update({
+      where: { id: orderId },
+      data: { status: "PAID" },
+      include: { payment: true, items: true },
+    });
+  });
 }

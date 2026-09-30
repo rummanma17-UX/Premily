@@ -7,6 +7,7 @@ export const checkoutSchema = z.object({
     .regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
   shippingAddress: z.string().min(1),
   shippingCity: z.string().min(1),
+  paymentMethod: z.enum(["CASH_ON_DELIVERY", "BKASH", "NAGAD"]),
 });
 
 export const buyNowSchema = checkoutSchema.extend({
@@ -14,5 +15,11 @@ export const buyNowSchema = checkoutSchema.extend({
   quantity: z.number().int().positive().default(1),
 });
 
+export const paymentProofSchema = z.object({
+  transactionId: z.string().min(1),
+  senderNumber: z.string().regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
+})
+
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 export type BuyNowInput = z.infer<typeof buyNowSchema>;
+export type PaymentProofInput = z.infer<typeof paymentProofSchema>;

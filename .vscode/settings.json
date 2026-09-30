@@ -19,5 +19,6 @@
     "**/web": true
   },
   "prisma.pinToPrisma6": false,
-  "folder-color.pathColors": []
+  "folder-color.pathColors": [],
+  "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }
