@@ -77,12 +77,26 @@ async function createOrderFromItemsTx(
     },
     include: { items: true, payment: true },
   });
+
   for (const line of lines) {
-    await tx.productVariant.update({
-      where: { id: line.variantId },
+    // Atomic decrement with safety check to prevent race condition oversells
+    const updated = await tx.productVariant.updateMany({
+      where: { 
+        id: line.variantId,
+        stock: { gte: line.quantity } 
+      },
       data: { stock: { decrement: line.quantity } },
     });
+
+    if (updated.count === 0) {
+      const variant = await tx.productVariant.findUnique({
+        where: { id: line.variantId },
+        include: { product: true },
+      });
+      throw new OutOfStockError(variant?.product.name ?? "Product");
+    }
   }
+
   return order;
 }
 
@@ -104,7 +118,7 @@ export async function checkoutFromCart(
     quantity: item.quantity,
   }));
 
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: TxClient) => {
     const order = await createOrderFromItemsTx(tx, userId, shipping, lines);
     await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
     return order;
@@ -117,7 +131,7 @@ export async function buyNow(
   variantId: string,
   quantity: number,
 ) {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: TxClient) => {
     return createOrderFromItemsTx(tx, userId, shipping, [
       { variantId, quantity },
     ]);
@@ -146,7 +160,7 @@ export async function getOrderById(userId: string, orderId: string) {
 }
 
 export async function submitPaymentProof(
-  userid: string,
+  userId: string,
   orderId: string,
   proof: PaymentProofInput,
 ) {
@@ -155,7 +169,7 @@ export async function submitPaymentProof(
     include: { payment: true },
   });
 
-  if (!order || order.userId !== userid) {
+  if (!order || order.userId !== userId) {
     throw new Error("ORDER_NOT_FOUND");
   }
 
@@ -186,13 +200,13 @@ export async function verifyPayment(verifierId: string, orderId: string) {
     throw new Error("ORDER_NOT_FOUND");
   }
 
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: TxClient) => {
     await tx.payment.update({
       where: { orderId },
       data: {
         status: "VERIFIED",
         verifiedAt: new Date(),
-        verifierBy: verifierId,
+        verifiedBy: verifierId,
       },
     });
 
