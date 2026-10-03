@@ -215,7 +215,8 @@ model Payment {
 
 enum PaymentMethod {
   CASH_ON_DELIVERY
-  BKASH_MANUAL
+  BKASH
+  NAGAD
 }
 
 enum PaymentStatus {
