@@ -4,7 +4,6 @@ import { prisma } from "../../lib/prisma.js";
 import type { AuthRequest } from "../../middleware/auth.js";
 import { loginSchema, registerSchema } from "./auth.schema.js";
 import { loginUser, registerUser } from "./auth.service.js";
-import type { safeParse } from "zod";
 
 export async function register(
   req: Request,
@@ -32,6 +31,10 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     });
     res.json(user);
   } catch (err) {
+    if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
+      res.status(401).json({ error: "Invalid email or password" });
+      return;
+    }
     next(err);
   }
 }
@@ -52,7 +55,7 @@ export async function me(req: AuthRequest, res: Response, next: NextFunction) {
       return;
     }
 
-    const {password, ...safeUser} = user
+    const { password, ...safeUser } = user;
     res.json(safeUser);
   } catch (err) {
     next(err);

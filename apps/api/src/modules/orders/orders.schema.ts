@@ -16,9 +16,15 @@ export const buyNowSchema = checkoutSchema.extend({
 });
 
 export const paymentProofSchema = z.object({
-  transactionId: z.string().min(1),
-  senderNumber: z.string().regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
-})
+  transactionId: z
+    .string()
+    .trim()
+    .min(1)
+    .transform((s) => s.toUpperCase()),
+  senderNumber: z
+    .string()
+    .regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
+});
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 export type BuyNowInput = z.infer<typeof buyNowSchema>;

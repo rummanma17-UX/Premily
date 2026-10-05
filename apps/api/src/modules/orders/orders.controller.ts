@@ -28,6 +28,7 @@ export async function checkout(
   } catch (err) {
     if (err instanceof OutOfStockError) {
       res.status(409).json({ error: err.message });
+      return
     }
     if (err instanceof Error && err.message === "CART_EMPTY") {
       res.status(400).json({ error: "Your cart is empty" });
@@ -150,7 +151,7 @@ export async function verifyOrderPayment(
         .json({ error: "Invalid or missing orderId parameter" });
     }
     const verifierId = req.user!.userId;
-    const order = await verifyPayment(verifierId, orderId);
+    const order = await verifyPayment(req.user!, orderId);
     res.json(order);
   } catch (err) {
     if (err instanceof Error && err.message === "ORDER_NOT_FOUND") {

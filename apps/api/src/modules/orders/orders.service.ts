@@ -81,9 +81,9 @@ async function createOrderFromItemsTx(
   for (const line of lines) {
     // Atomic decrement with safety check to prevent race condition oversells
     const updated = await tx.productVariant.updateMany({
-      where: { 
+      where: {
         id: line.variantId,
-        stock: { gte: line.quantity } 
+        stock: { gte: line.quantity },
       },
       data: { stock: { decrement: line.quantity } },
     });
@@ -190,7 +190,10 @@ export async function submitPaymentProof(
   });
 }
 
-export async function verifyPayment(verifierId: string, orderId: string) {
+export async function verifyPayment(
+  verifier: { userId: string; role: "CUSTOMER" | "SELLER" | "ADMIN" },
+  orderId: string,
+) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: { payment: true },
@@ -200,13 +203,31 @@ export async function verifyPayment(verifierId: string, orderId: string) {
     throw new Error("ORDER_NOT_FOUND");
   }
 
+  if (verifier.role === "SELLER") {
+    const ownsItem = await prisma.orderItem.count({
+      where: {
+        orderId,
+        variant: {product: {sellerId: verifier.userId} }
+      }
+    }
+    );
+    if (ownsItem === 0) {
+      throw new Error("ORDER_NOT_FOUND");
+    }
+  }
+
+  if (order.payment.method === "CASH_ON_DELIVERY")
+    throw new Error("NOT_MOBILE_PAYMENT");
+  if (order.payment.status === "VERIFIED") throw new Error("ALREADY_VERIFIED");
+  if (!order.payment.transactionId) throw new Error("PROOF_MISSING");
+
   return prisma.$transaction(async (tx: TxClient) => {
     await tx.payment.update({
       where: { orderId },
       data: {
         status: "VERIFIED",
         verifiedAt: new Date(),
-        verifiedBy: verifierId,
+        verifiedBy: verifier.userId,
       },
     });
 
