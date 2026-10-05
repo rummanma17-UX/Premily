@@ -26,10 +26,14 @@ export async function checkout(
     const order = await checkoutFromCart(userId, parsed);
     res.status(201).json(order);
   } catch (err) {
+    if (err instanceof OutOfStockError) {
+      res.status(409).json({ error: err.message });
+    }
     if (err instanceof Error && err.message === "CART_EMPTY") {
       res.status(400).json({ error: "Your cart is empty" });
       return;
     }
+
     next(err);
   }
 }
