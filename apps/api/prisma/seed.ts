@@ -12,7 +12,7 @@ async function main() {
   const category = await prisma.category.upsert({
     where: { slug: "electronics" },
     update: {},
-    create: { name: "Electronics", slug: "elctronics" },
+    create: { name: "Electronics", slug: "electronics" },
   });
 
   const sellerPassword = await hashPassword("password123");
@@ -28,6 +28,20 @@ async function main() {
       role: "SELLER",
     },
   });
+
+  const adminPassword = await hashPassword("admin123")
+
+  const admin = await prisma.user.upsert({
+    where: {email: "admin@premily.local"},
+    update:{},
+    create: {
+      name: "Admin",
+      email: "admin@premily.local",
+      phone: "01811111111",
+      password: adminPassword,
+      role: "ADMIN"
+    }
+  })
 
   await prisma.product.upsert({
     where: { slug: "wireless-mouse" },
