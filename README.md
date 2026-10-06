@@ -29,7 +29,7 @@ A production-grade e-commerce platform built for the Bangladesh market, architec
 
 Premily/
 ├── apps/
-│ ├── web/ # Next.js frontend (scaffold only, untouched yet)
+│ ├── web/ # Next.js frontend (active development from `6 Oct 2026`)
 │ └── api/ # Express backend (active development)
 │ ├── prisma/
 │ │ ├── schema.prisma

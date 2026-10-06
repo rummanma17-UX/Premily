@@ -16,7 +16,7 @@
     "**/.windsurf": true,
 
     //todo temporary
-    "**/web": true
+    // "**/web": true
   },
   "prisma.pinToPrisma6": false,
   "folder-color.pathColors": [],
