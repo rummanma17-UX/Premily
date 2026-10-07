@@ -3,7 +3,7 @@ import { ProductCard } from "@/components/ProductCard";
 import type { Product } from "@/types";
 
 export default async function ProductsPage() {
-  const products = await apiFetch<Product[]>("api/products");
+  const products = await apiFetch<Product[]>("/api/products");
 
  return (
     <main className="flex-1 px-6 py-12">
@@ -16,4 +16,4 @@ export default async function ProductsPage() {
       </div>
     </main>
   );
-}
+} 
