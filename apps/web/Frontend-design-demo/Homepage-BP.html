@@ -1,70 +1,204 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Premily - Home</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script><script src="https://unpkg.com/lucide@0.383.0"></script><script>tailwind.config={theme:{extend:{colors:{gold:"#D4B375",deep:"#B8924B",dark:"#1E1916",muted:"#68605B",cream:"#FAF3E8"},fontFamily:{serif:["Cinzel"],sans:["Plus Jakarta Sans","Noto Sans Bengali"]}}}}</script><style> body{background:#F3EFE9;color:#1E1916} .gbtn{background:linear-gradient(135deg,#E3C793,#B8924B);color:#1E1916;font-weight:600} .gbtn:hover{filter:brightness(1.06)} .card{background:#fff;border:1px solid #eadfcd;border-radius:14px;transition:.2s} .card:hover{box-shadow:0 12px 28px -12px rgba(184,146,75,.5);transform:translateY(-2px)} .chip.on{background:#1E1916;color:#FAF3E8} ::-webkit-scrollbar{height:6px;width:6px}::-webkit-scrollbar-thumb{background:#D4B375;border-radius:9px} .c{overflow:hidden;display:flex;flex-direction:column} .c .r{position:relative}.c img{width:100%;aspect-ratio:3/2;object-fit:cover} .c .o{position:absolute;top:6px;left:6px;font-size:9px;font-style:normal;padding:2px 6px;border-radius:99px} .c .b{padding:8px;display:flex;flex-direction:column;gap:3px;flex:1} .c h3{font-size:11px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden} .c .pr{display:flex;align-items:baseline;gap:6px}.c b{color:#B8924B;font-size:12px}.c s,.c .m{font-size:10px;color:#68605B}.c u{text-decoration:none;color:#D4B375} @media(min-width:640px){.c .b{padding:10px}.c h3{font-size:12px}.c b{font-size:14px}.c .o{font-size:10px}} .c .tg{display:flex;gap:4px;flex-wrap:wrap}.t{font-style:normal;font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;line-height:1.4} .tm{background:#1E1916;color:#E3C793}.tv{background:#ECFDF5;color:#047857;border:1px solid #A7F3D0} #g{scroll-margin-top:130px} [data-k],.d,.lg,.dp{cursor:pointer} </style></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Premily - Home Blueprint</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.383.0"></script>
+  <script>
+    tailwind.config={theme:{extend:{colors:{gold:"#D4B375",deep:"#B8924B",dark:"#1E1916",muted:"#68605B",cream:"#FAF3E8"},fontFamily:{serif:["Cinzel"],sans:["Plus Jakarta Sans"]}}}}
+  </script>
+  <style>
+    body{background:#F3EFE9;color:#1E1916}
+    .gbtn{background:linear-gradient(135deg,#E3C793,#B8924B);color:#1E1916;font-weight:600}
+    .card{background:#fff;border:1px solid #eadfcd;border-radius:14px;transition:.2s}
+    .card:hover{box-shadow:0 12px 28px -12px rgba(184,146,75,.5);transform:translateY(-2px)}
+    .chip.on{background:#1E1916;color:#FAF3E8}
+    .c{overflow:hidden;display:flex;flex-direction:column}
+    .c .r{position:relative}
+    .c img{width:100%;aspect-ratio:3/2;object-fit:cover}
+    .c .o{position:absolute;top:6px;left:6px;font-size:9px;padding:2px 6px;border-radius:99px}
+    .c .b{padding:8px;display:flex;flex-direction:column;gap:3px;flex:1}
+    .c h3{font-size:11px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .c .pr{display:flex;align-items:baseline;gap:6px}.c b{color:#B8924B;font-size:12px}.c s,.c .m{font-size:10px;color:#68605B}
+    .c .tg{display:flex;gap:4px;flex-wrap:wrap}.t{font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;line-height:1.4}
+    .tm{background:#1E1916;color:#E3C793}.tv{background:#ECFDF5;color:#047857;border:1px solid #A7F3D0}
+  </style>
+</head>
 <body class="font-sans">
-<div class="bg-dark text-cream text-xs"><div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
-<span class="hidden sm:flex items-center gap-1"><i data-lucide="smartphone" class="w-3.5 h-3.5"></i>Download the Premily app</span>
-<div class="flex items-center gap-4 ml-auto"><span class="hover:text-gold cursor-pointer">Sell on Premily</span><span class="hover:text-gold hidden sm:block cursor-pointer">Help</span><span class="hover:text-gold hidden sm:block cursor-pointer">Track Order</span>
-<span class="lg border border-gold/60 rounded-full px-3 py-0.5 hover:bg-gold hover:text-dark hidden sm:flex items-center gap-1 cursor-pointer"><i data-lucide="languages" class="w-3.5 h-3.5"></i>বাংলা</span></div></div></div>
-<header class="bg-white sticky top-0 z-40 shadow-sm"><div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-6">
-<span class="font-serif text-2xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></span>
-<span class="lg sm:hidden ml-auto border border-gold/60 rounded-full px-3 py-1 text-xs flex items-center gap-1 cursor-pointer"><i data-lucide="languages" class="w-3.5 h-3.5"></i>বাংলা</span>
-<div class="dp hidden md:flex items-center gap-2 border border-gold/40 rounded-xl px-3 py-1.5 hover:bg-cream cursor-pointer"><i data-lucide="map-pin" class="w-5 h-5 text-deep"></i><span class="leading-tight"><span class="block text-[10px] text-muted">Deliver to</span><span class="dl block text-sm font-semibold">Dhaka · 1-2 days</span></span></div>
-<div class="order-last w-full sm:order-none sm:w-auto sm:flex-1 flex border-2 border-gold rounded-full overflow-hidden bg-white"><span class="hidden sm:flex items-center bg-cream text-xs px-4 border-r border-gold/40">All</span>
-<input id="q" type="text" class="flex-1 px-4 py-2.5 text-sm outline-none min-w-0" placeholder="Search furniture, lighting, decor…"><span class="gbtn px-5 grid place-items-center"><i data-lucide="search" class="w-4 h-4"></i></span></div>
-<span class="hidden lg:flex items-center gap-2 text-sm hover:text-deep cursor-pointer"><i data-lucide="user" class="w-5 h-5"></i>Login / Sign up</span>
-<span class="relative p-2 hover:text-deep cursor-pointer"><i data-lucide="shopping-cart" class="w-6 h-6"></i><span class="absolute -top-0.5 -right-0.5 gbtn text-[10px] w-5 h-5 rounded-full grid place-items-center">0</span></span></div>
-<div class="dp md:hidden w-full bg-cream text-xs px-4 py-2 flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-deep"></i>Deliver to: <b class="dl">Dhaka · 1-2 days</b></div></header>
-<main class="max-w-7xl mx-auto px-4 py-4 space-y-6">
-<section class="grid lg:grid-cols-[230px_1fr_250px] gap-4">
-<aside class="card hidden lg:block p-2 overflow-hidden"><div data-k="Furniture" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="sofa" class="w-4 h-4 text-deep"></i>Furniture<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Lighting" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="lamp" class="w-4 h-4 text-deep"></i>Lighting<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Decor" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="flower-2" class="w-4 h-4 text-deep"></i>Decor<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Kitchen" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="utensils" class="w-4 h-4 text-deep"></i>Kitchen<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Bedding" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="bed" class="w-4 h-4 text-deep"></i>Bedding<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Outdoor" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="trees" class="w-4 h-4 text-deep"></i>Outdoor<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Rugs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="layout-grid" class="w-4 h-4 text-deep"></i>Rugs<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div><div data-k="Wall Art" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="frame" class="w-4 h-4 text-deep"></i>Wall Art<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div></aside>
-<div id="sl" class="relative rounded-2xl overflow-hidden h-56 sm:h-80 lg:h-[420px] bg-dark"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=75" class="w-full h-full object-cover opacity-70" alt="">
-<div class="absolute inset-0 bg-gradient-to-r from-dark/90 to-transparent flex flex-col justify-center p-6 sm:p-12 text-cream"><h1 class="font-serif text-2xl sm:text-4xl max-w-md leading-tight">Luxury Living, Delivered</h1><p class="mt-2 text-sm text-cream/80">Up to 40% off home essentials</p><span class="gbtn mt-5 w-fit px-6 py-2.5 rounded-full text-sm cursor-pointer">Shop Now</span></div>
-<div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2"><span class="d h-2 w-6 rounded-full bg-gold"></span><span class="d h-2 w-2 rounded-full bg-white/60"></span><span class="d h-2 w-2 rounded-full bg-white/60"></span></div></div>
-<div class="hidden lg:flex flex-col gap-4"><div class="card p-4 flex-1"><i data-lucide="truck" class="w-6 h-6 text-deep"></i><b class="block mt-2">Fast Delivery</b><p class="text-xs text-muted mt-1">Delivery to all 64 districts</p></div><div class="card p-4 flex-1"><i data-lucide="shield-check" class="w-6 h-6 text-deep"></i><b class="block mt-2">100% Authentic</b><p class="text-xs text-muted mt-1">Verified sellers only</p></div><div class="card p-4 flex-1"><i data-lucide="store" class="w-6 h-6 text-deep"></i><b class="block mt-2">Easy Returns</b><p class="text-xs text-muted mt-1">7-day return policy</p></div></div></section>
-<section><h2 class="font-bold text-lg mb-3">Shop by Category</h2><div id="cg" class="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-3"><div data-k="Furniture" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="sofa" class="w-5 h-5 text-deep"></i></span>Furniture</div><div data-k="Lighting" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="lamp" class="w-5 h-5 text-deep"></i></span>Lighting</div><div data-k="Decor" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="flower-2" class="w-5 h-5 text-deep"></i></span>Decor</div><div data-k="Kitchen" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="utensils" class="w-5 h-5 text-deep"></i></span>Kitchen</div><div data-k="Bedding" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="bed" class="w-5 h-5 text-deep"></i></span>Bedding</div><div data-k="Outdoor" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="trees" class="w-5 h-5 text-deep"></i></span>Outdoor</div><div data-k="Rugs" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="layout-grid" class="w-5 h-5 text-deep"></i></span>Rugs</div><div data-k="Wall Art" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="frame" class="w-5 h-5 text-deep"></i></span>Wall Art</div></div></section>
-<section class="card p-3 sm:p-4"><div class="flex flex-wrap items-center justify-between gap-2 mb-3"><div class="flex items-center gap-3"><h2 class="font-bold text-lg flex items-center gap-1"><i data-lucide="zap" class="w-5 h-5 text-deep"></i>Flash Sale</h2><span class="text-xs text-muted">Ends in</span><span id="tm" class="bg-dark text-gold font-mono text-sm px-3 py-1 rounded-lg">05:59:59</span></div><span class="text-sm font-semibold text-deep cursor-pointer">View all</span></div>
-<div class="flex gap-2 sm:gap-3 overflow-x-auto pb-2"><div class="card c w-36 sm:w-44 shrink-0" data-c="Furniture"><div class="r"><img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&q=70" alt=""><i class="o gbtn">-23%</i></div><div class="b"><h3>Aura Curved Lounge Chair</h3><p class="pr"><b>৳18,500</b><s>৳24,000</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.9 · 312 sold</p></div></div><div class="card c w-36 sm:w-44 shrink-0" data-c="Lighting"><div class="r"><img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&q=70" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Brass Wall Sconce</h3><p class="pr"><b>৳4,200</b><s>৳5,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.8 · 540 sold</p></div></div><div class="card c w-36 sm:w-44 shrink-0" data-c="Decor"><div class="r"><img src="https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?w=400&q=70" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Sculptural Gold Vessel</h3><p class="pr"><b>৳2,900</b><s>৳3,800</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.7 · 760 sold</p></div></div><div class="card c w-36 sm:w-44 shrink-0" data-c="Furniture"><div class="r"><img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=400&q=70" alt=""><i class="o gbtn">-20%</i></div><div class="b"><h3>Travertine Minimal Table</h3><p class="pr"><b>৳24,000</b><s>৳30,000</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m"><u>★</u> 5.0 · 98 sold</p></div></div></div></section>
-<section id="all"><div class="flex flex-wrap items-center justify-between gap-2 mb-3"><h2 class="font-bold text-lg">Just For You</h2><div id="ch" class="flex gap-2 overflow-x-auto"><span data-k="All" class="chip on shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">All</span><span data-k="Furniture" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Furniture</span><span data-k="Lighting" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Lighting</span><span data-k="Decor" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Decor</span><span data-k="Kitchen" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Kitchen</span><span data-k="Bedding" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Bedding</span><span data-k="Outdoor" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Outdoor</span><span data-k="Rugs" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Rugs</span><span data-k="Wall Art" class="chip  shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Wall Art</span></div></div>
-<div id="g" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3"><div class="card c " data-c="Furniture"><div class="r"><img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&q=70" alt=""><i class="o gbtn">-23%</i></div><div class="b"><h3>Aura Curved Lounge Chair</h3><p class="pr"><b>৳18,500</b><s>৳24,000</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.9 · 312 sold</p></div></div><div class="card c " data-c="Lighting"><div class="r"><img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&q=70" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Brass Wall Sconce</h3><p class="pr"><b>৳4,200</b><s>৳5,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.8 · 540 sold</p></div></div><div class="card c " data-c="Furniture"><div class="r"><img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=400&q=70" alt=""><i class="o gbtn">-20%</i></div><div class="b"><h3>Travertine Minimal Table</h3><p class="pr"><b>৳24,000</b><s>৳30,000</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m"><u>★</u> 5.0 · 98 sold</p></div></div><div class="card c " data-c="Decor"><div class="r"><img src="https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?w=400&q=70" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Sculptural Gold Vessel</h3><p class="pr"><b>৳2,900</b><s>৳3,800</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.7 · 760 sold</p></div></div><div class="card c " data-c="Lighting"><div class="r"><img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&q=70" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Fluted Brass Pendant</h3><p class="pr"><b>৳6,800</b><s>৳8,900</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.9 · 221 sold</p></div></div><div class="card c " data-c="Furniture"><div class="r"><img src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=400&q=70" alt=""><i class="o gbtn">-22%</i></div><div class="b"><h3>Walnut Sideboard</h3><p class="pr"><b>৳32,000</b><s>৳41,000</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.9 · 64 sold</p></div></div><div class="card c " data-c="Bedding"><div class="r"><img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=400&q=70" alt=""><i class="o gbtn">-22%</i></div><div class="b"><h3>Linen Bedding Set</h3><p class="pr"><b>৳5,600</b><s>৳7,200</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m"><u>★</u> 4.6 · 430 sold</p></div></div><div class="card c " data-c="Rugs"><div class="r"><img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&q=70" alt=""><i class="o gbtn">-18%</i></div><div class="b"><h3>Handwoven Jute Rug</h3><p class="pr"><b>৳7,800</b><s>৳9,500</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.8 · 187 sold</p></div></div><div class="card c " data-c="Outdoor"><div class="r"><img src="https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=400&q=70" alt=""><i class="o gbtn">-21%</i></div><div class="b"><h3>Teak Outdoor Chair</h3><p class="pr"><b>৳9,900</b><s>৳12,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.7 · 143 sold</p></div></div><div class="card c " data-c="Kitchen"><div class="r"><img src="https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?w=400&q=70" alt=""><i class="o gbtn">-26%</i></div><div class="b"><h3>Ceramic Dinner Set</h3><p class="pr"><b>৳3,400</b><s>৳4,600</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m"><u>★</u> 4.8 · 610 sold</p></div></div><div class="card c " data-c="Wall Art"><div class="r"><img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&q=70" alt=""><i class="o gbtn">-26%</i></div><div class="b"><h3>Abstract Canvas Art</h3><p class="pr"><b>৳2,600</b><s>৳3,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m"><u>★</u> 4.5 · 355 sold</p></div></div><div class="card c " data-c="Lighting"><div class="r"><img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&q=70" alt=""><i class="o gbtn">-25%</i></div><div class="b"><h3>Marble Table Lamp</h3><p class="pr"><b>৳3,900</b><s>৳5,200</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m"><u>★</u> 4.8 · 276 sold</p></div></div></div><p id="no" class="hidden text-center text-muted py-10">No products found.</p></section></main>
-<footer class="bg-dark text-cream mt-10"><div class="max-w-7xl mx-auto px-4 py-8 grid sm:grid-cols-3 gap-6 text-sm">
-<div><div class="font-serif text-xl tracking-widest">PREMILY<span class="text-gold">.</span></div><p class="text-cream/60 mt-2">Architectural luxury living, delivered across Bangladesh.</p></div>
-<div><b class="text-gold">Payment Methods</b><p class="text-cream/70 mt-2">bKash · Nagad · Rocket · Visa · Mastercard · Cash on Delivery</p></div>
-<div><b class="text-gold">Help</b><p class="text-cream/70 mt-2">support@premily.com<br>09-6xx-xxx-xxx</p></div></div>
-<div class="text-center text-xs text-cream/40 pb-5">© 2026 Premily · Demo</div></footer>
-<script>lucide.createIcons();(()=>{const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],U='https://images.unsplash.com/photo-',B='০১২৩৪৫৬৭৮৯',
-ls=(k,v)=>{try{return v===undefined?localStorage[k]:localStorage[k]=v}catch(e){}},
-D=Object.fromEntries(`Download the Premily app|প্রিমিলি অ্যাপ ডাউনলোড করুন;Sell on Premily|প্রিমিলিতে বিক্রি করুন;Help|সাহায্য;Track Order|অর্ডার ট্র্যাক;বাংলা|English;Deliver to|ডেলিভারি;Deliver to:|ডেলিভারি:;All|সব;Login / Sign up|লগইন / সাইন আপ;Shop Now|এখনই কিনুন;Fast Delivery|দ্রুত ডেলিভারি;Delivery to all 64 districts|সব ৬৪ জেলায় ডেলিভারি;100% Authentic|১০০% আসল;Verified sellers only|শুধু যাচাইকৃত বিক্রেতা;Easy Returns|সহজ রিটার্ন;7-day return policy|৭ দিনের রিটার্ন;Shop by Category|ক্যাটাগরি অনুযায়ী কিনুন;Furniture|আসবাব;Lighting|লাইটিং;Decor|ডেকর;Kitchen|রান্নাঘর;Bedding|বিছানা;Outdoor|আউটডোর;Rugs|কার্পেট;Wall Art|ওয়াল আর্ট;Flash Sale|ফ্ল্যাশ সেল;Ends in|শেষ হতে;View all|সব দেখুন;Just For You|আপনার জন্য;Mart|মার্ট;✓ Verified|✓ যাচাইকৃত;Architectural luxury living, delivered across Bangladesh.|সারা বাংলাদেশে প্রিমিয়াম হোম ডেলিভারি।;Payment Methods|পেমেন্ট পদ্ধতি;Choose your district|আপনার জেলা বেছে নিন;Aura Curved Lounge Chair|অরা কার্ভড লাউঞ্জ চেয়ার;Brass Wall Sconce|ব্রাস ওয়াল স্কনস;Travertine Minimal Table|ট্রাভার্টাইন মিনিমাল টেবিল;Sculptural Gold Vessel|স্কাল্পচারাল গোল্ড ভেসেল;Fluted Brass Pendant|ফ্লুটেড ব্রাস পেন্ডেন্ট;Walnut Sideboard|ওয়ালনাট সাইডবোর্ড;Linen Bedding Set|লিনেন বেডিং সেট;Handwoven Jute Rug|হাতে বোনা জুট রাগ;Teak Outdoor Chair|টিক আউটডোর চেয়ার;Ceramic Dinner Set|সিরামিক ডিনার সেট;Abstract Canvas Art|অ্যাবস্ট্রাক্ট ক্যানভাস আর্ট;Marble Table Lamp|মার্বেল টেবিল ল্যাম্প;Luxury Living, Delivered|প্রিমিয়াম লিভিং, বাসায় পৌঁছে;Brass & Light Collection|ব্রাস ও লাইট কালেকশন;Handcrafted Furniture|হাতে তৈরি আসবাব;Up to 40% off home essentials|হোম এসেনশিয়ালে ৪০% পর্যন্ত ছাড়;Statement lighting, from ৳3,900|স্টেটমেন্ট লাইটিং, ৳৩,৯০০ থেকে;Walnut, travertine & more|ওয়ালনাট, ট্রাভার্টাইন ও আরও;Dhaka|ঢাকা;Chattogram|চট্টগ্রাম;Sylhet|সিলেট;Khulna|খুলনা;Rajshahi|রাজশাহী;Barishal|বরিশাল;Rangpur|রংপুর;Mymensingh|ময়মনসিংহ;Gazipur|গাজীপুর;Narayanganj|নারায়ণগঞ্জ;Cumilla|কুমিল্লা;Bogura|বগুড়া`.split(';').map(x=>x.split('|'))),
-DS=`Bagerhat,Bandarban,Barguna,Barishal,Bhola,Bogura,Brahmanbaria,Chandpur,Chapai Nawabganj,Chattogram,Chuadanga,Cox's Bazar,Cumilla,Dhaka,Dinajpur,Faridpur,Feni,Gaibandha,Gazipur,Gopalganj,Habiganj,Jamalpur,Jashore,Jhalokati,Jhenaidah,Joypurhat,Khagrachhari,Khulna,Kishoreganj,Kurigram,Kushtia,Lakshmipur,Lalmonirhat,Madaripur,Magura,Manikganj,Meherpur,Moulvibazar,Munshiganj,Mymensingh,Naogaon,Narail,Narayanganj,Narsingdi,Natore,Netrokona,Nilphamari,Noakhali,Pabna,Panchagarh,Patuakhali,Pirojpur,Rajbari,Rajshahi,Rangamati,Rangpur,Satkhira,Shariatpur,Sherpur,Sirajganj,Sunamganj,Sylhet,Tangail,Thakurgaon`.split(','),
-SL=[['1600585154340','Luxury Living, Delivered','Up to 40% off home essentials'],['1618221195710','Brass & Light Collection','Statement lighting, from ৳3,900'],['1538688525198','Handcrafted Furniture','Walnut, travertine & more']];
-let bn=ls('l')=='1',dt=ls('d')||'Dhaka',ct='All',si=0;
-const nd=s=>bn?s.replace(/\d/g,c=>B[c]):s;
-function tr(){const w=document.createTreeWalker(document.body,4);let n;while(n=w.nextNode()){if(/^(SCRIPT|STYLE)$/.test(n.parentNode.tagName))continue;const o=n._o??=n.data,k=o.trim();n.data=bn?nd((D[k]?o.replace(k,D[k]):o).replace(/ sold$/,' বিক্রি')):o}}
-function sd(){const e=F.includes(dt)?'1-2':'3-5';$$('.dl').forEach(x=>x.textContent=nd((bn&&D[dt]||dt)+' · '+e+(bn?' দিন':' days')))}
-const F=['Dhaka','Gazipur','Narayanganj'];
-// district modal
-const M=document.createElement('div');M.className='fixed inset-0 z-50 bg-black/50 place-items-center p-4';M.style.display='none';
-M.innerHTML='<div class="bg-white rounded-2xl w-full max-w-md p-5 max-h-[80vh] flex flex-col"><div class="flex justify-between mb-3"><b>Choose your district</b><button id="mx">✕</button></div><input id="mq" class="border border-gold/50 rounded-full px-4 py-2 text-sm outline-none mb-3"><div id="ml" class="overflow-y-auto grid grid-cols-2 gap-2 text-sm"></div></div>';
-document.body.append(M);
-function rl(){const q=$('#mq').value.toLowerCase();$('#ml').innerHTML=DS.filter(d=>(d+(D[d]||'')).toLowerCase().includes(q)).map(d=>`<button data-d="${d}" class="text-left px-3 py-2 rounded-lg border ${d==dt?'bg-dark text-cream':'border-gold/30 hover:bg-cream'}">${d}</button>`).join('');tr()}
-M.onclick=e=>{const d=e.target.dataset.d;if(e.target==M||e.target.id=='mx')M.style.display='none';if(d){dt=d;ls('d',d);M.style.display='none';sd()}};
-$('#mq').oninput=rl;
-$$('.dp').forEach(x=>x.onclick=()=>{M.style.display='grid';$('#mq').value='';rl()});
-// language
-function L(){document.documentElement.lang=bn?'bn':'en';tr();$('#q').placeholder=bn?'আসবাব, লাইট, ডেকর খুঁজুন…':'Search furniture, lighting, decor…';$('#mq').placeholder=bn?'জেলা খুঁজুন…':'Search district…';sd()}
-$$('.lg').forEach(x=>x.onclick=()=>{bn=!bn;ls('l',bn?'1':'0');L()});
-// filter + search
-const go=()=>$('#all').scrollIntoView({behavior:'smooth'});
-function fl(){const q=$('#q').value.toLowerCase();$$('#all .c').forEach(c=>c.style.display=(ct=='All'||c.dataset.c==ct)&&c.textContent.toLowerCase().includes(q)?'':'none');$('#no').classList.toggle('hidden',$$('#all .c').some(c=>!c.style.display));$$('#all [data-k]').forEach(e=>e.classList.toggle('on',e.dataset.k==ct))}
-$$('[data-k]').forEach(e=>e.onclick=()=>{ct=e.dataset.k;fl();go()});
-$('#q').oninput=fl;$('#q').onkeydown=e=>e.key=='Enter'&&go();$('#q').nextElementSibling.onclick=go;
-// slider
-function sl(i){si=i;const[a,b,c]=SL[i];$('#sl img').src=U+a+'?w=1200&q=75';$('#sl h1').textContent=b;$('#sl p').textContent=c;$$('#sl .d').forEach((e,j)=>e.className='d h-2 rounded-full '+(j==i?'w-6 bg-gold':'w-2 bg-white/60'));tr()}
-$$('#sl .d').forEach((e,j)=>e.onclick=()=>sl(j));setInterval(()=>sl((si+1)%3),5e3);
-// timer
-const E=Date.now()+216e5;
-setInterval(()=>{const s=Math.max(0,(E-Date.now())/1e3|0);$('#tm').textContent=nd([s/3600|0,s%3600/60|0,s%60].map(x=>('0'+x).slice(-2)).join(':'))},1e3);
-L()})()
-</script></body></html>
+
+  <!-- Top Notification Bar -->
+  <div class="bg-dark text-cream text-xs">
+    <div class="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center">
+      <span class="hidden sm:flex items-center gap-1"><i data-lucide="smartphone" class="w-3.5 h-3.5"></i>Download the Premily app</span>
+      <div class="flex items-center gap-4 ml-auto">
+        <span class="hover:text-gold cursor-pointer">Sell on Premily</span>
+        <span class="hover:text-gold hidden sm:block cursor-pointer">Help</span>
+        <span class="hover:text-gold hidden sm:block cursor-pointer">Track Order</span>
+        <span class="border border-gold/60 rounded-full px-3 py-0.5 hover:bg-gold hover:text-dark hidden sm:flex items-center gap-1 cursor-pointer">
+          <i data-lucide="languages" class="w-3.5 h-3.5"></i>বাংলা
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="bg-white sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-6">
+      <span class="font-serif text-2xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></span>
+      <span class="sm:hidden ml-auto border border-gold/60 rounded-full px-3 py-1 text-xs flex items-center gap-1 cursor-pointer">
+        <i data-lucide="languages" class="w-3.5 h-3.5"></i>বাংলা
+      </span>
+      <div class="hidden md:flex items-center gap-2 border border-gold/40 rounded-xl px-3 py-1.5 hover:bg-cream cursor-pointer">
+        <i data-lucide="map-pin" class="w-5 h-5 text-deep"></i>
+        <span class="leading-tight">
+          <span class="block text-[10px] text-muted">Deliver to</span>
+          <span class="block text-sm font-semibold">Dhaka · 1-2 days</span>
+        </span>
+      </div>
+      <div class="order-last w-full sm:order-0 sm:w-auto sm:flex-1 flex border-2 border-gold rounded-full overflow-hidden bg-white">
+        <span class="hidden sm:flex items-center bg-cream text-xs px-4 border-r border-gold/40">All</span>
+        <input type="text" class="flex-1 px-4 py-2.5 text-sm outline-none min-w-0" placeholder="Search furniture, lighting, decor…">
+        <button class="gbtn px-5 grid place-items-center"><i data-lucide="search" class="w-4 h-4"></i></button>
+      </div>
+      <span class="hidden lg:flex items-center gap-2 text-sm hover:text-deep cursor-pointer">
+        <i data-lucide="user" class="w-5 h-5"></i>Login / Sign up
+      </span>
+      <span class="relative p-2 hover:text-deep cursor-pointer">
+        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+        <span class="absolute -top-0.5 -right-0.5 gbtn text-[10px] w-5 h-5 rounded-full grid place-items-center">0</span>
+      </span>
+    </div>
+    <div class="md:hidden w-full bg-cream text-xs px-4 py-2 flex items-center gap-1">
+      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-deep"></i>Deliver to: <b>Dhaka · 1-2 days</b>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-4 space-y-6">
+
+    <!-- Top Grid Section (Sidebar, Banner, Features) -->
+    <section class="grid lg:grid-cols-[230px_1fr_250px] gap-4">
+      <!-- Sidebar Categories -->
+      <aside class="card hidden lg:block p-2 overflow-hidden">
+        <div data-k="Furniture" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="sofa" class="w-4 h-4 text-deep"></i>Furniture<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Lighting" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="lamp" class="w-4 h-4 text-deep"></i>Lighting<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Decor" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="flower-2" class="w-4 h-4 text-deep"></i>Decor<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Kitchen" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="utensils" class="w-4 h-4 text-deep"></i>Kitchen<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Bedding" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="bed" class="w-4 h-4 text-deep"></i>Bedding<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Outdoor" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="trees" class="w-4 h-4 text-deep"></i>Outdoor<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Rugs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="layout-grid" class="w-4 h-4 text-deep"></i>Rugs<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+        <div data-k="Wall Art" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm hover:bg-cream cursor-pointer"><i data-lucide="frame" class="w-4 h-4 text-deep"></i>Wall Art<i data-lucide="chevron-right" class="w-3.5 h-3.5 ml-auto text-muted"></i></div>
+      </aside>
+
+      <!-- Banner Carousel -->
+      <div class="relative rounded-2xl overflow-hidden h-56 sm:h-80 lg:h-105 bg-dark">
+        <img src="https://picsum.photos/id/1068/800/500" class="w-full h-full object-cover opacity-70" alt="Hero Banner">
+        <div class="absolute inset-0 bg-linear-to-r from-dark/90 to-transparent flex flex-col justify-center p-6 sm:p-12 text-cream">
+          <h1 class="font-serif text-2xl sm:text-4xl max-w-md leading-tight">Luxury Living, Delivered</h1>
+          <p class="mt-2 text-sm text-cream/80">Up to 40% off home essentials</p>
+          <span class="gbtn mt-5 w-fit px-6 py-2.5 rounded-full text-sm cursor-pointer">Shop Now</span>
+        </div>
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+          <span class="h-2 w-6 rounded-full bg-gold"></span>
+          <span class="h-2 w-2 rounded-full bg-white/60"></span>
+          <span class="h-2 w-2 rounded-full bg-white/60"></span>
+        </div>
+      </div>
+
+      <!-- Side Features -->
+      <div class="hidden lg:flex flex-col gap-4">
+        <div class="card p-4 flex-1"><i data-lucide="truck" class="w-6 h-6 text-deep"></i><b class="block mt-2">Fast Delivery</b><p class="text-xs text-muted mt-1">Delivery to all 64 districts</p></div>
+        <div class="card p-4 flex-1"><i data-lucide="shield-check" class="w-6 h-6 text-deep"></i><b class="block mt-2">100% Authentic</b><p class="text-xs text-muted mt-1">Verified sellers only</p></div>
+        <div class="card p-4 flex-1"><i data-lucide="store" class="w-6 h-6 text-deep"></i><b class="block mt-2">Easy Returns</b><p class="text-xs text-muted mt-1">7-day return policy</p></div>
+      </div>
+    </section>
+
+    <!-- Category Grid -->
+    <section>
+      <h2 class="font-bold text-lg mb-3">Shop by Category</h2>
+      <div class="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-3">
+        <div data-k="Furniture" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="sofa" class="w-5 h-5 text-deep"></i></span>Furniture</div>
+        <div data-k="Lighting" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="lamp" class="w-5 h-5 text-deep"></i></span>Lighting</div>
+        <div data-k="Decor" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="flower-2" class="w-5 h-5 text-deep"></i></span>Decor</div>
+        <div data-k="Kitchen" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="utensils" class="w-5 h-5 text-deep"></i></span>Kitchen</div>
+        <div data-k="Bedding" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="bed" class="w-5 h-5 text-deep"></i></span>Bedding</div>
+        <div data-k="Outdoor" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="trees" class="w-5 h-5 text-deep"></i></span>Outdoor</div>
+        <div data-k="Rugs" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="layout-grid" class="w-5 h-5 text-deep"></i></span>Rugs</div>
+        <div data-k="Wall Art" class="card p-2 sm:p-3 flex flex-col items-center gap-1.5 text-[11px] sm:text-xs font-medium cursor-pointer"><span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-cream grid place-items-center"><i data-lucide="frame" class="w-5 h-5 text-deep"></i></span>Wall Art</div>
+      </div>
+    </section>
+
+    <!-- Flash Sale Horizontal Scroll -->
+    <section class="card p-3 sm:p-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="flex items-center gap-3">
+          <h2 class="font-bold text-lg flex items-center gap-1"><i data-lucide="zap" class="w-5 h-5 text-deep"></i>Flash Sale</h2>
+          <span class="text-xs text-muted">Ends in</span>
+          <span class="bg-dark text-gold font-mono text-sm px-3 py-1 rounded-lg">05:59:59</span>
+        </div>
+        <span class="text-sm font-semibold text-deep cursor-pointer">View all</span>
+      </div>
+      <div class="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
+        <div class="card c w-36 sm:w-44 shrink-0" data-c="Furniture"><div class="r"><img src="https://picsum.photos/id/1060/300/200" alt=""><i class="o gbtn">-23%</i></div><div class="b"><h3>Aura Curved Lounge Chair</h3><p class="pr"><b>৳18,500</b><s>৳24,000</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m">★ 4.9 · 312 sold</p></div></div>
+        <div class="card c w-36 sm:w-44 shrink-0" data-c="Lighting"><div class="r"><img src="https://picsum.photos/id/1070/300/200" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Brass Wall Sconce</h3><p class="pr"><b>৳4,200</b><s>৳5,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m">★ 4.8 · 540 sold</p></div></div>
+        <div class="card c w-36 sm:w-44 shrink-0" data-c="Decor"><div class="r"><img src="https://picsum.photos/id/1080/300/200" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Sculptural Gold Vessel</h3><p class="pr"><b>৳2,900</b><s>৳3,800</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m">★ 4.7 · 760 sold</p></div></div>
+        <div class="card c w-36 sm:w-44 shrink-0" data-c="Furniture"><div class="r"><img src="https://picsum.photos/id/1062/300/200" alt=""><i class="o gbtn">-20%</i></div><div class="b"><h3>Travertine Minimal Table</h3><p class="pr"><b>৳24,000</b><s>৳30,000</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m">★ 5.0 · 98 sold</p></div></div>
+      </div>
+    </section>
+
+    <!-- Main Grid Section with Chips -->
+    <section>
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h2 class="font-bold text-lg">Just For You</h2>
+        <div class="flex gap-2 overflow-x-auto">
+          <span data-k="All" class="chip on shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">All</span>
+          <span data-k="Furniture" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Furniture</span>
+          <span data-k="Lighting" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Lighting</span>
+          <span data-k="Decor" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Decor</span>
+          <span data-k="Kitchen" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Kitchen</span>
+          <span data-k="Bedding" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Bedding</span>
+          <span data-k="Outdoor" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Outdoor</span>
+          <span data-k="Rugs" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Rugs</span>
+          <span data-k="Wall Art" class="chip shrink-0 text-xs px-4 py-1.5 rounded-full bg-white border border-gold/40 cursor-pointer">Wall Art</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+        <div class="card c" data-c="Furniture"><div class="r"><img src="https://picsum.photos/id/1060/300/200" alt=""><i class="o gbtn">-23%</i></div><div class="b"><h3>Aura Curved Lounge Chair</h3><p class="pr"><b>৳18,500</b><s>৳24,000</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m">★ 4.9 · 312 sold</p></div></div>
+        <div class="card c" data-c="Lighting"><div class="r"><img src="https://picsum.photos/id/1070/300/200" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Brass Wall Sconce</h3><p class="pr"><b>৳4,200</b><s>৳5,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m">★ 4.8 · 540 sold</p></div></div>
+        <div class="card c" data-c="Furniture"><div class="r"><img src="https://picsum.photos/id/1062/300/200" alt=""><i class="o gbtn">-20%</i></div><div class="b"><h3>Travertine Minimal Table</h3><p class="pr"><b>৳24,000</b><s>৳30,000</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m">★ 5.0 · 98 sold</p></div></div>
+        <div class="card c" data-c="Decor"><div class="r"><img src="https://picsum.photos/id/1080/300/200" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Sculptural Gold Vessel</h3><p class="pr"><b>৳2,900</b><s>৳3,800</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m">★ 4.7 · 760 sold</p></div></div>
+        <div class="card c" data-c="Lighting"><div class="r"><img src="https://picsum.photos/id/1072/300/200" alt=""><i class="o gbtn">-24%</i></div><div class="b"><h3>Fluted Brass Pendant</h3><p class="pr"><b>৳6,800</b><s>৳8,900</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m">★ 4.9 · 221 sold</p></div></div>
+        <div class="card c" data-c="Furniture"><div class="r"><img src="https://picsum.photos/id/1069/300/200" alt=""><i class="o gbtn">-22%</i></div><div class="b"><h3>Walnut Sideboard</h3><p class="pr"><b>৳32,000</b><s>৳41,000</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m">★ 4.9 · 64 sold</p></div></div>
+        <div class="card c" data-c="Bedding"><div class="r"><img src="https://picsum.photos/id/1025/300/200" alt=""><i class="o gbtn">-22%</i></div><div class="b"><h3>Linen Bedding Set</h3><p class="pr"><b>৳5,600</b><s>৳7,200</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m">★ 4.6 · 430 sold</p></div></div>
+        <div class="card c" data-c="Rugs"><div class="r"><img src="https://picsum.photos/id/1040/300/200" alt=""><i class="o gbtn">-18%</i></div><div class="b"><h3>Handwoven Jute Rug</h3><p class="pr"><b>৳7,800</b><s>৳9,500</s></p><p class="tg"><i class="t tm">Mart</i><i class="t tv">✓ Verified</i></p><p class="m">★ 4.8 · 187 sold</p></div></div>
+        <div class="card c" data-c="Outdoor"><div class="r"><img src="https://picsum.photos/id/1050/300/200" alt=""><i class="o gbtn">-21%</i></div><div class="b"><h3>Teak Outdoor Chair</h3><p class="pr"><b>৳9,900</b><s>৳12,500</s></p><p class="tg"><i class="t tv">✓ Verified</i></p><p class="m">★ 4.7 · 143 sold</p></div></div>
+        <div class="card c" data-c="Kitchen"><div class="r"><img src="https://picsum.photos/id/1060/300/200" alt=""><i class="o gbtn">-26%</i></div><div class="b"><h3>Ceramic Dinner Set</h3><p class="pr"><b>৳3,400</b><s>৳4,600</s></p><p class="tg"><i class="t tm">Mart</i></p><p class="m">★ 4.8 · 610 sold</p></div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-cream mt-10">
+    <div class="max-w-7xl mx-auto px-4 py-8 grid sm:grid-cols-3 gap-6 text-sm">
+      <div>
+        <div class="font-serif text-xl tracking-widest">PREMILY<span class="text-gold">.</span></div>
+        <p class="text-cream/60 mt-2">Architectural luxury living, delivered across Bangladesh.</p>
+      </div>
+      <div>
+        <b class="text-gold">Payment Methods</b>
+        <p class="text-cream/70 mt-2">bKash · Nagad · Rocket · Visa · Mastercard · Cash on Delivery</p>
+      </div>
+      <div>
+        <b class="text-gold">Help</b>
+        <p class="text-cream/70 mt-2">support@premily.com<br>09-6xx-xxx-xxx</p>
+      </div>
+    </div>
+    <div class="text-center text-xs text-cream/40 pb-5">© 2026 Premily · Demo Blueprint</div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
