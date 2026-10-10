@@ -8,6 +8,7 @@ import { cartRouter } from "./modules/cart/cart.routes.js";
 import { categoriesRouter } from "./modules/categories/categories.routes.js";
 import { ordersRouter } from "./modules/orders/orders.routes.js";
 import { productsRouter } from "./modules/products/products.routes.js";
+import { adminRouter } from "./modules/admin/admin.routes.js";
 
 const app: Express = express();
 
@@ -24,6 +25,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", ordersRouter);
+app.use("/api/admin", adminRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
