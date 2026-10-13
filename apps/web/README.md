@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Premily Web
 
-## Getting Started
+The Premily web application is the frontend of the Premily e-commerce platform. It uses Next.js App Router, React, and TypeScript.
 
-First, run the development server:
+## Technology Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Lucide React icons
+
+## Directory Structure
+
+```text
+apps/web/
+├── app/
+│   ├── products/
+│   │   ├── page.tsx
+│   │   └── [slug]/
+│   │       └── page.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   └── ProductCard.tsx
+├── lib/
+│   └── api.ts
+├── public/
+├── types/
+│   └── index.ts
+├── .env.local.example
+├── next.config.ts
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prerequisites
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Install Node.js and pnpm, then install dependencies from the repository root:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm install
+```
 
-## Learn More
+## Environment Configuration
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.local.example` to `.env.local` inside `apps/web/`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Configure:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
 
-## Deploy on Vercel
+This variable defines the base URL used by the frontend's API utility. Values prefixed with `NEXT_PUBLIC_` are exposed to browser-side code, so never put secrets in them.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Start the frontend from the repository root:
+
+```bash
+pnpm --filter web dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Other Commands
+
+Run the production build:
+
+```bash
+pnpm --filter web build
+```
+
+Start the production server after a successful build:
+
+```bash
+pnpm --filter web start
+```
+
+Run ESLint:
+
+```bash
+pnpm --filter web lint
+```
+
+## API Integration
+
+The shared API utility is located at `lib/api.ts`.
+
+It provides `apiFetch<T>()`, which:
+
+- Builds a request URL from `NEXT_PUBLIC_API_URL` and the supplied path.
+- Uses the Fetch API.
+- Sets JSON request headers.
+- Disables fetch caching for these requests.
+- Throws an error for unsuccessful HTTP responses.
+- Returns the parsed JSON response.
+
+Ensure the backend is running and the API URL is configured correctly when developing features that depend on the API.
+
+## Development Status
+
+The frontend is under active development. Check the actual pages and components before assuming a feature is complete. The static HTML files in `Frontend-design-demo/` are design references and are separate from the Next.js application.

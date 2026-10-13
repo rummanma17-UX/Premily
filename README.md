@@ -1,96 +1,151 @@
 # Premily
 
-A production-grade e-commerce platform built for the Bangladesh market, architecturally comparable to Daraz/Amazon. This is both a real build and a deliberate learning project — every piece of the backend is built and understood file-by-file before moving to the next.
+Premily is an e-commerce platform in development, focused on the Bangladesh market. The project is built as both a practical software engineering project and a learning journey, with an emphasis on understanding the architecture, implementation, and reasoning behind each feature.
+
+## Project Status
+
+**Active development — not production-ready yet.**
+
+- Backend: Express, TypeScript, PostgreSQL, and Prisma.
+- Frontend: Next.js and TypeScript.
+- Infrastructure: pnpm workspace and Docker Compose for local PostgreSQL.
+- Authentication, shopping cart, orders, products, categories, and administration have dedicated backend modules.
+
+See the application-specific READMEs for current setup instructions and implementation details.
 
 ## Tech Stack
 
-**Frontend** (not yet started)
-- Next.js 15, TypeScript, Tailwind CSS, shadcn/ui
-- TanStack Query (server state), Zustand (client state)
-- React Hook Form + Zod (forms & validation)
+| Area | Technology |
+|---|---|
+| Frontend | Next.js, React, TypeScript |
+| Styling | Tailwind CSS |
+| Backend | Express 5, TypeScript, Node.js |
+| Database | PostgreSQL 17 |
+| ORM | Prisma 7 with PostgreSQL driver adapter |
+| Validation | Zod |
+| Authentication | JWT, Argon2, HTTP cookies |
+| Package management | pnpm workspaces |
+| Local database | Docker Compose |
 
-**Backend** (in progress)
-- Express 5, TypeScript, ESM
-- PostgreSQL 17 + Prisma 7 (driver adapter: `@prisma/adapter-pg`)
-- Zod-validated environment config
-- Feature-based module structure (`modules/<feature>/`)
+## Repository Structure
 
-**Auth** (planned)
-- Argon2id password hashing, HTTP-only secure cookies
-
-**Payments** (planned, Bangladesh-focused)
-- SSLCommerz, bKash, Nagad, 
-
-**Infrastructure**
-- Docker Compose (local Postgres)
-- pnpm monorepo (`apps/web`, `apps/api`)
-
-## Project Structure (will look good in code editor)
-
+```text
 Premily/
 ├── apps/
-│ ├── web/ # Next.js frontend (active development from `6 Oct 2026`)
-│ └── api/ # Express backend (active development)
-│ ├── prisma/
-│ │ ├── schema.prisma
-│ │ └── migrations/
-│ ├── src/
-│ │ ├── app.ts # Express app + middleware + route mounting
-│ │ ├── index.ts # Server entrypoint (imports app, calls listen)
-│ │ ├── config/
-│ │ │ └── env.ts # Zod-validated environment variables
-│ │ ├── lib/
-│ │ │ └── prisma.ts # Shared Prisma Client singleton
-│ │ ├── middleware/
-│ │ │ └── error-handler.ts
-│ │ └── modules/
-│ │ └── categories/ # routes → controller → service → schema 
-│ └── prisma.config.ts # CLI-side DB connection config (Prisma 7)
-├── docker-compose.yml # Local Postgres 17 container
-└── pnpm-workspace.yaml
-
-
-## Architecture Decisions
-
-- **Product variants are first-class from day one.** `ProductVariant` (SKU, price, stock, size, color) is separate from `Product` — cart/order line items reference variants, never products directly. Avoids a costly schema migration later.
-- **Decimal, never Float, for money.** All price fields use `@db.Decimal(10, 2)`.
-- **cuid over integer IDs.** Prevents exposing sequential/guessable IDs in public URLs.
-- **Order line items snapshot data at purchase time** (`priceAtOrder`, `productName`, `variantLabel`) rather than referencing live product data — so past orders stay accurate even if a product's price/name changes or the product is deleted later.
-- **Feature-based folders, not type-based.** `modules/products/` holds everything product-related, rather than scattering across top-level `controllers/`, `services/` folders.
-- **`app.ts` / `index.ts` split.** `app.ts` builds the Express app (testable in isolation); `index.ts` only starts it. Enables clean testing later without side effects from server startup.
-
-## Local Setup
-
-**Prerequisites:** Node.js, pnpm, Docker Desktop
-
-```bash
-# from repo root
-pnpm install
-pnpm approve-builds        # approve sharp, prisma build scripts
-
-docker compose up -d       # start local Postgres
-
-pnpm --filter api exec prisma migrate dev   # apply migrations
-pnpm --filter api dev                        # start API on :4000
+│   ├── api/                  # Express backend
+│   │   ├── prisma/           # Database schema and migrations
+│   │   ├── scripts/           # Build helper scripts
+│   │   └── src/
+│   │       ├── config/        # Environment configuration
+│   │       ├── lib/           # Shared infrastructure
+│   │       ├── middleware/    # Express middleware
+│   │       └── modules/       # Feature-based backend modules
+│   └── web/                  # Next.js frontend
+│       ├── app/               # App Router pages and layouts
+│       ├── components/        # Reusable UI components
+│       ├── lib/               # Client-side utilities
+│       ├── public/            # Static assets
+│       └── types/             # Shared frontend types
+├── docker-compose.yml        # Local PostgreSQL service
+├── package.json              # Root project configuration
+├── pnpm-lock.yaml             # Dependency lockfile
+└── pnpm-workspace.yaml        # Workspace configuration
 ```
 
-Copy `apps/api/.env.example` to `apps/api/.env` and fill in real values before running.
+## Prerequisites
 
-## Current Status
+- Node.js
+- pnpm
+- Docker Desktop or another Docker-compatible environment
+- Git
 
-- ✅ Express app scaffolded with CORS, JSON parsing, centralized error handling
-- ✅ Zod-validated env config
-- ✅ Full Prisma schema: User, Category, Product, ProductVariant, ProductImage, Cart, CartItem, Order, OrderItem
-- ✅ First working feature module: Categories (`GET` / `POST /api/categories`)
-- ✅ Prisma-specific error handling (e.g. unique constraint → clean 409 response)
-- ⏳ Auth (register/login, Argon2id, cookies) — next up
-- ⏳ Products module
-- ⏳ Cart, Orders, Payments
-- ⏳ Frontend (not started — backend-first approach)
+## Getting Started
 
+### 1. Install dependencies
 
-**[BTW README was generated by AI]**
+Run from the repository root:
 
-## Notes for AI Assistants / Auditors
+```bash
+pnpm install
+```
 
-This project deliberately follows a **backend-first** build order. If asked about frontend features, note the frontend is still the default Next.js scaffold — nothing has been customized there yet. Backend follows a strict routes → controller → service → (schema) layering per feature module.
+### 2. Configure the backend
+
+Copy `apps/api/.env.example` to `apps/api/.env`.
+
+Configure the database URL, port, environment, and JWT secret. Never commit real secrets.
+
+### 3. Start PostgreSQL
+
+From the repository root:
+
+```bash
+docker compose up -d
+```
+
+The development database is exposed on port `15432` on your host machine.
+
+### 4. Apply database migrations
+
+```bash
+pnpm --filter api exec prisma migrate dev
+```
+
+Ensure PostgreSQL is running and the backend environment is configured first.
+
+### 5. Start the backend
+
+```bash
+pnpm --filter api dev
+```
+
+The API uses port `4000` by default. Its health endpoint is available at `/health`.
+
+### 6. Start the frontend
+
+In another terminal, copy `apps/web/.env.local.example` to `apps/web/.env.local`.
+
+Then run:
+
+```bash
+pnpm --filter web dev
+```
+
+The frontend uses port `3000` by default.
+
+## Backend Architecture
+
+The backend is organized by feature rather than by technical role.
+
+Each feature module can contain:
+
+- Routes: define HTTP endpoints.
+- Controllers: handle HTTP requests and responses.
+- Services: contain application and business logic.
+- Schemas: validate incoming data.
+
+Shared configuration, middleware, and Prisma infrastructure live outside the feature modules.
+
+The Express application is defined in `apps/api/src/app.ts`, while `apps/api/src/index.ts` starts the server.
+
+## Architecture Principles
+
+- **Feature-based organization:** Related feature logic stays together.
+- **Separation of concerns:** HTTP handling, business logic, and validation have distinct responsibilities.
+- **Database integrity:** Prisma schema constraints and migrations define database structure and evolution.
+- **Accurate order history:** Order items should preserve the relevant purchase-time information.
+- **Money representation:** Use decimal database types for monetary values rather than floating-point types.
+- **Incremental development:** Features should be implemented, tested, and understood before expanding the system.
+
+## Documentation
+
+- [Backend documentation](apps/api/README.md)
+- [Frontend documentation](apps/web/README.md)
+- [Backend module architecture](apps/api/src/modules/README.md)
+- [Frontend design prototypes](apps/web/Frontend-design-demo/README.md)
+
+## Development Philosophy
+
+Premily is being developed with two goals: building a maintainable application and understanding the engineering decisions behind it.
+
+The implementation, tests, security controls, and deployment process must be verified as development progresses. A successful local build does not by itself establish production readiness.
