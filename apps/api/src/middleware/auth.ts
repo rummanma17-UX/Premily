@@ -55,6 +55,7 @@ export function requireRole(
         res.status(403).json({ error: "Forbidden" });
         return;
       }
+      next()
     } catch (err) {
       next(err);
     }
