@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Panel - Premily</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.383.0"></script>
+  <script>
+    tailwind.config={theme:{extend:{colors:{gold:"#D4B375",deep:"#B8924B",dark:"#1E1916",muted:"#68605B",cream:"#FAF3E8"},fontFamily:{serif:["Cinzel"],sans:["Plus Jakarta Sans"]}}}}
+  </script>
+  <style>
+    body{background:#F3EFE9;color:#1E1916}
+    .gbtn{background:linear-gradient(135deg,#E3C793,#B8924B);color:#1E1916;font-weight:600}
+    .card{background:#fff;border:1px solid #eadfcd;border-radius:14px;transition:.2s}
+    .card:hover{box-shadow:0 12px 28px -12px rgba(184,146,75,.25);transform:translateY(-1px)}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;color:#68605B;cursor:pointer;transition:.2s}
+    .nav-item:hover, .nav-item.active{background:#FAF3E8;color:#B8924B}
+    .nav-item.active{font-weight:600}
+    ::-webkit-scrollbar{height:6px;width:6px}::-webkit-scrollbar-thumb{background:#D4B375;border-radius:9px}
+  </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col lg:flex-row">
+
+  <!-- Mobile Top Navigation Bar -->
+  <header class="lg:hidden bg-dark text-cream px-4 py-3 flex justify-between items-center sticky top-0 z-50">
+    <div class="font-serif text-xl tracking-widest">PREMILY<span class="text-gold">.</span> <span class="text-xs text-gold/80 font-sans tracking-normal ml-1">Admin</span></div>
+    <button onclick="toggleSidebar()" class="p-1 rounded-lg hover:bg-white/10"><i data-lucide="menu" class="w-6 h-6"></i></button>
+  </header>
+
+  <!-- Sidebar Overlay for Mobile -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+
+  <!-- Sidebar Navigation -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gold/30 flex flex-col transition-transform duration-300 -translate-x-full lg:translate-x-0">
+    <!-- Brand Header -->
+    <div class="p-5 border-b border-gold/20 flex items-center justify-between">
+      <div>
+        <h1 class="font-serif text-xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></h1>
+        <span class="text-[10px] uppercase tracking-wider text-muted font-semibold">Store Administration</span>
+      </div>
+      <button onclick="toggleSidebar()" class="lg:hidden p-1 text-muted hover:text-dark"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+
+    <!-- Nav Links -->
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+      <div onclick="switchTab('dashboard', this)" class="nav-item active"><i data-lucide="layout-dashboard" class="w-4 h-4"></i>Dashboard</div>
+      <div onclick="switchTab('products', this)" class="nav-item"><i data-lucide="package" class="w-4 h-4"></i>Products</div>
+      <div onclick="switchTab('orders', this)" class="nav-item"><i data-lucide="shopping-cart" class="w-4 h-4"></i>Orders <span class="ml-auto bg-deep text-cream text-[10px] px-2 py-0.5 rounded-full font-bold">12</span></div>
+      <div onclick="switchTab('categories', this)" class="nav-item"><i data-lucide="folder-tree" class="w-4 h-4"></i>Categories</div>
+      <div onclick="switchTab('customers', this)" class="nav-item"><i data-lucide="users" class="w-4 h-4"></i>Customers</div>
+      <div onclick="switchTab('sellers', this)" class="nav-item"><i data-lucide="store" class="w-4 h-4"></i>Sellers & Vendors</div>
+      <div onclick="switchTab('coupons', this)" class="nav-item"><i data-lucide="ticket" class="w-4 h-4"></i>Coupons & Discounts</div>
+      <div onclick="switchTab('analytics', this)" class="nav-item"><i data-lucide="bar-chart-3" class="w-4 h-4"></i>Analytics</div>
+      <div onclick="switchTab('settings', this)" class="nav-item"><i data-lucide="settings" class="w-4 h-4"></i>Store Settings</div>
+    </nav>
+
+    <!-- Admin User Profile Footer -->
+    <div class="p-4 border-t border-gold/20 flex items-center gap-3 bg-cream/50">
+      <div class="w-9 h-9 rounded-full bg-deep text-cream font-bold grid place-items-center text-sm">AR</div>
+      <div class="flex-1 min-w-0">
+        <b class="block text-xs truncate text-dark">Abdullah Rumman</b>
+        <span class="text-[10px] text-muted block truncate">admin@premily.com</span>
+      </div>
+      <i data-lucide="log-out" class="w-4 h-4 text-muted hover:text-deep cursor-pointer"></i>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Top Header Bar -->
+    <header class="hidden lg:flex bg-white border-b border-gold/30 px-6 py-3.5 justify-between items-center sticky top-0 z-30">
+      <div id="breadcrumb" class="flex items-center gap-2 text-sm text-muted">
+        <span>Admin Panel</span>›<b class="text-dark">Dashboard Overview</b>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center border border-gold/40 rounded-full px-3 py-1.5 bg-cream/40">
+          <i data-lucide="search" class="w-4 h-4 text-muted mr-2"></i>
+          <input type="text" class="text-xs outline-none bg-transparent w-48" placeholder="Search system…">
+        </div>
+        <span class="relative p-2 rounded-full hover:bg-cream cursor-pointer">
+          <i data-lucide="bell" class="w-5 h-5 text-dark"></i>
+          <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-deep"></span>
+        </span>
+      </div>
+    </header>
+
+    <!-- Dynamic Content Container -->
+    <div id="view-container" class="p-4 sm:p-6 space-y-6 max-w-7xl w-full mx-auto">
+      <!-- Injected dynamically via JS -->
+    </div>
+  </main>
+
+  <script>
+    // Templates for each Admin section
+    const views = {
+      dashboard: `
+        <div class="card p-5 sm:p-6 bg-gradient-to-r from-dark to-[#3A332E] text-cream flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div class="space-y-1">
+            <span class="text-xs uppercase tracking-wider text-gold font-semibold">Store Management</span>
+            <h2 class="font-serif text-xl sm:text-2xl font-bold">Welcome back, Admin</h2>
+            <p class="text-xs text-cream/70">Here is what's happening across your store today in Bangladesh.</p>
+          </div>
+          <button class="gbtn px-5 py-2.5 rounded-full text-xs uppercase tracking-wider shadow-md hover:brightness-105 flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add New Product
+          </button>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div class="card p-4 space-y-1"><div class="flex justify-between items-center text-muted"><span class="text-xs font-semibold">Total Revenue</span><i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i></div><b class="text-xl sm:text-2xl font-bold text-dark">৳14,28,500</b><span class="text-[10px] text-emerald-600 font-semibold block">+12.4% from last month</span></div>
+          <div class="card p-4 space-y-1"><div class="flex justify-between items-center text-muted"><span class="text-xs font-semibold">Total Orders</span><i data-lucide="shopping-bag" class="w-4 h-4 text-deep"></i></div><b class="text-xl sm:text-2xl font-bold text-dark">1,482</b><span class="text-[10px] text-emerald-600 font-semibold block">+8.1% new orders</span></div>
+          <div class="card p-4 space-y-1"><div class="flex justify-between items-center text-muted"><span class="text-xs font-semibold">Active Products</span><i data-lucide="package" class="w-4 h-4 text-deep"></i></div><b class="text-xl sm:text-2xl font-bold text-dark">324</b><span class="text-[10px] text-muted block">Across 8 categories</span></div>
+          <div class="card p-4 space-y-1"><div class="flex justify-between items-center text-muted"><span class="text-xs font-semibold">Customers</span><i data-lucide="users" class="w-4 h-4 text-deep"></i></div><b class="text-xl sm:text-2xl font-bold text-dark">4,890</b><span class="text-[10px] text-emerald-600 font-semibold block">+180 this week</span></div>
+        </div>
+        <div class="card p-4 sm:p-5 space-y-4">
+          <h3 class="font-bold text-base text-dark">Recent Activity Feed</h3>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div class="flex items-center gap-3 border-b border-gold/20 pb-2"><i data-lucide="shopping-cart" class="w-4 h-4 text-deep"></i><span>New order <b>#PRM-8942</b> placed by Nusrat Jahan (Dhaka) · ৳18,500</span><span class="ml-auto text-muted">10 mins ago</span></div>
+            <div class="flex items-center gap-3 border-b border-gold/20 pb-2"><i data-lucide="store" class="w-4 h-4 text-emerald-600"></i><span>Vendor <b>Aura Home Studio</b> updated stock levels for Lounge Chair</span><span class="ml-auto text-muted">45 mins ago</span></div>
+            <div class="flex items-center gap-3 pb-2"><i data-lucide="user-plus" class="w-4 h-4 text-blue-600"></i><span>New customer registration: Rafi Hossain (Sylhet)</span><span class="ml-auto text-muted">2 hours ago</span></div>
+          </div>
+        </div>
+      `,
+      products: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <div class="flex justify-between items-center flex-wrap gap-2">
+            <div><h2 class="font-bold text-lg text-dark">Product Catalog Management</h2><p class="text-xs text-muted">Manage inventory, prices, and vendor items.</p></div>
+            <button class="gbtn px-4 py-2 rounded-full text-xs font-semibold">+ Add Product</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead><tr class="border-b border-gold/30 text-muted font-semibold bg-cream/50"><th class="py-2.5 px-3">Item</th><th class="py-2.5 px-3">Category</th><th class="py-2.5 px-3">Price</th><th class="py-2.5 px-3">Stock</th><th class="py-2.5 px-3 text-right">Actions</th></tr></thead>
+              <tbody class="divide-y divide-gold/20">
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold">Aura Curved Lounge Chair</td><td class="py-3 px-3">Furniture</td><td class="py-3 px-3">৳18,500</td><td class="py-3 px-3">24 units</td><td class="py-3 px-3 text-right"><span class="text-deep font-semibold cursor-pointer">Edit</span></td></tr>
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold">Brass Wall Sconce</td><td class="py-3 px-3">Lighting</td><td class="py-3 px-3">৳4,200</td><td class="py-3 px-3">45 units</td><td class="py-3 px-3 text-right"><span class="text-deep font-semibold cursor-pointer">Edit</span></td></tr>
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold">Travertine Minimal Table</td><td class="py-3 px-3">Furniture</td><td class="py-3 px-3">৳24,000</td><td class="py-3 px-3">8 units</td><td class="py-3 px-3 text-right"><span class="text-deep font-semibold cursor-pointer">Edit</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `,
+      orders: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <div class="flex justify-between items-center"><h2 class="font-bold text-lg text-dark">Customer Orders (12 Pending)</h2><span class="text-xs bg-deep text-cream px-3 py-1 rounded-full font-semibold">Live Feed</span></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead><tr class="border-b border-gold/30 text-muted font-semibold bg-cream/50"><th class="py-2.5 px-3">Order ID</th><th class="py-2.5 px-3">Customer</th><th class="py-2.5 px-3">District</th><th class="py-2.5 px-3">Amount</th><th class="py-2.5 px-3">Status</th><th class="py-2.5 px-3 text-right">Action</th></tr></thead>
+              <tbody class="divide-y divide-gold/20">
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold text-deep">#PRM-8942</td><td class="py-3 px-3">Nusrat Jahan</td><td class="py-3 px-3">Dhaka</td><td class="py-3 px-3 font-semibold">৳18,500</td><td class="py-3 px-3"><span class="bg-amber-100 text-amber-800 text-[10px] font-semibold px-2 py-0.5 rounded-full">Processing</span></td><td class="py-3 px-3 text-right"><span class="text-deep font-semibold cursor-pointer">Fulfill</span></td></tr>
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold text-deep">#PRM-8941</td><td class="py-3 px-3">Rafi Hossain</td><td class="py-3 px-3">Sylhet</td><td class="py-3 px-3 font-semibold">৳4,200</td><td class="py-3 px-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] font-semibold px-2 py-0.5 rounded-full">Delivered</span></td><td class="py-3 px-3 text-right"><span class="text-deep font-semibold cursor-pointer">View</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `,
+      categories: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <div class="flex justify-between items-center"><h2 class="font-bold text-lg text-dark">Store Categories (8 Active)</h2><button class="gbtn px-4 py-2 rounded-full text-xs font-semibold">+ Add Category</button></div>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="card p-3 flex items-center gap-3"><i data-lucide="sofa" class="w-6 h-6 text-deep"></i><div><b>Furniture</b><span class="text-xs text-muted block">124 items</span></div></div>
+            <div class="card p-3 flex items-center gap-3"><i data-lucide="lamp" class="w-6 h-6 text-deep"></i><div><b>Lighting</b><span class="text-xs text-muted block">86 items</span></div></div>
+            <div class="card p-3 flex items-center gap-3"><i data-lucide="flower-2" class="w-6 h-6 text-deep"></i><div><b>Decor</b><span class="text-xs text-muted block">92 items</span></div></div>
+            <div class="card p-3 flex items-center gap-3"><i data-lucide="utensils" class="w-6 h-6 text-deep"></i><div><b>Kitchen</b><span class="text-xs text-muted block">54 items</span></div></div>
+          </div>
+        </div>
+      `,
+      customers: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <h2 class="font-bold text-lg text-dark">Registered Customers Directory</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead><tr class="border-b border-gold/30 text-muted font-semibold bg-cream/50"><th class="py-2.5 px-3">Name</th><th class="py-2.5 px-3">Email / Phone</th><th class="py-2.5 px-3">Location</th><th class="py-2.5 px-3">Total Orders</th></tr></thead>
+              <tbody class="divide-y divide-gold/20">
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold">Nusrat Jahan</td><td class="py-3 px-3">nusrat@example.com</td><td class="py-3 px-3">Dhaka</td><td class="py-3 px-3">5 orders</td></tr>
+                <tr class="hover:bg-cream/30"><td class="py-3 px-3 font-semibold">Rafi Hossain</td><td class="py-3 px-3">01712345678</td><td class="py-3 px-3">Sylhet (Chhatak)</td><td class="py-3 px-3">2 orders</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `,
+      sellers: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <div class="flex justify-between items-center"><h2 class="font-bold text-lg text-dark">Verified Vendors & Sellers</h2><button class="gbtn px-4 py-2 rounded-full text-xs font-semibold">+ Approve New Vendor</button></div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="card p-4 space-y-2">
+              <div class="flex items-center justify-between"><b>Aura Home Studio</b><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">Verified</span></div>
+              <p class="text-xs text-muted">Specializes in solid oak furniture and minimalist tables.</p>
+              <div class="flex justify-between text-xs pt-2 border-t border-gold/20"><span>Rating: 4.9 ★</span><span>Products: 18</span></div>
+            </div>
+            <div class="card p-4 space-y-2">
+              <div class="flex items-center justify-between"><b>NEXORA Lighting Co.</b><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">Verified</span></div>
+              <p class="text-xs text-muted">Handcrafted brass wall sconces and pendant lamps.</p>
+              <div class="flex justify-between text-xs pt-2 border-t border-gold/20"><span>Rating: 4.8 ★</span><span>Products: 14</span></div>
+            </div>
+          </div>
+        </div>
+      `,
+      coupons: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <div class="flex justify-between items-center"><h2 class="font-bold text-lg text-dark">Active Discount Coupons</h2><button class="gbtn px-4 py-2 rounded-full text-xs font-semibold">+ Create Coupon</button></div>
+          <div class="grid sm:grid-cols-3 gap-3">
+            <div class="card p-4 bg-cream/50 border-dashed border-gold space-y-1"><b class="text-deep text-base">LUXURY40</b><span class="text-xs block text-muted">40% off on home essentials</span><span class="text-[10px] text-emerald-600 font-semibold block">Expires: Oct 31, 2026</span></div>
+            <div class="card p-4 bg-cream/50 border-dashed border-gold space-y-1"><b class="text-deep text-base">SYLHETFREE</b><span class="text-xs block text-muted">Free delivery in Sylhet region</span><span class="text-[10px] text-emerald-600 font-semibold block">Active campaign</span></div>
+          </div>
+        </div>
+      `,
+      analytics: `
+        <div class="card p-4 sm:p-5 space-y-6">
+          <h2 class="font-bold text-lg text-dark">Store Performance Analytics</h2>
+          <div class="grid sm:grid-cols-3 gap-4">
+            <div class="card p-4 space-y-2 bg-dark text-cream"><span>Conversion Rate</span><b class="text-2xl text-gold block">3.8%</b><span class="text-xs text-cream/70">+0.6% increase this week</span></div>
+            <div class="card p-4 space-y-2"><span>Average Order Value</span><b class="text-2xl text-deep block">৳7,450</b><span class="text-xs text-muted">Calculated across all districts</span></div>
+            <div class="card p-4 space-y-2"><span>Return Rate</span><b class="text-2xl text-emerald-700 block">1.2%</b><span class="text-xs text-muted">Well below marketplace average</span></div>
+          </div>
+          <div class="card p-5 space-y-3">
+            <h3 class="font-bold text-sm text-dark">Monthly Revenue Trend (2026)</h3>
+            <div class="h-36 flex items-end gap-3 pt-6 px-2 border-b border-gold/30">
+              <div class="flex-1 bg-deep/40 rounded-t hover:bg-deep transition-all" style="height: 40%"></div>
+              <div class="flex-1 bg-deep/50 rounded-t hover:bg-deep transition-all" style="height: 55%"></div>
+              <div class="flex-1 bg-deep/60 rounded-t hover:bg-deep transition-all" style="height: 50%"></div>
+              <div class="flex-1 bg-deep/70 rounded-t hover:bg-deep transition-all" style="height: 70%"></div>
+              <div class="flex-1 bg-deep/80 rounded-t hover:bg-deep transition-all" style="height: 85%"></div>
+              <div class="flex-1 gbtn rounded-t shadow" style="height: 100%"></div>
+            </div>
+            <div class="flex justify-between text-xs text-muted px-1"><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct (Current)</span></div>
+          </div>
+        </div>
+      `,
+      settings: `
+        <div class="card p-4 sm:p-5 space-y-4">
+          <h2 class="font-bold text-lg text-dark">Store Settings & Configurations</h2>
+          <div class="space-y-4 text-sm max-w-xl">
+            <div class="space-y-1"><label class="text-xs font-semibold text-muted">Marketplace Name</label><input type="text" class="w-full border border-gold/40 rounded-xl px-3 py-2 text-sm outline-none bg-white" value="Premily"></div>
+            <div class="space-y-1"><label class="text-xs font-semibold text-muted">Support Email</label><input type="text" class="w-full border border-gold/40 rounded-xl px-3 py-2 text-sm outline-none bg-white" value="support@premily.com"></div>
+            <div class="space-y-1"><label class="text-xs font-semibold text-muted">Default Currency</label><input type="text" class="w-full border border-gold/40 rounded-xl px-3 py-2 text-sm outline-none bg-white" value="BDT (৳)"></div>
+            <div class="pt-2"><button class="gbtn px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider">Save Changes</button></div>
+          </div>
+        </div>
+      `
+    };
+
+    // Switch view function
+    function switchTab(tabKey, element) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+      document.getElementById('view-container').innerHTML = views[tabKey];
+      
+      // Update breadcrumb
+      const titles = { dashboard: 'Dashboard Overview', products: 'Product Catalog', orders: 'Customer Orders', categories: 'Store Categories', customers: 'Customers Directory', sellers: 'Sellers & Vendors', coupons: 'Coupons & Discounts', analytics: 'Analytics & Reports', settings: 'Store Settings' };
+      document.getElementById('breadcrumb').innerHTML = `<span>Admin Panel</span>›<b class="text-dark">${titles[tabKey]}</b>`;
+      
+      lucide.createIcons();
+      if(window.innerWidth < 1024) toggleSidebar();
+    }
+
+    // Initialize default view
+    document.getElementById('view-container').innerHTML = views['dashboard'];
+    lucide.createIcons();
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      document.getElementById('sidebar-overlay').classList.toggle('hidden');
+    }
+  </script>
+</body>
+</html>
