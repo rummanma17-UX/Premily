@@ -207,10 +207,13 @@ export async function verifyPayment(
     const ownsItem = await prisma.orderItem.count({
       where: {
         orderId,
-        variant: {product: {sellerId: verifier.userId} }
-      }
-    }
-    );
+        variant: {
+          product: {
+            sellerId: verifier.userId,
+          },
+        },
+      },
+    });
     if (ownsItem === 0) {
       throw new Error("ORDER_NOT_FOUND");
     }
