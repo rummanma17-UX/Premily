@@ -8,99 +8,236 @@ datasource db {
 }
 
 // ==========================================
-// USER & AUTH
+// USERS & AUTHENTICATION
 // ==========================================
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  phone     String   @unique
+  id        String  @id @default(cuid())
+  email     String  @unique
+  phone     String  @unique
   password  String
   name      String
-  role      Role     @default(CUSTOMER)
+  role      Role    @default(CUSTOMER)
+  isActive  Boolean @default(true)
 
-  cart      Cart?
-  orders    Order[]
-  products  Product[] @relation("SellerProducts")
+  store             Store?             @relation("StoreOwner")
+  cart              Cart?
+  orderGroups       OrderGroup[]       @relation("CustomerOrderGroups")
+  orders            Order[]            @relation("CustomerOrders")
+  verifiedPayments  Payment[]          @relation("PaymentVerifier")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([role, isActive])
   @@map("users")
 }
 
 enum Role {
   CUSTOMER
-  ADMIN
   SELLER
+  ADMIN
 }
 
 // ==========================================
-// CATALOG & PRODUCTS
+// STORES & SELLER SUBSCRIPTIONS
+// ==========================================
+
+model Store {
+  id          String      @id @default(cuid())
+  sellerId    String      @unique
+  seller      User        @relation("StoreOwner", fields: [sellerId], references: [id], onDelete: Restrict)
+
+  slug        String      @unique
+  displayName String
+  description String?
+
+  logoUrl     String?
+  bannerUrl   String?
+  primaryColor String?
+
+  seoTitle       String?
+  seoDescription String?
+
+  status      StoreStatus @default(DRAFT)
+  isPublished Boolean     @default(false)
+  publishedAt DateTime?
+
+  products     Product[]
+  orders       Order[]
+  subscription SellerSubscription?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, isPublished])
+  @@map("stores")
+}
+
+enum StoreStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+model SellerSubscription {
+  id      String @id @default(cuid())
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Restrict)
+
+  planCode String  @default("seller_monthly")
+  amount   Decimal @default(150.00) @db.Decimal(10, 2)
+  currency String  @default("BDT")
+
+  status SubscriptionStatus @default(TRIALING)
+
+  trialStartsAt DateTime  @default(now())
+  trialEndsAt   DateTime
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+
+  cancelAtPeriodEnd Boolean   @default(false)
+  cancelledAt       DateTime?
+
+  provider               String?
+  providerCustomerId     String?
+  providerSubscriptionId String? @unique
+
+  payments SubscriptionPayment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, currentPeriodEnd])
+  @@map("seller_subscriptions")
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+model SubscriptionPayment {
+  id             String             @id @default(cuid())
+  subscriptionId String
+  subscription   SellerSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+
+  amount   Decimal @db.Decimal(10, 2)
+  currency String  @default("BDT")
+  status   SubscriptionPaymentStatus @default(PENDING)
+
+  provider              String?
+  providerTransactionId String? @unique
+
+  periodStart DateTime?
+  periodEnd   DateTime?
+  paidAt      DateTime?
+  failureReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subscriptionId, createdAt])
+  @@index([status, createdAt])
+  @@map("subscription_payments")
+}
+
+enum SubscriptionPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ==========================================
+// CATEGORIES, PRODUCTS & INVENTORY
 // ==========================================
 
 model Category {
-  id        String    @id @default(cuid())
-  name      String
-  slug      String    @unique
-  products  Product[]
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("categories")
 }
 
 model Product {
-  id          String           @id @default(cuid())
+  id          String @id @default(cuid())
+  storeId     String
+  store       Store  @relation(fields: [storeId], references: [id], onDelete: Restrict)
+
+
   name        String
-  slug        String           @unique
+  slug        String
   description String
 
-  categoryId  String
-  category    Category         @relation(fields: [categoryId], references: [id])
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  sellerId    String
-  seller      User             @relation("SellerProducts", fields: [sellerId], references: [id])
+  status ProductStatus @default(DRAFT)
 
-  images      ProductImage[]
-  variants    ProductVariant[]
+  seoTitle       String?
+  seoDescription String?
 
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  images   ProductImage[]
+  variants ProductVariant[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([storeId, slug])
+  @@index([storeId, status, createdAt])
+  @@index([categoryId])
   @@map("products")
 }
 
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
 model ProductVariant {
-  id         String      @id @default(cuid())
-  sku        String      @unique
-  price      Decimal     @db.Decimal(10, 2)
-  stock      Int         @default(0)
-  size       String?
-  color      String?
+  id        String  @id @default(cuid())
+  sku       String  @unique
+  price     Decimal @db.Decimal(10, 2)
+  stock     Int     @default(0)
+  size      String?
+  color     String?
+  isActive  Boolean @default(true)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   cartItems  CartItem[]
   orderItems OrderItem[]
 
-  productId  String
-  product    Product     @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
+  @@index([productId, isActive])
   @@map("product_variants")
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   url       String
   altText   String?
-  position  Int
+  position  Int     @default(0)
 
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@unique([productId, position])
   @@map("product_images")
 }
 
@@ -109,107 +246,171 @@ model ProductImage {
 // ==========================================
 
 model Cart {
-  id        String     @id @default(cuid())
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id])
+  items CartItem[]
 
-  items     CartItem[]
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("carts")
 }
 
 model CartItem {
-  id        String         @id @default(cuid())
-  quantity  Int
+  id       String @id @default(cuid())
+  quantity Int
 
-  cartId    String
-  cart      Cart           @relation(fields: [cartId], references: [id])
+  cartId String
+  cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
   variantId String
-  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([cartId, variantId])
   @@map("cart_items")
 }
 
 // ==========================================
-// ORDERS & PAYMENTS
+// CHECKOUT GROUPS & SELLER ORDERS
 // ==========================================
 
+// One customer checkout can contain orders for multiple stores.
+// Payments and fulfillment remain separate for each seller order.
+
+model OrderGroup {
+  id          String @id @default(cuid())
+  groupNumber String @unique
+
+  userId String
+  user   User   @relation("CustomerOrderGroups", fields: [userId], references: [id], onDelete: Restrict)
+
+  orders Order[]
+
+  subtotal     Decimal @db.Decimal(10, 2)
+  shippingCost Decimal @db.Decimal(10, 2)
+  discount     Decimal @default(0) @db.Decimal(10, 2)
+  total        Decimal @db.Decimal(10, 2)
+  currency     String  @default("BDT")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@map("order_groups")
+}
+
 model Order {
-  id              String      @id @default(cuid())
-  status          OrderStatus @default(PENDING)
+  id          String @id @default(cuid())
+  orderNumber String @unique
 
-  subtotal        Decimal     @db.Decimal(10, 2)
-  shippingCost    Decimal     @db.Decimal(10, 2)
-  total           Decimal     @db.Decimal(10, 2)
+  orderGroupId String
+  orderGroup   OrderGroup @relation(fields: [orderGroupId], references: [id], onDelete: Restrict)
 
-  shippingName    String
-  shippingPhone   String
-  shippingAddress String
-  shippingCity    String
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Restrict)
 
-  userId          String
-  user            User        @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation("CustomerOrders", fields: [userId], references: [id], onDelete: Restrict)
 
-  items           OrderItem[]
-  payment         Payment?
+  status OrderStatus @default(PENDING)
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  subtotal     Decimal @db.Decimal(10, 2)
+  shippingCost Decimal @db.Decimal(10, 2)
+  discount     Decimal @default(0) @db.Decimal(10, 2)
+  total        Decimal @db.Decimal(10, 2)
+  currency     String  @default("BDT")
 
+  shippingName        String
+  shippingPhone       String
+  shippingAddress     String
+  shippingCity        String
+  shippingDistrict    String?
+  shippingPostalCode  String?
+  shippingCountry     String  @default("Bangladesh")
+
+  customerNote String?
+  cancelledAt  DateTime?
+
+  items    OrderItem[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([storeId, status, createdAt])
+  @@index([orderGroupId])
   @@map("orders")
 }
 
 enum OrderStatus {
   PENDING
-  PAID
+  CONFIRMED
+  PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  RETURNED
 }
 
 model OrderItem {
-  id           String         @id @default(cuid())
-  quantity     Int
-  priceAtOrder Decimal        @db.Decimal(10, 2)
-  productName  String
-  variantLabel String
+  id       String @id @default(cuid())
+  quantity Int
 
-  orderId      String
-  order        Order          @relation(fields: [orderId], references: [id])
+  // Snapshots preserve the details of the purchase.
+  productName       String
+  productSlugAtOrder String?
+  variantLabel      String
+  skuAtOrder        String?
+  productImageUrlAtOrder String?
 
-  variantId    String
-  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  priceAtOrder Decimal @db.Decimal(10, 2)
 
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Optional because the original variant may later be deleted.
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
   @@map("order_items")
 }
 
-model Payment {
-  id            String        @id @default(cuid())
-  method        PaymentMethod
-  status        PaymentStatus @default(PENDING)
-  amount        Decimal       @db.Decimal(10, 2)
+// ==========================================
+// CUSTOMER ORDER PAYMENTS
+// ==========================================
 
-  transactionId String?       @unique
+// Payment attempts belong to an individual seller order.
+// This is separate from the seller's PREMILY subscription billing.
+
+model Payment {
+  id     String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+
+  amount   Decimal @db.Decimal(10, 2)
+  currency String  @default("BDT")
+
+  transactionId String? @unique
   senderNumber  String?
 
-  verifiedAt    DateTime?
-  verifiedBy    String?
+  verifiedAt DateTime?
+  verifiedBy String?
+  verifier   User? @relation("PaymentVerifier", fields: [verifiedBy], references: [id], onDelete: SetNull)
 
-  orderId       String        @unique
-  order         Order         @relation(fields: [orderId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
+  @@index([orderId, status])
   @@map("payments")
 }
 
@@ -223,4 +424,5 @@ enum PaymentStatus {
   PENDING
   VERIFIED
   FAILED
+  REFUNDED
 }
