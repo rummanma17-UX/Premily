@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Product Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config={theme:{extend:{colors:{gold:"#D4B375",deep:"#B8924B",dark:"#1E1916",muted:"#68605B",cream:"#FAF3E8"},fontFamily:{serif:["Cinzel"],sans:["Plus Jakarta Sans"]}}}}
+  </script>
+  <style>
+    body{background:#F3EFE9;color:#1E1916}
+  </style>
+</head>
+<body class="font-sans min-h-screen flex items-center justify-center">
+
+  <main class="flex-1 px-6 py-12 max-w-4xl mx-auto">
+    <div class="grid sm:grid-cols-2 gap-8 bg-white p-6 rounded-2xl border border-[#eadfcd] shadow-sm">
+      
+      <!-- Product Image -->
+      <img
+        src="https://picsum.photos/id/1060/800/800"
+        alt="Aura Curved Lounge Chair"
+        className="w-full aspect-square object-cover rounded"
+        class="w-full aspect-square object-cover rounded-xl"
+      />
+
+      <!-- Product Details & Variants -->
+      <div class="flex flex-col justify-center">
+        <h1 class="text-2xl font-semibold text-dark font-serif">Aura Curved Lounge Chair</h1>
+        <p class="text-muted mt-1 text-sm">Furniture / Lounge Chairs</p>
+        <p class="text-xl mt-4 font-bold text-deep">৳18,500</p>
+        <p class="mt-6 text-gray-700 text-sm leading-relaxed">
+          A sculptural curved lounge chair in solid oak with soft boucle upholstery. Designed for luxury living rooms and boutique spaces.
+        </p>
+
+        <!-- Variants Stack -->
+        <div class="mt-6 flex flex-col gap-2">
+          
+          <div class="border border-gold/40 rounded-xl px-3.5 py-2.5 flex justify-between text-sm bg-cream/40 items-center">
+            <span class="font-medium text-dark">Large / Beige</span>
+            <span class="text-emerald-700 font-semibold text-xs bg-emerald-100 px-2 py-0.5 rounded-full">24 in stock</span>
+          </div>
+
+          <div class="border border-gold/40 rounded-xl px-3.5 py-2.5 flex justify-between text-sm bg-cream/40 items-center">
+            <span class="font-medium text-dark">Medium / Walnut</span>
+            <span class="text-emerald-700 font-semibold text-xs bg-emerald-100 px-2 py-0.5 rounded-full">8 in stock</span>
+          </div>
+
+          <div class="border border-gold/40 rounded-xl px-3.5 py-2.5 flex justify-between text-sm bg-cream/20 opacity-60 items-center">
+            <span class="font-medium text-dark">Small / Charcoal</span>
+            <span class="text-rose-700 font-semibold text-xs bg-rose-100 px-2 py-0.5 rounded-full">Out of stock</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>
