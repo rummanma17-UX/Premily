@@ -10,7 +10,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/${product.store.slug}/products/${product.slug}`}
       className="block rounded border overflow-hidden hover:shadow-md transition-shadow"
     >
       {image && (

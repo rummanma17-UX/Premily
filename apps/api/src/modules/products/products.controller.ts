@@ -42,7 +42,12 @@ export async function getProduct(
   next: NextFunction,
 ) {
   try {
-    const product = (await getProductBySlug(req.params.slug as string)) || "";
+    const { storeSlug, productSlug } = req.params;
+
+    const product = await getProductBySlug(
+      storeSlug as string,
+      productSlug as string,
+    );
 
     if (!product) {
       res.status(404).json({ error: "Product not found" });

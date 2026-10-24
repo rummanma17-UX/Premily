@@ -30,4 +30,5 @@ export type Product = {
   category: Category;
   variants: ProductVariant[];
   images: ProductImage[];
+  store: { slug: string };
 };

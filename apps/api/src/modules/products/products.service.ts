@@ -5,13 +5,22 @@ export async function createProduct(
   sellerId: string,
   data: CreateProductInput,
 ) {
+  const store = await prisma.store.findUnique({
+    where: { sellerId },
+    select: { id: true },
+  });
+
+  if (!store) {
+    throw new Error("STORE_NOT_FOUND");
+  }
+
   return prisma.product.create({
     data: {
       name: data.name,
       slug: data.slug,
       description: data.description,
       categoryId: data.categoryId,
-      sellerId,
+      storeId: store.id,
       variants: {
         create: data.variants.map((v) => ({
           ...v,
@@ -33,13 +42,17 @@ export async function createProduct(
   });
 }
 
-export async function getProductBySlug(slug: string) {
-  return prisma.product.findUnique({
-    where: { slug },
+export async function getProductBySlug(storeSlug: string, productSlug: string) {
+  return prisma.product.findFirst({
+    where: {
+      slug: productSlug,
+      store: { slug: storeSlug },
+    },
     include: {
       variants: true,
       images: true,
       category: true,
+      store: true,
     },
   });
 }
@@ -57,12 +70,14 @@ export async function getAllProducts() {
 
 export async function getMyProducts(sellerId: string) {
   return prisma.product.findMany({
-    where: { sellerId },
+    where: {
+      store: { sellerId },
+    },
     include: {
       variants: true,
       images: true,
       category: true,
     },
-    orderBy: {createdAt: "desc"}
+    orderBy: { createdAt: "desc" },
   });
 }
