@@ -63,6 +63,9 @@ export async function getAllProducts() {
       variants: true,
       images: true,
       category: true,
+      store: {
+        select: { slug: true },
+      },
     },
     orderBy: { createdAt: "desc" },
   });

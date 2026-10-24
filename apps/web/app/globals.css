@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
+@theme {
+  /* ==================== PREMILY BRAND COLORS ==================== */
+  --color-gold: #D4B375;
+  --color-deep: #B8924B;
+  --color-light-gold: #E3C793;
+  --color-dark: #1E1916;
+  --color-cream: #FAF3E8;
+  --color-muted: #68605B;
+
+  /* Card & Surface Tokens */
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #F5EFE6;
+  --color-border-gold: #EADFCD;
+
+  /* State & Functional Colors */
+  --color-success-bg: #ECFDF5;
+  --color-success: #047857;
+  --color-success-border: #A7F3D0;
+
+  --color-warning-bg: #FEF3C7;
+  --color-warning: #B45309;
+
+  --color-error-bg: #FFE4E6;
+  --color-error: #BE123C;
+
+  /* ==================== TYPOGRAPHY & FONTS ==================== */
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-cinzel), Georgia, serif;
+
+  /* Custom Animations & Transitions */
+  --ease-premily: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==================== BASE RESET & CSS VARIABLES ==================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --background: var(--color-cream);
+  --foreground: var(--color-dark);
+  
+  /* Gradient Shortcuts */
+  --gradient-gold: linear-gradient(135deg, #E3C793 0%, #B8924B 100%);
+  --gradient-dark: linear-gradient(135deg, #2D2723 0%, #1E1916 100%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* ==================== CUSTOM SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-light-gold);
+  border-radius: 9999px;
+  border: 2px solid var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-deep);
+}
+
+/* Hide scrollbar utility class */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ==================== REUSABLE UTILITY CLASSES ==================== */
+@layer utilities {
+  /* Gold Gradient Button */
+  .gbtn {
+    background: var(--gradient-gold);
+    color: var(--color-dark);
+    font-weight: 600;
+    transition: all 0.2s var(--ease-premily);
+  }
+  
+  .gbtn:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 4px 12px rgba(184, 146, 75, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .gbtn:active {
+    transform: translateY(0);
+  }
+
+  /* Luxury Card Styles */
+  .premily-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-gold);
+    border-radius: 1rem; /* 16px */
+    transition: all 0.25s var(--ease-premily);
+  }
+
+  .premily-card-hover:hover {
+    box-shadow: 0 12px 28px -12px rgba(184, 146, 75, 0.25);
+    transform: translateY(-2px);
+  }
+
+  /* Glassmorphism Effect */
+  .premily-glass {
+    background: rgba(250, 243, 232, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 179, 117, 0.3);
+  }
+}
+
+/* ==================== SELECTION & FOCUS STATES ==================== */
+::selection {
+  background-color: var(--color-light-gold);
+  color: var(--color-dark);
+}
+
+/* Focus outline for form inputs & buttons */
+input:focus-visible, 
+select:focus-visible, 
+textarea:focus-visible, 
+button:focus-visible {
+  outline: 2px solid var(--color-deep);
+  outline-offset: 2px;
 }

@@ -15,7 +15,8 @@ export async function getAdminDashboard() {
     totalCategories,
     totalOrders,
     pendingOrders,
-    paidOrders,
+    confirmedOrders,
+    processingOrders,
     shippedOrders,
     deliveredOrders,
     cancelledOrders,
@@ -29,15 +30,15 @@ export async function getAdminDashboard() {
     prisma.category.count(),
     prisma.order.count(),
     prisma.order.count({ where: { status: "PENDING" } }),
-    prisma.order.count({ where: { status: "PAID" } }),
+    prisma.order.count({ where: { status: "CONFIRMED" } }),
+    prisma.order.count({ where: { status: "PROCESSING" } }),
     prisma.order.count({ where: { status: "SHIPPED" } }),
     prisma.order.count({ where: { status: "DELIVERED" } }),
     prisma.order.count({ where: { status: "CANCELLED" } }),
     prisma.order.aggregate({
       where: {
-        status: { in: ["PAID", "SHIPPED", "DELIVERED"] },
-        payment: {
-          is: { status: "VERIFIED" },
+        payments: {
+          some: { status: "VERIFIED" },
         },
       },
       _sum: { total: true },
@@ -51,7 +52,8 @@ export async function getAdminDashboard() {
     orders: {
       total: totalOrders,
       pending: pendingOrders,
-      paid: paidOrders,
+      confirmed: confirmedOrders,
+      processing: processingOrders,
       shipped: shippedOrders,
       delivered: deliveredOrders,
       cancelled: cancelledOrders,
@@ -69,29 +71,35 @@ export async function getAdminProducts({ page, limit, q }: AdminProductQuery) {
           {
             category: {
               is: {
-                name: {
-                  contains: q,
-                  mode: "insensitive" as const,
+                name: { contains: q, mode: "insensitive" as const },
+              },
+            },
+          },
+          {
+            store: {
+              is: {
+                displayName: { contains: q, mode: "insensitive" as const },
+              },
+            },
+          },
+          {
+            store: {
+              is: {
+                seller: {
+                  is: {
+                    name: { contains: q, mode: "insensitive" as const },
+                  },
                 },
               },
             },
           },
           {
-            seller: {
+            store: {
               is: {
-                name: {
-                  contains: q,
-                  mode: "insensitive" as const,
-                },
-              },
-            },
-          },
-          {
-            seller: {
-              is: {
-                email: {
-                  contains: q,
-                  mode: "insensitive" as const,
+                seller: {
+                  is: {
+                    email: { contains: q, mode: "insensitive" as const },
+                  },
                 },
               },
             },
@@ -99,6 +107,7 @@ export async function getAdminProducts({ page, limit, q }: AdminProductQuery) {
         ],
       }
     : {};
+
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
@@ -107,12 +116,19 @@ export async function getAdminProducts({ page, limit, q }: AdminProductQuery) {
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       include: {
         category: true,
-        seller: {
+        store: {
           select: {
             id: true,
-            name: true,
-            email: true,
-            role: true,
+            slug: true,
+            displayName: true,
+            seller: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
           },
         },
         images: {
@@ -121,7 +137,6 @@ export async function getAdminProducts({ page, limit, q }: AdminProductQuery) {
         variants: true,
       },
     }),
-
     prisma.product.count({ where }),
   ]);
 
@@ -160,7 +175,14 @@ export async function getAdminOrders({ page, limit, status }: AdminOrderQuery) {
             phone: true,
           },
         },
-        payment: true,
+        store: {
+          select: {
+            id: true,
+            slug: true,
+            displayName: true,
+          },
+        },
+        payments: true,
         items: true,
       },
     }),
@@ -187,7 +209,7 @@ export async function updateAdminOrderStatus(
     const order = await tx.order.findUnique({
       where: { id: orderId },
       include: {
-        payment: true,
+        payments: true,
         items: true,
       },
     });
@@ -197,14 +219,27 @@ export async function updateAdminOrderStatus(
     }
 
     const target = input.status;
-    const isCOD = order.payment?.method === "CASH_ON_DELIVERY";
+    const isCOD = order.payments.some(
+      (payment) => payment.method === "CASH_ON_DELIVERY",
+    );
+    const hasVerifiedPayment = order.payments.some(
+      (payment) => payment.status === "VERIFIED",
+    );
 
-    // PAID must be reached through the payment-verification flow.
     const allowed =
-      (order.status === "PENDING" && target === "CANCELLED") ||
-      (order.status === "PENDING" && target === "SHIPPED" && isCOD) ||
-      (order.status === "PAID" && target === "SHIPPED") ||
-      (order.status === "SHIPPED" && target === "DELIVERED");
+      (order.status === "PENDING" &&
+        target === "CANCELLED") ||
+      (order.status === "PENDING" &&
+        target === "CONFIRMED" &&
+        (isCOD || hasVerifiedPayment)) ||
+      (order.status === "CONFIRMED" &&
+        target === "PROCESSING") ||
+      (order.status === "PROCESSING" &&
+        target === "SHIPPED") ||
+      (order.status === "SHIPPED" &&
+        target === "DELIVERED") ||
+      (order.status === "DELIVERED" &&
+        target === "RETURNED");
 
     if (!allowed) {
       throw new Error("INVALID_STATUS_TRANSITION");
@@ -224,20 +259,26 @@ export async function updateAdminOrderStatus(
 
     if (target === "CANCELLED") {
       for (const item of order.items) {
-        await tx.productVariant.update({
-          where: { id: item.variantId },
-          data: { stock: { increment: item.quantity } },
-        });
+        if (item.variantId) {
+          await tx.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { increment: item.quantity } },
+          });
+        }
       }
     }
 
     if (target === "DELIVERED" && isCOD) {
-      if (!order.payment) {
+      const codPayment = order.payments.find(
+        (payment) => payment.method === "CASH_ON_DELIVERY",
+      );
+
+      if (!codPayment) {
         throw new Error("PAYMENT_NOT_FOUND");
       }
 
       await tx.payment.update({
-        where: { orderId },
+        where: { id: codPayment.id },
         data: {
           status: "VERIFIED",
           verifiedAt: new Date(),
@@ -257,7 +298,14 @@ export async function updateAdminOrderStatus(
             phone: true,
           },
         },
-        payment: true,
+        store: {
+          select: {
+            id: true,
+            slug: true,
+            displayName: true,
+          },
+        },
+        payments: true,
         items: true,
       },
     });

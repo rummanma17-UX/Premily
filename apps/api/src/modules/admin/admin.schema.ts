@@ -6,17 +6,31 @@ export const adminProductQuerySchema = z.object({
   q: z.string().trim().max(100).default(""),
 });
 
-
 export const adminOrderQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   status: z
-    .enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"])
+    .enum([
+      "PENDING",
+      "CONFIRMED",
+      "PROCESSING",
+      "SHIPPED",
+      "DELIVERED",
+      "CANCELLED",
+      "RETURNED",
+    ])
     .optional(),
 });
 
 export const adminOrderStatusSchema = z.object({
-  status: z.enum(["SHIPPED", "DELIVERED", "CANCELLED", "PAID"]),
+  status: z.enum([
+    "CONFIRMED",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+    "RETURNED",
+  ]),
 });
 
 export type AdminProductQuery = z.infer<typeof adminProductQuerySchema>;
