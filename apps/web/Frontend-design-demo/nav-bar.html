@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: "#D4B375", deep: "#B8924B", dark: "#1E1916", muted: "#68605B", cream: "#FAF3E8" },
+          fontFamily: { serif: ["Cinzel", "serif"], sans: ["Plus Jakarta Sans", "sans-serif"] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #F3EFE9; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gbtn { background: linear-gradient(135deg,#E3C793,#B8924B); color: #1E1916; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- Paste your navigation bar here -->
+  <header class="bg-white sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-6">
+      <span class="font-serif text-2xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></span>
+      <span class="sm:hidden ml-auto border border-gold/60 rounded-full px-3 py-1 text-xs flex items-center gap-1 cursor-pointer">
+        <i data-lucide="languages" class="w-3.5 h-3.5"></i>বাংলা
+      </span>
+      <div class="hidden md:flex items-center gap-2 border border-gold/40 rounded-xl px-3 py-1.5 hover:bg-cream cursor-pointer">
+        <i data-lucide="map-pin" class="w-5 h-5 text-deep"></i>
+        <span class="leading-tight">
+          <span class="block text-[10px] text-muted">Deliver to</span>
+          <span class="block text-sm font-semibold">Dhaka · 1-2 days</span>
+        </span>
+      </div>
+      <div class="order-last w-full sm:order-0 sm:w-auto sm:flex-1 flex border-2 border-gold rounded-full overflow-hidden bg-white">
+        <span class="hidden sm:flex items-center bg-cream text-xs px-4 border-r border-gold/40">All</span>
+        <input type="text" class="flex-1 px-4 py-2.5 text-sm outline-none min-w-0" placeholder="Search furniture, lighting, decor…">
+        <button class="gbtn px-5 grid place-items-center"><i data-lucide="search" class="w-4 h-4"></i></button>
+      </div>
+      <span class="hidden lg:flex items-center gap-2 text-sm hover:text-deep cursor-pointer">
+        <i data-lucide="user" class="w-5 h-5"></i>Login / Sign up
+      </span>
+      <span class="relative p-2 hover:text-deep cursor-pointer">
+        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+        <span class="absolute -top-0.5 -right-0.5 gbtn text-[10px] w-5 h-5 rounded-full grid place-items-center">0</span>
+      </span>
+    </div>
+    <div class="md:hidden w-full bg-cream text-xs px-4 py-2 flex items-center gap-1">
+      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-deep"></i>Deliver to: <b>Dhaka · 1-2 days</b>
+    </div>
+  </header>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

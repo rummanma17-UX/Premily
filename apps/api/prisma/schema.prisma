@@ -13,8 +13,8 @@ datasource db {
 
 model User {
   id        String  @id @default(cuid())
-  email     String  @unique
-  phone     String  @unique
+  email     String? @unique // Optional for phone-first BD registration
+  phone     String  @unique // Primary login identifier in Bangladesh
   password  String
   name      String
   role      Role    @default(CUSTOMER)
@@ -25,6 +25,8 @@ model User {
   orderGroups       OrderGroup[]       @relation("CustomerOrderGroups")
   orders            Order[]            @relation("CustomerOrders")
   verifiedPayments  Payment[]          @relation("PaymentVerifier")
+  reviews           Review[]           @relation("CustomerReviews")
+  addresses         UserAddress[]      @relation("CustomerAddresses")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -37,6 +39,29 @@ enum Role {
   CUSTOMER
   SELLER
   ADMIN
+}
+
+// ==========================================
+// CUSTOMER ADDRESS BOOK
+// ==========================================
+
+model UserAddress {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation("CustomerAddresses", fields: [userId], references: [id], onDelete: Cascade)
+
+  fullName     String
+  phoneNumber  String
+  district     String   // e.g. "Dhaka", "Chattogram"
+  thana        String   // e.g. "Mirpur", "Panchlaish"
+  streetAddress String
+  isDefault    Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId, isDefault])
+  @@map("user_addresses")
 }
 
 // ==========================================
@@ -63,14 +88,33 @@ model Store {
   isPublished Boolean     @default(false)
   publishedAt DateTime?
 
-  products     Product[]
-  orders       Order[]
-  subscription SellerSubscription?
+  // Strict PREMILY official or approved partner flag (Admin-only controlled)
+  isPremilyMart       Boolean                 @default(false)
+
+  // Seller verification status
+  verificationStatus  StoreVerificationStatus @default(UNVERIFIED)
+  verifiedAt          DateTime?
+  verifiedBy          String?
+  tradeLicenseNo      String?
+  nidNumber           String?
+  verificationNote    String?
+
+  // Store-specific shipping rate overrides
+  insideDistrictCost  Decimal?                @db.Decimal(10, 2) // Custom rate for seller's local district
+  outsideDistrictCost Decimal?                @db.Decimal(10, 2) // Custom rate for outside districts
+  homeDistrict        String?                                    // Seller's base district (e.g. "Chattogram")
+
+  products      Product[]
+  orders        Order[]
+  subscription  SellerSubscription?
+  shippingRates StoreShippingRate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status, isPublished])
+  @@index([isPremilyMart])
+  @@index([verificationStatus])
   @@map("stores")
 }
 
@@ -80,6 +124,53 @@ enum StoreStatus {
   ACTIVE
   SUSPENDED
   CLOSED
+}
+
+enum StoreVerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model StoreShippingRate {
+  id           String   @id @default(cuid())
+  storeId      String
+  store        Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  districtName String   // Specific district (e.g. "Sylhet")
+  rate         Decimal  @db.Decimal(10, 2)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([storeId, districtName])
+  @@map("store_shipping_rates")
+}
+
+// ==========================================
+// NATIONWIDE LOGISTICS (DEFAULT DISTRICT RATES)
+// ==========================================
+
+model DistrictShipping {
+  id               String       @id @default(cuid())
+  districtName     String       @unique // e.g. "Dhaka", "Chattogram"
+  division         String               // e.g. "Dhaka", "Chittagong"
+  zone             ShippingZone @default(OUTSIDE_DHAKA)
+  baseCost         Decimal      @default(150.00) @db.Decimal(10, 2)
+  estimatedDaysMin Int          @default(3)
+  estimatedDaysMax Int          @default(5)
+  isActive         Boolean      @default(true)
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@map("district_shipping")
+}
+
+enum ShippingZone {
+  INSIDE_DHAKA
+  DHAKA_SUBURB
+  OUTSIDE_DHAKA
 }
 
 model SellerSubscription {
@@ -93,8 +184,8 @@ model SellerSubscription {
 
   status SubscriptionStatus @default(TRIALING)
 
-  trialStartsAt DateTime  @default(now())
-  trialEndsAt   DateTime
+  trialStartsAt      DateTime  @default(now())
+  trialEndsAt        DateTime
   currentPeriodStart DateTime?
   currentPeriodEnd   DateTime?
 
@@ -127,16 +218,16 @@ model SubscriptionPayment {
   subscriptionId String
   subscription   SellerSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
 
-  amount   Decimal @db.Decimal(10, 2)
-  currency String  @default("BDT")
+  amount   Decimal                   @db.Decimal(10, 2)
+  currency String                    @default("BDT")
   status   SubscriptionPaymentStatus @default(PENDING)
 
   provider              String?
   providerTransactionId String? @unique
 
-  periodStart DateTime?
-  periodEnd   DateTime?
-  paidAt      DateTime?
+  periodStart   DateTime?
+  periodEnd     DateTime?
+  paidAt        DateTime?
   failureReason String?
 
   createdAt DateTime @default(now())
@@ -159,37 +250,49 @@ enum SubscriptionPaymentStatus {
 // ==========================================
 
 model Category {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
-  products Product[]
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  imageUrl  String?
+  parentId  String?
+  parent    Category?  @relation("SubCategories", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Category[] @relation("SubCategories")
+  products  Product[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("categories")
 }
 
 model Product {
-  id          String @id @default(cuid())
+  id          String        @id @default(cuid())
   storeId     String
-  store       Store  @relation(fields: [storeId], references: [id], onDelete: Restrict)
-
+  store       Store         @relation(fields: [storeId], references: [id], onDelete: Restrict)
 
   name        String
   slug        String
   description String
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  status ProductStatus @default(DRAFT)
+  status      ProductStatus @default(DRAFT)
 
   seoTitle       String?
   seoDescription String?
 
-  images   ProductImage[]
-  variants ProductVariant[]
+  // High-performance cached stats for fast public discovery
+  avgRating      Decimal       @default(0.00) @db.Decimal(3, 2)
+  reviewCount    Int           @default(0)
+  salesCount     Int           @default(0)
+  isFeatured     Boolean       @default(false)
+  isTrending     Boolean       @default(false)
+
+  images         ProductImage[]
+  variants       ProductVariant[]
+  reviews        Review[]
+  campaignItems  CampaignProduct[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -197,6 +300,8 @@ model Product {
   @@unique([storeId, slug])
   @@index([storeId, status, createdAt])
   @@index([categoryId])
+  @@index([status, isFeatured])
+  @@index([status, salesCount])
   @@map("products")
 }
 
@@ -207,13 +312,14 @@ enum ProductStatus {
 }
 
 model ProductVariant {
-  id        String  @id @default(cuid())
-  sku       String  @unique
-  price     Decimal @db.Decimal(10, 2)
-  stock     Int     @default(0)
-  size      String?
-  color     String?
-  isActive  Boolean @default(true)
+  id             String   @id @default(cuid())
+  sku            String   @unique
+  price          Decimal  @db.Decimal(10, 2)
+  compareAtPrice Decimal? @db.Decimal(10, 2) // Strikethrough original price (MSRP)
+  stock          Int      @default(0)
+  size           String?
+  color          String?
+  isActive       Boolean  @default(true)
 
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -239,6 +345,90 @@ model ProductImage {
 
   @@unique([productId, position])
   @@map("product_images")
+}
+
+// ==========================================
+// CAMPAIGNS, PROMOTIONS & FLASH SALES
+// ==========================================
+
+model Campaign {
+  id          String            @id @default(cuid())
+  name        String
+  slug        String            @unique
+  description String?
+  bannerUrl   String?
+  badgeText   String?           // e.g. "Flash Sale", "Eid Special"
+  type        CampaignType      @default(FLASH_SALE)
+  startsAt    DateTime
+  endsAt      DateTime
+  isActive    Boolean           @default(true)
+
+  items       CampaignProduct[]
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([isActive, startsAt, endsAt])
+  @@map("campaigns")
+}
+
+enum CampaignType {
+  FLASH_SALE
+  FESTIVAL
+  SEASONAL
+  CLEARANCE
+}
+
+model CampaignProduct {
+  id          String   @id @default(cuid())
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  salePrice   Decimal  @db.Decimal(10, 2)
+  stockLimit  Int?     // Maximum quantity available at this discount
+  soldCount   Int      @default(0)
+
+  createdAt   DateTime @default(now())
+
+  @@unique([campaignId, productId])
+  @@index([campaignId])
+  @@map("campaign_products")
+}
+
+// ==========================================
+// RATINGS & REVIEWS
+// ==========================================
+
+model Review {
+  id                 String       @id @default(cuid())
+  productId          String
+  product            Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User         @relation("CustomerReviews", fields: [userId], references: [id], onDelete: Cascade)
+
+  rating             Int          // 1 to 5
+  title              String?
+  comment            String
+  isVerifiedPurchase Boolean      @default(false)
+  status             ReviewStatus @default(APPROVED)
+
+  sellerReply        String?
+  sellerRepliedAt    DateTime?
+
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([productId, status, createdAt])
+  @@index([userId])
+  @@map("reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 // ==========================================
@@ -278,9 +468,6 @@ model CartItem {
 // ==========================================
 // CHECKOUT GROUPS & SELLER ORDERS
 // ==========================================
-
-// One customer checkout can contain orders for multiple stores.
-// Payments and fulfillment remain separate for each seller order.
 
 model OrderGroup {
   id          String @id @default(cuid())
@@ -362,11 +549,10 @@ model OrderItem {
   id       String @id @default(cuid())
   quantity Int
 
-  // Snapshots preserve the details of the purchase.
-  productName       String
-  productSlugAtOrder String?
-  variantLabel      String
-  skuAtOrder        String?
+  productName            String
+  productSlugAtOrder     String?
+  variantLabel           String
+  skuAtOrder             String?
   productImageUrlAtOrder String?
 
   priceAtOrder Decimal @db.Decimal(10, 2)
@@ -374,7 +560,6 @@ model OrderItem {
   orderId String
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  // Optional because the original variant may later be deleted.
   variantId String?
   variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 
@@ -386,11 +571,8 @@ model OrderItem {
 // CUSTOMER ORDER PAYMENTS
 // ==========================================
 
-// Payment attempts belong to an individual seller order.
-// This is separate from the seller's PREMILY subscription billing.
-
 model Payment {
-  id     String @id @default(cuid())
+  id      String @id @default(cuid())
   orderId String
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Restrict)
 

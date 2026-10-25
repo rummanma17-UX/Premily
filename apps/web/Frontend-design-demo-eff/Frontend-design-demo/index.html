@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premily Design System Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { gold: "#D4B375", deep: "#B8924B", dark: "#1E1916", muted: "#68605B", cream: "#FAF3E8" }, fontFamily: { serif: ["Cinzel", "serif"], sans: ["Plus Jakarta Sans", "sans-serif"] } } } }
+  </script>
+  <style>
+    body { background: #FAF3E8; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card { background: #fff; border: 1px solid #eadfcd; border-radius: 14px; transition: all 0.2s ease; }
+    .card:hover { border-color: #B8924B; transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(184,146,75,0.2); }
+  </style>
+</head>
+<body class="p-6 md:p-12 max-w-5xl mx-auto space-y-8">
+  <div class="space-y-2 border-b border-gold/30 pb-6">
+    <h1 class="font-serif text-3xl font-bold text-dark">PREMILY<span class="text-deep">.</span> Design System Hub</h1>
+    <p class="text-sm text-muted">All original 8 prototype pages organized into a clean, token-efficient folder structure.</p>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <a href="pages/Homepage-BP.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="home" class="w-5 h-5 text-deep"></i> Storefront Homepage</div>
+      <p class="text-xs text-muted">Hero luxury banner, category grids & trust badges.</p>
+    </a>
+
+    <a href="pages/catalog.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="grid" class="w-5 h-5 text-deep"></i> Catalog & Filters</div>
+      <p class="text-xs text-muted">Product listings & category sidebar filters.</p>
+    </a>
+
+    <a href="pages/ProductPage.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="package" class="w-5 h-5 text-deep"></i> Product Detail View</div>
+      <p class="text-xs text-muted">Image gallery, variant selection & buy box.</p>
+    </a>
+
+    <a href="pages/checkout.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="credit-card" class="w-5 h-5 text-deep"></i> Checkout & Payments</div>
+      <p class="text-xs text-muted">Shipping address, bKash/Nagad/COD options.</p>
+    </a>
+
+    <a href="pages/login-page.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="log-in" class="w-5 h-5 text-deep"></i> Auth & Login</div>
+      <p class="text-xs text-muted">User authentication and login UI.</p>
+    </a>
+
+    <a href="pages/admin-panel.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="shield-check" class="w-5 h-5 text-deep"></i> Admin Console</div>
+      <p class="text-xs text-muted">Platform metrics & transactions table.</p>
+    </a>
+
+    <a href="pages/seller-panel.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="store" class="w-5 h-5 text-deep"></i> Vendor Dashboard</div>
+      <p class="text-xs text-muted">Merchant stats & inventory management.</p>
+    </a>
+
+    <a href="pages/productCard.html" class="card p-5 space-y-2 block">
+      <div class="flex items-center gap-2 font-bold text-dark"><i data-lucide="layers" class="w-5 h-5 text-deep"></i> Product Card Component</div>
+      <p class="text-xs text-muted">Standalone pixel-perfect product card component.</p>
+    </a>
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

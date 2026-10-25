@@ -311,3 +311,61 @@ export async function updateAdminOrderStatus(
     });
   });
 }
+
+export async function listAdminStores(page = 1, limit = 20) {
+  const skip = (page - 1) * limit;
+  const [stores, total] = await Promise.all([
+    prisma.store.findMany({
+      include: {
+        seller: {
+          select: { id: true, name: true, email: true, phone: true },
+        },
+        _count: {
+          select: { products: true, orders: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    prisma.store.count(),
+  ]);
+
+  return {
+    stores,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
+
+export async function setStoreMartStatus(storeId: string, isPremilyMart: boolean) {
+  return prisma.store.update({
+    where: { id: storeId },
+    data: { isPremilyMart },
+  });
+}
+
+export async function setStoreVerificationStatus(
+  storeId: string,
+  adminId: string,
+  verificationStatus: "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED",
+  verificationNote?: string,
+) {
+  const data: any = {
+    verificationStatus,
+    verifiedBy: verificationStatus === "VERIFIED" ? adminId : null,
+    verifiedAt: verificationStatus === "VERIFIED" ? new Date() : null,
+  };
+  if (verificationNote !== undefined) {
+    data.verificationNote = verificationNote;
+  }
+
+  return prisma.store.update({
+    where: { id: storeId },
+    data,
+  });
+}

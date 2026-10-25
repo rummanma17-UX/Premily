@@ -3,12 +3,16 @@ import cors from "cors";
 import express, { type Express } from "express";
 import { requireAuth, type AuthRequest } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/error-handler.js";
+import { adminRouter } from "./modules/admin/admin.routes.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
+import { campaignsRouter } from "./modules/campaigns/campaigns.routes.js";
 import { cartRouter } from "./modules/cart/cart.routes.js";
 import { categoriesRouter } from "./modules/categories/categories.routes.js";
 import { ordersRouter } from "./modules/orders/orders.routes.js";
 import { productsRouter } from "./modules/products/products.routes.js";
-import { adminRouter } from "./modules/admin/admin.routes.js";
+import { reviewsRouter } from "./modules/reviews/reviews.routes.js";
+import { shippingRouter } from "./modules/shipping/shipping.routes.js";
+import { storesRouter } from "./modules/stores/stores.routes.js";
 
 const app: Express = express();
 
@@ -20,12 +24,18 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+// Feature routes
 app.use("/api/categories", categoriesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/shipping", shippingRouter);
+app.use("/api/reviews", reviewsRouter);
+app.use("/api/stores", storesRouter);
+app.use("/api/campaigns", campaignsRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });

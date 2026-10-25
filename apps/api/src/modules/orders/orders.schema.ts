@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 export const checkoutSchema = z.object({
-  shippingName: z.string().min(1),
+  shippingName: z.string().min(1, "Recipient name is required"),
   shippingPhone: z
     .string()
-    .regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number"),
-  shippingAddress: z.string().min(1),
-  shippingCity: z.string().min(1),
+    .regex(/^01[3-9]\d{8}$/, "Invalid Bangladeshi phone number (e.g. 01712345678)"),
+  shippingAddress: z.string().min(1, "Street address is required"),
+  shippingCity: z.string().min(1, "City / Area is required"),
+  shippingDistrict: z.string().min(1, "District is required").default("Dhaka"),
   paymentMethod: z.enum(["CASH_ON_DELIVERY", "BKASH", "NAGAD"]),
 });
 

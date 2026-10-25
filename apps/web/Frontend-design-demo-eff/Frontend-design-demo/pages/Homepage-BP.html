@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premily - Luxury Shopping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: "#D4B375", deep: "#B8924B", dark: "#1E1916", muted: "#68605B", cream: "#FAF3E8" },
+          fontFamily: { serif: ["Cinzel", "serif"], sans: ["Plus Jakarta Sans", "sans-serif"] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #FAF3E8; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gbtn { background: linear-gradient(135deg,#E3C793,#B8924B); color: #1E1916; font-weight: 600; }
+    .card { background: #fff; border: 1px solid #eadfcd; border-radius: 14px; }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="bg-white border-b border-gold/30 py-4 px-4 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <a href="../index.html" class="font-serif text-2xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></a>
+      <nav class="hidden md:flex gap-6 text-xs font-semibold text-muted">
+        <a href="catalog.html" class="hover:text-deep">Catalog</a>
+        <a href="ProductPage.html" class="hover:text-deep">Products</a>
+        <a href="checkout.html" class="hover:text-deep">Checkout</a>
+        <a href="admin-panel.html" class="hover:text-deep">Admin</a>
+        <a href="seller-panel.html" class="hover:text-deep">Seller</a>
+      </nav>
+      <a href="login-page.html" class="gbtn px-4 py-2 rounded-lg text-xs font-bold">Sign In</a>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="max-w-7xl mx-auto px-4 py-12">
+    <div class="bg-[#1E1916] text-[#FAF3E8] rounded-2xl p-8 md:p-16 flex flex-col items-start gap-6 relative overflow-hidden">
+      <span class="text-xs uppercase tracking-widest text-[#D4B375] font-semibold">Luxury E-Commerce Platform</span>
+      <h1 class="font-serif text-3xl md:text-5xl font-bold leading-tight max-w-xl">Elegance Redefined for Every Modern Space</h1>
+      <p class="text-xs md:text-sm text-[#FAF3E8]/80 max-w-md">Discover curated luxury collections with nationwide 64-district delivery and seamless MFS payments.</p>
+      <a href="catalog.html" class="gbtn px-6 py-3 rounded-full text-xs font-bold tracking-wider uppercase">Explore Catalog</a>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="max-w-7xl mx-auto px-4 py-8 space-y-4">
+    <h2 class="font-serif text-xl font-bold text-dark">Featured Categories</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <a href="catalog.html" class="card p-4 text-center hover:border-deep transition">
+        <i data-lucide="armchair" class="w-8 h-8 mx-auto text-deep mb-2"></i>
+        <b class="text-xs block text-dark">Furniture</b>
+      </a>
+      <a href="catalog.html" class="card p-4 text-center hover:border-deep transition">
+        <i data-lucide="lamp" class="w-8 h-8 mx-auto text-deep mb-2"></i>
+        <b class="text-xs block text-dark">Lighting</b>
+      </a>
+      <a href="catalog.html" class="card p-4 text-center hover:border-deep transition">
+        <i data-lucide="gem" class="w-8 h-8 mx-auto text-deep mb-2"></i>
+        <b class="text-xs block text-dark">Decor</b>
+      </a>
+      <a href="catalog.html" class="card p-4 text-center hover:border-deep transition">
+        <i data-lucide="watch" class="w-8 h-8 mx-auto text-deep mb-2"></i>
+        <b class="text-xs block text-dark">Accessories</b>
+      </a>
+    </div>
+  </section>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

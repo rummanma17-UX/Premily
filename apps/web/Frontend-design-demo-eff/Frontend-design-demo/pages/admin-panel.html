@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Premily</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: "#D4B375", deep: "#B8924B", dark: "#1E1916", muted: "#68605B", cream: "#FAF3E8" },
+          fontFamily: { serif: ["Cinzel", "serif"], sans: ["Plus Jakarta Sans", "sans-serif"] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #F3EFE9; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card { background: #fff; border: 1px solid #eadfcd; border-radius: 14px; }
+  </style>
+</head>
+<body class="font-sans">
+
+  <header class="bg-white border-b border-gold/30 py-4 px-6 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <a href="../index.html" class="font-serif text-2xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></a>
+      <span class="text-xs font-bold text-deep flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4"></i> Super Admin Console</span>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 space-y-6">
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="card p-5 space-y-1">
+        <span class="text-xs text-muted block">Total Platform Orders</span>
+        <b class="text-2xl text-dark">1,284</b>
+      </div>
+      <div class="card p-5 space-y-1">
+        <span class="text-xs text-muted block">Gross Revenue</span>
+        <b class="text-2xl text-deep">৳4,820,000</b>
+      </div>
+      <div class="card p-5 space-y-1">
+        <span class="text-xs text-muted block">Verified Vendors</span>
+        <b class="text-2xl text-dark">48</b>
+      </div>
+      <div class="card p-5 space-y-1">
+        <span class="text-xs text-muted block">Pending Approvals</span>
+        <b class="text-2xl text-amber-600">6</b>
+      </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="card p-6 space-y-4">
+      <h2 class="font-bold text-base border-b border-gold/20 pb-3 text-dark">Recent Platform Transactions</h2>
+      <div class="overflow-x-auto text-xs">
+        <table class="w-full text-left">
+          <thead class="bg-cream/50 text-muted font-semibold border-b border-gold/20">
+            <tr>
+              <th class="p-3">Order ID</th>
+              <th class="p-3">Customer</th>
+              <th class="p-3">District</th>
+              <th class="p-3">Amount</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gold/10">
+            <tr>
+              <td class="p-3 font-semibold">#PRM-9021</td>
+              <td class="p-3">Abdullah Al Rumman</td>
+              <td class="p-3">Sylhet</td>
+              <td class="p-3 font-bold text-deep">৳18,100</td>
+              <td class="p-3"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">Paid (bKash)</span></td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">#PRM-9020</td>
+              <td class="p-3">Tanvir Ahmed</td>
+              <td class="p-3">Dhaka</td>
+              <td class="p-3 font-bold text-deep">৳24,000</td>
+              <td class="p-3"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-semibold">Processing</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

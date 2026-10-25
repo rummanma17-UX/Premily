@@ -32,7 +32,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     res.json(user);
   } catch (err) {
     if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
-      res.status(401).json({ error: "Invalid email or password" });
+      res.status(401).json({ error: "Invalid credentials" });
       return;
     }
     next(err);

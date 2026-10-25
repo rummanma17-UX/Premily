@@ -11,8 +11,6 @@
 
     //! agents
     "**/.agents": true,
-    "**/.claude": true,
-    "**/.windsurf": true,
 
     //todo temporary
     "**/dist": true

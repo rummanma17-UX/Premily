@@ -4,16 +4,21 @@ import {
   adminOrderQuerySchema,
   adminOrderStatusSchema,
   adminProductQuerySchema,
+  updateStoreMartSchema,
+  updateStoreVerificationSchema,
 } from "./admin.schema.js";
 import {
   getAdminDashboard,
   getAdminOrders,
   getAdminProducts,
+  listAdminStores,
+  setStoreMartStatus,
+  setStoreVerificationStatus,
   updateAdminOrderStatus,
 } from "./admin.service.js";
 
 export async function dashboard(
-  _req: Request,
+  _req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) {
@@ -26,15 +31,14 @@ export async function dashboard(
 }
 
 export async function listAdminProducts(
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) {
   try {
     const query = adminProductQuerySchema.parse(req.query);
-    const data = await getAdminProducts(query);
-
-    res.json(data);
+    const result = await getAdminProducts(query);
+    res.json(result);
   } catch (err) {
     next(err);
   }
@@ -48,8 +52,7 @@ export async function listAdminOrders(
   try {
     const query = adminOrderQuerySchema.parse(req.query);
     const result = await getAdminOrders(query);
-
-    res.json({ result });
+    res.json(result);
   } catch (err) {
     next(err);
   }
@@ -61,7 +64,7 @@ export async function updateOrderStatus(
   next: NextFunction,
 ) {
   try {
-    const orderId = req.params.orderId;
+    const orderId = req.params.orderId as string;
 
     if (!orderId || typeof orderId !== "string") {
       res.status(400).json({ error: "Invalid order ID" });
@@ -102,10 +105,69 @@ export async function updateOrderStatus(
 
       if (knownError) {
         res.status(knownError.status).json({ error: knownError.message });
-        return
+        return;
       }
     }
-    
-    next(err)
+
+    next(err);
+  }
+}
+
+export async function listStores(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+    const result = await listAdminStores(page, limit);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateStoreMart(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const storeId = req.params.storeId as string;
+    if (!storeId) {
+      res.status(400).json({ error: "Store ID is required" });
+      return;
+    }
+    const parsed = updateStoreMartSchema.parse(req.body);
+    const updated = await setStoreMartStatus(storeId, parsed.isPremilyMart);
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateStoreVerification(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const storeId = req.params.storeId as string;
+    if (!storeId) {
+      res.status(400).json({ error: "Store ID is required" });
+      return;
+    }
+    const adminId = req.user!.userId;
+    const parsed = updateStoreVerificationSchema.parse(req.body);
+    const updated = await setStoreVerificationStatus(
+      storeId,
+      adminId,
+      parsed.verificationStatus,
+      parsed.verificationNote,
+    );
+    res.json(updated);
+  } catch (err) {
+    next(err);
   }
 }

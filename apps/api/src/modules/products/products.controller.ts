@@ -1,4 +1,4 @@
-import type { NextFunction, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { AuthRequest } from "../../middleware/auth.js";
 import { createProductSchema } from "./products.schema.js";
 import {
@@ -24,30 +24,53 @@ export async function addProduct(
 }
 
 export async function listProducts(
-  _req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const products = await getAllProducts();
-    res.json(products);
+    const q = req.query.q as string | undefined;
+    const category = req.query.category as string | undefined;
+    const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice as string) : undefined;
+    const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : undefined;
+    const mart = req.query.mart === "true";
+    const featured = req.query.featured === "true";
+    const trending = req.query.trending === "true";
+    const storeSlug = req.query.storeSlug as string | undefined;
+    const sort = req.query.sort as any;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 24;
+
+    const result = await getAllProducts({
+      q,
+      category,
+      minPrice,
+      maxPrice,
+      mart,
+      featured,
+      trending,
+      storeSlug,
+      sort,
+      page,
+      limit,
+    });
+
+    res.json(result);
   } catch (err) {
     next(err);
   }
 }
 
 export async function getProduct(
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const { storeSlug, productSlug } = req.params;
+    const slug = (req.params.slug ?? req.params.productSlug) as string;
+    const storeSlug = req.params.storeSlug as string | undefined;
 
-    const product = await getProductBySlug(
-      storeSlug as string,
-      productSlug as string,
-    );
+    const product = await getProductBySlug(slug, storeSlug);
 
     if (!product) {
       res.status(404).json({ error: "Product not found" });

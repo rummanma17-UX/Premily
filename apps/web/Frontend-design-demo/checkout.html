@@ -1,131 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout - Premily</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@0.383.0"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script>
-    tailwind.config={theme:{extend:{colors:{gold:"#D4B375",deep:"#B8924B",dark:"#1E1916",muted:"#68605B",cream:"#FAF3E8"},fontFamily:{serif:["Cinzel"],sans:["Plus Jakarta Sans"]}}}}
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: "#D4B375",
+            deep: "#B8924B",
+            dark: "#1E1916",
+            muted: "#68605B",
+            cream: "#FAF3E8"
+          },
+          fontFamily: {
+            serif: ["Cinzel", "serif"],
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    }
   </script>
   <style>
-    body{background:#F3EFE9;color:#1E1916}
-    .gbtn{background:linear-gradient(135deg,#E3C793,#B8924B);color:#1E1916;font-weight:600}
-    .card{background:#fff;border:1px solid #eadfcd;border-radius:14px}
+    body { background: #F3EFE9; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gbtn { background: linear-gradient(135deg,#E3C793,#B8924B); color: #1E1916; font-weight: 600; transition: all 0.2s ease; }
+    .gbtn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .card { background: #fff; border: 1px solid #eadfcd; border-radius: 14px; }
   </style>
 </head>
 <body class="font-sans">
 
-  <header class="bg-white border-b border-gold/30 py-4 px-4">
+  <!-- Header -->
+  <header class="bg-white border-b border-gold/30 py-4 px-4 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       <span class="font-serif text-2xl font-bold tracking-widest text-dark">PREMILY<span class="text-deep">.</span></span>
-      <span class="text-xs text-muted">Secure Checkout</span>
+      <span class="text-xs text-muted font-medium flex items-center gap-1">
+        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i> Secure Checkout
+      </span>
     </div>
   </header>
 
+  <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 py-6">
-    <div class="grid lg:grid-cols-[1fr_360px] gap-6">
+    <div class="grid lg:grid-cols-[1fr_380px] gap-6">
       
       <!-- Left Column: Shipping & Payment Form -->
       <div class="space-y-4">
+        
         <!-- Delivery Address Card -->
-        <div class="card p-4 sm:p-6 space-y-4">
-          <h2 class="font-bold text-lg border-b border-gold/20 pb-2 flex items-center gap-2">
-            <i data-lucide="map-pin" class="w-5 h-5 text-deep"></i> Shipping Address
+        <div class="card p-4 sm:p-6 space-y-4 shadow-sm">
+          <h2 class="font-bold text-base border-b border-gold/20 pb-2.5 flex items-center gap-2 text-dark">
+            <i data-lucide="map-pin" class="w-5 h-5 text-deep"></i> Shipping Address (Bangladesh 64 Districts)
           </h2>
           
           <div class="grid sm:grid-cols-2 gap-3 text-xs">
             <div class="space-y-1">
               <label class="font-semibold text-muted">Full Name</label>
-              <input type="text" value="Abdullah Al Rumman" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white">
+              <input type="text" value="Abdullah Al Rumman" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white focus:border-deep transition">
             </div>
             <div class="space-y-1">
               <label class="font-semibold text-muted">Phone Number</label>
-              <input type="text" value="01700000000" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white">
+              <input type="text" value="01700000000" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white focus:border-deep transition">
             </div>
             <div class="space-y-1 sm:col-span-2">
               <label class="font-semibold text-muted">Street Address</label>
-              <input type="text" placeholder="House no, road name, area" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white">
+              <input type="text" placeholder="House no, road name, area" value="Patantula, Subid Bazar" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white focus:border-deep transition">
             </div>
             <div class="space-y-1">
               <label class="font-semibold text-muted">District</label>
-              <select class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white">
-                <option>Dhaka</option>
-                <option selected>Sylhet</option>
-                <option>Chattogram</option>
-                <option>Gazipur</option>
+              <select id="district-select" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white focus:border-deep transition cursor-pointer">
+                <option value="Sylhet" selected>Sylhet</option>
+                <option value="Sunamganj">Sunamganj</option>
+                <option value="Dhaka">Dhaka</option>
+                <option value="Chattogram">Chattogram</option>
+                <option value="Gazipur">Gazipur</option>
+                <option value="Rajshahi">Rajshahi</option>
               </select>
             </div>
             <div class="space-y-1">
               <label class="font-semibold text-muted">City / Thana</label>
-              <input type="text" value="Chhatak" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white">
+              <input type="text" value="Chhatak / Sadar" class="w-full border border-gold/40 rounded-lg p-2.5 outline-none bg-white focus:border-deep transition">
             </div>
           </div>
         </div>
 
         <!-- Payment Method Selection Card -->
-        <div class="card p-4 sm:p-6 space-y-4">
-          <h2 class="font-bold text-lg border-b border-gold/20 pb-2 flex items-center gap-2">
+        <div class="card p-4 sm:p-6 space-y-4 shadow-sm">
+          <h2 class="font-bold text-base border-b border-gold/20 pb-2.5 flex items-center gap-2 text-dark">
             <i data-lucide="credit-card" class="w-5 h-5 text-deep"></i> Payment Method
           </h2>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-            <label class="card p-3 flex flex-col items-center gap-1 cursor-pointer border-2 border-deep bg-cream/40">
-              <input type="radio" name="pay" checked class="accent-deep">
-              <b class="mt-1">bKash / Nagad</b>
-              <span class="text-[10px] text-muted">Instant MFS</span>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs" id="payment-options">
+            
+            <label class="pay-card p-3.5 rounded-xl flex flex-col items-center text-center gap-1.5 cursor-pointer border-2 border-deep bg-cream/60 transition shadow-sm">
+              <input type="radio" name="pay" checked class="accent-deep mb-1">
+              <b class="text-dark">bKash / Nagad</b>
+              <span class="text-[10px] text-muted">Instant MFS Transfer</span>
             </label>
-            <label class="card p-3 flex flex-col items-center gap-1 cursor-pointer hover:bg-cream/20">
-              <input type="radio" name="pay" class="accent-deep">
-              <b class="mt-1">Cash on Delivery</b>
-              <span class="text-[10px] text-muted">Pay at doorstep</span>
+
+            <label class="pay-card p-3.5 rounded-xl flex flex-col items-center text-center gap-1.5 cursor-pointer border border-gold/40 bg-white hover:bg-cream/20 transition">
+              <input type="radio" name="pay" class="accent-deep mb-1">
+              <b class="text-dark">Cash on Delivery</b>
+              <span class="text-[10px] text-muted">Pay at your doorstep</span>
             </label>
-            <label class="card p-3 flex flex-col items-center gap-1 cursor-pointer hover:bg-cream/20">
-              <input type="radio" name="pay" class="accent-deep">
-              <b class="mt-1">Card Payment</b>
+
+            <label class="pay-card p-3.5 rounded-xl flex flex-col items-center text-center gap-1.5 cursor-pointer border border-gold/40 bg-white hover:bg-cream/20 transition">
+              <input type="radio" name="pay" class="accent-deep mb-1">
+              <b class="text-dark">Card Payment</b>
               <span class="text-[10px] text-muted">Visa / Mastercard</span>
             </label>
+
           </div>
         </div>
+
       </div>
 
       <!-- Right Column: Order Summary Sidebar -->
       <div class="space-y-4">
-        <div class="card p-4 sm:p-6 space-y-4">
-          <h2 class="font-bold text-lg border-b border-gold/20 pb-2">Order Summary</h2>
+        <div class="card p-4 sm:p-6 space-y-4 shadow-sm sticky top-24">
+          <h2 class="font-bold text-base border-b border-gold/20 pb-2.5 text-dark">Order Summary</h2>
 
           <!-- Item list -->
           <div class="space-y-3 border-b border-gold/20 pb-3 text-xs">
-            <div class="flex gap-3">
-              <img src="https://picsum.photos/id/1060/100/100" class="w-12 h-12 rounded object-cover">
+            <div class="flex gap-3 items-center">
+              <img src="https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=200&q=80" class="w-12 h-12 rounded-lg object-cover border border-gold/30">
               <div class="flex-1">
-                <b class="block truncate">Aura Curved Lounge Chair</b>
+                <b class="block truncate text-dark">Aura Curved Lounge Chair</b>
                 <span class="text-muted">Color: Beige · Qty: 1</span>
               </div>
-              <b class="text-deep">৳18,500</b>
+              <b class="text-deep font-bold">৳18,500</b>
             </div>
           </div>
 
           <!-- Price calculations -->
-          <div class="space-y-1.5 text-xs text-muted">
+          <div class="space-y-2 text-xs text-muted">
             <div class="flex justify-between"><span>Subtotal</span><b class="text-dark">৳18,500</b></div>
-            <div class="flex justify-between"><span>Delivery Fee (Sylhet)</span><b class="text-dark">৳100</b></div>
-            <div class="flex justify-between text-emerald-700"><span>Discount Coupon</span><b>-৳500</b></div>
-            <div class="flex justify-between text-sm font-bold text-dark border-t border-gold/30 pt-2">
-              <span>Total Amount</span><span class="text-deep text-lg">৳18,100</span>
+            <div class="flex justify-between"><span id="delivery-label">Delivery Fee (Sylhet)</span><b class="text-dark" id="delivery-fee">৳100</b></div>
+            <div class="flex justify-between text-emerald-700 font-medium"><span>Discount Coupon</span><b>-৳500</b></div>
+            <div class="flex justify-between text-sm font-bold text-dark border-t border-gold/30 pt-3">
+              <span>Total Amount</span><span class="text-deep text-base" id="total-amount">৳18,100</span>
             </div>
           </div>
 
-          <button class="gbtn w-full py-3 rounded-full text-xs uppercase tracking-wider font-bold shadow mt-2">
+          <button onclick="alert('Order successfully placed! Thank you for choosing Premily.')" class="gbtn w-full py-3.5 rounded-xl text-xs uppercase tracking-wider font-bold shadow-md cursor-pointer mt-2">
             Place Order Now
           </button>
+          
+          <p class="text-[10px] text-center text-muted">By placing your order, you agree to Premily's terms & conditions.</p>
         </div>
       </div>
 
     </div>
   </main>
 
-  <script>lucide.createIcons();</script>
+  <script>
+    // Initialize Lucide Icons safely on load
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+
+      // Interactive Payment Card Highlighting
+      const payCards = document.querySelectorAll('.pay-card');
+      payCards.forEach(card => {
+        const radio = card.querySelector('input[type="radio"]');
+        card.addEventListener('click', () => {
+          payCards.forEach(c => {
+            c.classList.remove('border-deep', 'bg-cream/60', 'shadow-sm');
+            c.classList.add('border-gold/40', 'bg-white');
+          });
+          radio.checked = true;
+          card.classList.remove('border-gold/40', 'bg-white');
+          card.classList.add('border-deep', 'bg-cream/60', 'shadow-sm');
+        });
+      });
+
+      // Dynamic Delivery Fee Calculation based on District
+      const districtSelect = document.getElementById('district-select');
+      const deliveryFeeEl = document.getElementById('delivery-fee');
+      const deliveryLabelEl = document.getElementById('delivery-label');
+      const totalAmountEl = document.getElementById('total-amount');
+
+      districtSelect.addEventListener('change', (e) => {
+        const district = e.target.value;
+        let fee = 100;
+        if (district === 'Dhaka') fee = 120;
+        else if (district === 'Chattogram') fee = 150;
+        else if (district === 'Sylhet' || district === 'Sunamganj') fee = 80;
+        else fee = 150;
+
+        deliveryLabelEl.innerText = `Delivery Fee (${district})`;
+        deliveryFeeEl.innerText = `৳${fee}`;
+        
+        const total = 18500 - 500 + fee;
+        totalAmountEl.innerText = `৳${total.toLocaleString()}`;
+      });
+    });
+  </script>
 </body>
 </html>

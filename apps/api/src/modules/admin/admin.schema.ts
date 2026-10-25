@@ -33,6 +33,17 @@ export const adminOrderStatusSchema = z.object({
   ]),
 });
 
+export const updateStoreMartSchema = z.object({
+  isPremilyMart: z.boolean(),
+});
+
+export const updateStoreVerificationSchema = z.object({
+  verificationStatus: z.enum(["UNVERIFIED", "PENDING", "VERIFIED", "REJECTED"]),
+  verificationNote: z.string().max(500).optional(),
+});
+
 export type AdminProductQuery = z.infer<typeof adminProductQuerySchema>;
 export type AdminOrderQuery = z.infer<typeof adminOrderQuerySchema>;
 export type AdminOrderStatusInput = z.infer<typeof adminOrderStatusSchema>;
+export type UpdateStoreMartInput = z.infer<typeof updateStoreMartSchema>;
+export type UpdateStoreVerificationInput = z.infer<typeof updateStoreVerificationSchema>;

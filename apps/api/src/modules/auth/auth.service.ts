@@ -5,11 +5,14 @@ import { hashPassword, signToken, verifyPassword } from "./auth.utils.js";
 export async function registerUser(data: RegisterInput) {
   const hashedPassword = await hashPassword(data.password);
 
+  // Normalize empty email to null so unique constraint is not violated
+  const email = data.email && data.email.trim().length > 0 ? data.email.trim().toLowerCase() : null;
+
   const user = await prisma.user.create({
     data: {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
+      name: data.name.trim(),
+      email,
+      phone: data.phone.trim(),
       password: hashedPassword,
       role: data.role,
     },
@@ -20,8 +23,13 @@ export async function registerUser(data: RegisterInput) {
 }
 
 export async function loginUser(data: LoginInput) {
-  const user = await prisma.user.findUnique({
-    where: { email: data.email },
+  const rawIdentifier = data.identifier.trim();
+  const isPhone = /^01[3-9]\d{8}$/.test(rawIdentifier);
+
+  const user = await prisma.user.findFirst({
+    where: isPhone
+      ? { phone: rawIdentifier }
+      : { email: rawIdentifier.toLowerCase() },
   });
 
   if (!user) {
@@ -37,5 +45,5 @@ export async function loginUser(data: LoginInput) {
   const token = signToken({ userId: user.id, role: user.role });
 
   const { password, ...safeUser } = user;
-  return { user: safeUser, token}
+  return { user: safeUser, token };
 }

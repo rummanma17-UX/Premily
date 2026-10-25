@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footer - Premily</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: "#D4B375", deep: "#B8924B", dark: "#1E1916", muted: "#68605B", cream: "#FAF3E8" },
+          fontFamily: { serif: ["Cinzel", "serif"], sans: ["Plus Jakarta Sans", "sans-serif"] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #F3EFE9; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; flex-direction: column; min-height: 100vh; justify-content: flex-end; margin: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Expanded Footer -->
+  <footer class="bg-dark text-cream mt-10">
+    <div class="max-w-7xl mx-auto px-4 py-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-xs">
+      
+      <!-- Brand -->
+      <div class="col-span-2 space-y-3">
+        <div class="font-serif text-xl tracking-widest text-gold font-bold">PREMILY<span class="text-white">.</span></div>
+        <p class="text-cream/70 leading-relaxed">
+          A high-end luxury multi-vendor e-commerce platform dedicated to the Bangladeshi market, delivering curated lifestyle collections nationwide.
+        </p>
+      </div>
+
+      <!-- Explore -->
+      <div class="space-y-3">
+        <h4 class="font-bold text-gold uppercase tracking-wider text-[11px]">Explore</h4>
+        <ul class="space-y-2 text-cream/70">
+          <li><a href="#" class="hover:text-gold transition">Browse Stores & Products</a></li>
+          <li><a href="#" class="hover:text-gold transition">How PREMILY Works</a></li>
+          <li><a href="#" class="hover:text-gold transition">Seller Subscriptions</a></li>
+        </ul>
+      </div>
+
+      <!-- For Sellers -->
+      <div class="space-y-3">
+        <h4 class="font-bold text-gold uppercase tracking-wider text-[11px]">For Sellers</h4>
+        <ul class="space-y-2 text-cream/70">
+          <li><a href="#" class="hover:text-gold transition">Create a Store / Get Started</a></li>
+          <li><a href="#" class="hover:text-gold transition">Seller Login</a></li>
+          <li><a href="#" class="hover:text-gold transition">Onboarding Guide</a></li>
+        </ul>
+      </div>
+
+      <!-- Customer Support -->
+      <div class="space-y-3">
+        <h4 class="font-bold text-gold uppercase tracking-wider text-[11px]">Customer Support</h4>
+        <ul class="space-y-2 text-cream/70">
+          <li><a href="#" class="hover:text-gold transition">Contact Support</a></li>
+          <li><a href="#" class="hover:text-gold transition">FAQs</a></li>
+          <li><a href="#" class="hover:text-gold transition">Orders, Delivery & Returns</a></li>
+        </ul>
+      </div>
+
+      <!-- Policies -->
+      <div class="space-y-3">
+        <h4 class="font-bold text-gold uppercase tracking-wider text-[11px]">Policies</h4>
+        <ul class="space-y-2 text-cream/70">
+          <li><a href="#" class="hover:text-gold transition">Terms of Service</a></li>
+          <li><a href="#" class="hover:text-gold transition">Privacy Policy</a></li>
+          <li><a href="#" class="hover:text-gold transition">Cookie Policy</a></li>
+          <li><a href="#" class="hover:text-gold transition">Seller Agreement</a></li>
+          <li><a href="#" class="hover:text-gold transition">Refund Policy</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom Bar: Contact, Social, Trust & Legal -->
+    <div class="border-t border-gold/20 py-6 px-4">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-cream/70">
+        
+        <!-- Copyright & Trust -->
+        <div class="space-y-1 text-center md:text-left">
+          <p>© 2026 PREMILY. All rights reserved.</p>
+          <p class="text-cream/50 text-[11px]">Secure Payments: bKash · Nagad · Cash on Delivery</p>
+        </div>
+
+        <!-- Social & Contact Links -->
+        <div class="flex items-center gap-6">
+          <a href="#" class="flex items-center gap-1.5 hover:text-gold transition"><i data-lucide="mail" class="w-4 h-4"></i> support@premily.com</a>
+          <a href="#" class="flex items-center gap-1.5 hover:text-gold transition"><i data-lucide="facebook" class="w-4 h-4"></i> Facebook</a>
+          <a href="#" class="flex items-center gap-1.5 hover:text-gold transition"><i data-lucide="instagram" class="w-4 h-4"></i> Instagram</a>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

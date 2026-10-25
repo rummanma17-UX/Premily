@@ -10,6 +10,8 @@ import {
 export const productsRouter: RouterType = Router();
 
 productsRouter.get("/mine", requireAuth, requireRole("SELLER"), listMyProduct);
+productsRouter.get("/item/:slug", getProduct);
 productsRouter.get("/:storeSlug/products/:productSlug", getProduct);
+productsRouter.get("/:slug", getProduct);
 productsRouter.get("/", listProducts);
 productsRouter.post("/", requireAuth, requireRole("SELLER"), addProduct);
