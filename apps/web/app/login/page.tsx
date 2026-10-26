@@ -16,7 +16,51 @@ import {
   AlertCircle,
   HelpCircle,
   Languages,
+  Check,
 } from "lucide-react";
+
+type PasswordCriteria = {
+  minLength: boolean;
+  hasMixedCase: boolean;
+  hasNumber: boolean;
+  hasSpecial: boolean;
+};
+
+function calculatePasswordStrength(password: string): {
+  score: number;
+  label: "Too Short" | "Weak" | "Fair" | "Good" | "Strong";
+  color: string;
+  textColor: string;
+  criteria: PasswordCriteria;
+} {
+  const criteria: PasswordCriteria = {
+    minLength: password.length >= 8,
+    hasMixedCase: /[a-z]/.test(password) && /[A-Z]/.test(password),
+    hasNumber: /\d/.test(password),
+    hasSpecial: /[^A-Za-z0-9]/.test(password),
+  };
+
+  let score = 0;
+  if (password.length >= 6) score += 1;
+  if (criteria.minLength) score += 1;
+  if (criteria.hasMixedCase) score += 1;
+  if (criteria.hasNumber || criteria.hasSpecial) score += 1;
+  if (criteria.hasNumber && criteria.hasSpecial && criteria.minLength) score = 4;
+
+  if (password.length === 0) {
+    return { score: 0, label: "Too Short", color: "bg-slate-200", textColor: "text-muted", criteria };
+  }
+  if (score <= 1) {
+    return { score: 1, label: "Weak", color: "bg-rose-500", textColor: "text-rose-600", criteria };
+  }
+  if (score === 2) {
+    return { score: 2, label: "Fair", color: "bg-amber-500", textColor: "text-amber-600", criteria };
+  }
+  if (score === 3) {
+    return { score: 3, label: "Good", color: "bg-[#B8924B]", textColor: "text-[#B8924B]", criteria };
+  }
+  return { score: 4, label: "Strong", color: "bg-emerald-600", textColor: "text-emerald-700", criteria };
+}
 
 function LoginContent() {
   const router = useRouter();
@@ -37,6 +81,7 @@ function LoginContent() {
   const [signupIdentifier, setSignupIdentifier] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupRole, setSignupRole] = useState<"CUSTOMER" | "SELLER">("CUSTOMER");
+  const passwordStrength = calculatePasswordStrength(signupPassword);
 
   // Status & feedback state
   const [loading, setLoading] = useState(false);
@@ -151,6 +196,11 @@ function LoginContent() {
 
     if (!signupPassword || signupPassword.length < 6) {
       setErrorMessage("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (passwordStrength.score < 2) {
+      setErrorMessage("Password is too weak. Please include at least 8 characters or a combination of letters and numbers.");
       return;
     }
 
@@ -504,6 +554,110 @@ function LoginContent() {
                     )}
                   </button>
                 </div>
+
+                {/* Password Strength Display */}
+                {signupPassword.length > 0 && (
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-muted">Password Strength:</span>
+                      <span className={`font-semibold ${passwordStrength.textColor}`}>
+                        {passwordStrength.label}
+                      </span>
+                    </div>
+
+                    {/* 4-segment visual meter */}
+                    <div className="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+                      <div
+                        className={`rounded-full transition-all duration-300 ${
+                          passwordStrength.score >= 1 ? passwordStrength.color : "bg-slate-200"
+                        }`}
+                      />
+                      <div
+                        className={`rounded-full transition-all duration-300 ${
+                          passwordStrength.score >= 2 ? passwordStrength.color : "bg-slate-200"
+                        }`}
+                      />
+                      <div
+                        className={`rounded-full transition-all duration-300 ${
+                          passwordStrength.score >= 3 ? passwordStrength.color : "bg-slate-200"
+                        }`}
+                      />
+                      <div
+                        className={`rounded-full transition-all duration-300 ${
+                          passwordStrength.score >= 4 ? passwordStrength.color : "bg-slate-200"
+                        }`}
+                      />
+                    </div>
+
+                    {/* Criteria checklist */}
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] pt-0.5">
+                      <div
+                        className={`flex items-center gap-1 transition ${
+                          passwordStrength.criteria.minLength
+                            ? "text-emerald-700 font-medium"
+                            : "text-muted"
+                        }`}
+                      >
+                        <Check
+                          className={`w-3 h-3 ${
+                            passwordStrength.criteria.minLength
+                              ? "text-emerald-600"
+                              : "text-muted/40"
+                          }`}
+                        />
+                        <span>8+ characters</span>
+                      </div>
+                      <div
+                        className={`flex items-center gap-1 transition ${
+                          passwordStrength.criteria.hasMixedCase
+                            ? "text-emerald-700 font-medium"
+                            : "text-muted"
+                        }`}
+                      >
+                        <Check
+                          className={`w-3 h-3 ${
+                            passwordStrength.criteria.hasMixedCase
+                              ? "text-emerald-600"
+                              : "text-muted/40"
+                          }`}
+                        />
+                        <span>Upper & lower case</span>
+                      </div>
+                      <div
+                        className={`flex items-center gap-1 transition ${
+                          passwordStrength.criteria.hasNumber
+                            ? "text-emerald-700 font-medium"
+                            : "text-muted"
+                        }`}
+                      >
+                        <Check
+                          className={`w-3 h-3 ${
+                            passwordStrength.criteria.hasNumber
+                              ? "text-emerald-600"
+                              : "text-muted/40"
+                          }`}
+                        />
+                        <span>At least 1 number</span>
+                      </div>
+                      <div
+                        className={`flex items-center gap-1 transition ${
+                          passwordStrength.criteria.hasSpecial
+                            ? "text-emerald-700 font-medium"
+                            : "text-muted"
+                        }`}
+                      >
+                        <Check
+                          className={`w-3 h-3 ${
+                            passwordStrength.criteria.hasSpecial
+                              ? "text-emerald-600"
+                              : "text-muted/40"
+                          }`}
+                        />
+                        <span>Special symbol (!@#$)</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <button
