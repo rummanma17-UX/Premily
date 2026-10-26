@@ -73,16 +73,19 @@ Premily/
 ```
 
 ---
+## 4. Dual Workspace Compatibility (`pnpm` & `npm`)
 
-## 4. Current State (~80% Production Ready)
+- **Root Definition Strategy**: The repository supports dual workspace configurations so it compiles cleanly both locally via `pnpm` (driven by `pnpm-workspace.yaml`) and in standard cloud environments using native `npm workspaces` defined in the root `package.json`.
+- **Dependency Guardrails**: When utilizing `pnpm`, postinstall scripts requiring build authorization (e.g., `@firebase/util`, `protobufjs`) must be approved via `pnpm approve-builds` or managed through Corepack to maintain strict supply-chain policies.
 
-- Core backend routes, schemas, database models, and baseline migrations are compiled and verified.
+## 5. Current State
+
+- Core backend routes, schemas, database models, and baseline migrations are compiled and verified (will be modified in the future).
 - Master frontend routes are built with realistic fallbacks and luxury styling.
-- Both `api` and `web` pass TypeScript checks (`tsc --noEmit`) with 0 errors.
 
 ---
 
-## 5. Immediate Future Roadmap for Next AI / Developers
+## 6. Immediate Future Roadmap for Next AI / Developers
 
 1. **Seed Database with Realistic Data**:
    - Run `pnpm --filter api exec tsx prisma/seed.ts` with stores, products, reviews, and district rates so API returns live data instead of UI fallbacks.
@@ -97,7 +100,7 @@ Premily/
 
 ---
 
-## 6. How to Run
+## 7. How to Run
 
 ```bash
 # Terminal 1 - API Server
