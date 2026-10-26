@@ -120,3 +120,24 @@ export type DistrictShippingInfo = {
   estimatedDaysMin: number;
   estimatedDaysMax: number;
 };
+
+export type Pagination = {
+  total: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+};
+
+export type ProductListResponse = {
+  products: Product[];
+  pagination: Pagination;
+};
+
+export type ConfirmedOrder = {
+  orderNumber: string;
+  total: number;
+  shippingDistrict: string;
+  paymentMethod: string;
+  shippingAddress: string;
+};
+

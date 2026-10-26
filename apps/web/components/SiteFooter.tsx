@@ -38,8 +38,8 @@ export function SiteFooter() {
             For sellers
           </h2>
           <ul className={listClass}>
-            <li><Link href="/seller/register" className={linkClass}>Create a store</Link></li>
-            <li><Link href="/seller/login" className={linkClass}>Seller login</Link></li>
+            <li><Link href="/login?tab=signup" className={linkClass}>Create a store</Link></li>
+            <li><Link href="/login" className={linkClass}>Seller login</Link></li>
             <li><Link href="/seller/guide" className={linkClass}>Onboarding guide</Link></li>
           </ul>
         </div>

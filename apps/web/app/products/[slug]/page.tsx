@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { Product } from "@/types";
 import { ImageGallery } from "@/components/product/ImageGallery";

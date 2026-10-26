@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Package,
-  ShoppingCart,
   Truck,
   Settings,
   Store,

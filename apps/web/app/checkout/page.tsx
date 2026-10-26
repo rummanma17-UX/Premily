@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { BANGLADESH_DISTRICTS } from "@/lib/bangladesh-districts";
+import type { ConfirmedOrder } from "@/types";
 import {
   MapPin,
   CreditCard,
@@ -18,15 +19,35 @@ function formatTaka(amount: number) {
 }
 
 export default function CheckoutPage() {
-  const [fullName, setFullName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [fullName, setFullName] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("premily_user");
+        if (stored) return JSON.parse(stored).name || "";
+      } catch {
+        // silent
+      }
+    }
+    return "";
+  });
+  const [phoneNumber, setPhoneNumber] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("premily_user");
+        if (stored) return JSON.parse(stored).phone || "";
+      } catch {
+        // silent
+      }
+    }
+    return "";
+  });
   const [streetAddress, setStreetAddress] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("Dhaka");
   const [cityThana, setCityThana] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"CASH_ON_DELIVERY" | "BKASH" | "NAGAD">("BKASH");
 
   const [isPlacing, setIsPlacing] = useState(false);
-  const [orderConfirmed, setOrderConfirmed] = useState<any | null>(null);
+  const [orderConfirmed, setOrderConfirmed] = useState<ConfirmedOrder | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Cart demo items

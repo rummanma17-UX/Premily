@@ -1,12 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { Store, Product } from "@/types";
+import type { Store, ProductListResponse } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { MartBadge } from "@/components/badges/MartBadge";
 import { VerifiedBadge } from "@/components/badges/VerifiedBadge";
-import { RatingStars } from "@/components/ui/RatingStars";
 import { MapPin, Package, Star, Search, ArrowLeft } from "lucide-react";
 
 export default async function SellerStorefrontPage({
@@ -52,7 +50,7 @@ export default async function SellerStorefrontPage({
   if (q) queryParams.set("q", q);
   if (category) queryParams.set("category", category);
 
-  const productData = await apiFetch<{ products: Product[]; pagination: any }>(
+  const productData = await apiFetch<ProductListResponse>(
     `/api/products?${queryParams.toString()}`
   ).catch(() => ({
     products: [

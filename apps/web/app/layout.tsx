@@ -20,7 +20,11 @@ export const metadata: Metadata = {
     "Create and manage a branded online store with PREMILY, the ecommerce platform for businesses in Bangladesh.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"

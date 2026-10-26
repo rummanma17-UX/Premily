@@ -3,13 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  ShieldCheck,
   Store,
-  Users,
-  Package,
   TrendingUp,
-  CheckCircle,
-  XCircle,
   ArrowLeft,
 } from "lucide-react";
 import { MartBadge } from "@/components/badges/MartBadge";

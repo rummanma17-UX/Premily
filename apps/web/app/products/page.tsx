@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import type { Product, Category } from "@/types";
+import type { Product, Category, ProductListResponse } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
-import { Filter, SlidersHorizontal, ChevronRight, X } from "lucide-react";
+import { SlidersHorizontal, ChevronRight, X } from "lucide-react";
 
 export default async function ProductsCatalogPage({
   searchParams,
@@ -36,7 +36,7 @@ export default async function ProductsCatalogPage({
   if (sort) query.set("sort", sort);
 
   const [productsData, categories] = await Promise.all([
-    apiFetch<{ products: Product[]; pagination: any }>(`/api/products?${query.toString()}`).catch(() => null),
+    apiFetch<ProductListResponse>(`/api/products?${query.toString()}`).catch(() => null),
     apiFetch<Category[]>("/api/categories").catch(() => []),
   ]);
 

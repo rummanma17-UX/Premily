@@ -1,10 +1,14 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 export async function apiFetch<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
+  if (!API_URL && typeof window === "undefined" && !path.startsWith("http")) {
+    throw new Error("No backend API URL configured");
+  }
+  const url = path.startsWith("http") ? path : `${API_URL}${path}`;
+  const res = await fetch(url, {
     ...options,
     cache: "no-store",
     headers: {
