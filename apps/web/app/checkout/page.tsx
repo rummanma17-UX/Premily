@@ -12,10 +12,21 @@ import {
   ArrowLeft,
   Truck,
   RotateCcw,
+  ShoppingBag,
 } from "lucide-react";
+import { StoreService } from "@/lib/store-data";
+import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
 
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
+}
+
+function generateTrxId() {
+  return `BK${Date.now().toString(36).toUpperCase()}`;
+}
+
+function generateMockOrderNumber() {
+  return `PRM-${Date.now().toString(36).toUpperCase()}-DHK`;
 }
 
 export default function CheckoutPage() {
@@ -49,6 +60,7 @@ export default function CheckoutPage() {
   const [isPlacing, setIsPlacing] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState<ConfirmedOrder | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   // Cart demo items
   const [cartItems] = useState([
@@ -90,40 +102,44 @@ export default function CheckoutPage() {
     setIsPlacing(true);
 
     try {
-      const payload = {
-        shippingName: fullName.trim(),
-        shippingPhone: phoneNumber.trim(),
+      // Register into unified PREMILY StoreService
+      const savedOrder = StoreService.addOrder({
+        storeId: "store-aura",
+        storeSlug: "aura-home",
+        storeName: cartItems[0]?.storeName || "Aura Home Studio",
+        customerName: fullName.trim(),
+        customerPhone: phoneNumber.trim(),
         shippingAddress: streetAddress.trim(),
-        shippingCity: cityThana.trim() || selectedDistrict,
         shippingDistrict: selectedDistrict,
+        shippingCity: cityThana.trim() || selectedDistrict,
+        items: cartItems.map((c) => ({
+          productId: c.id,
+          name: c.productName,
+          variantLabel: c.variantLabel,
+          price: c.price,
+          quantity: c.quantity,
+          imageUrl: c.image,
+        })),
+        subtotal,
+        shippingCost: shippingFee,
+        total,
         paymentMethod,
-      };
-
-      const res = await fetch("http://localhost:3001/api/orders/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
+        paymentStatus: paymentMethod === "CASH_ON_DELIVERY" ? "PENDING" : "PENDING",
+        transactionId: paymentMethod !== "CASH_ON_DELIVERY" ? generateTrxId() : null,
+        orderStatus: "PENDING",
       });
 
-      if (res.ok) {
-        const orderData = await res.json();
-        setOrderConfirmed(orderData);
-      } else {
-        // If not logged in, generate a simulated client order confirmation with clear tracking ID
-        const mockOrderNumber = `ORD-${Date.now().toString(36).toUpperCase()}-BD`;
-        setOrderConfirmed({
-          orderNumber: mockOrderNumber,
-          total,
-          shippingDistrict: selectedDistrict,
-          paymentMethod,
-          shippingAddress: streetAddress,
-        });
-      }
-    } catch {
-      // Local offline fallback
       setOrderConfirmed({
-        orderNumber: `ORD-${Date.now().toString(36).toUpperCase()}-BD`,
+        orderNumber: savedOrder.orderNumber,
+        total,
+        shippingDistrict: selectedDistrict,
+        paymentMethod,
+        shippingAddress: streetAddress,
+      });
+    } catch {
+      const mockOrderNumber = generateMockOrderNumber();
+      setOrderConfirmed({
+        orderNumber: mockOrderNumber,
         total,
         shippingDistrict: selectedDistrict,
         paymentMethod,
@@ -171,8 +187,15 @@ export default function CheckoutPage() {
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <Link
+            href="/account/orders"
+            className="gbtn px-6 py-3 rounded-full text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span>Track in My Orders</span>
+          </Link>
+          <Link
             href="/"
-            className="gbtn px-6 py-3 rounded-full text-xs font-semibold shadow-xs"
+            className="px-6 py-3 rounded-full text-xs font-semibold border border-border-gold text-dark hover:border-deep bg-white"
           >
             Continue Shopping
           </Link>
@@ -194,6 +217,41 @@ export default function CheckoutPage() {
           PREMILY Secure Checkout
         </span>
       </div>
+
+      {/* Google 1-Click Fast Autofill Banner */}
+      {!fullName && (
+        <div className="p-3.5 rounded-2xl bg-white border border-border-gold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
+          <div className="flex items-center gap-2.5 text-xs text-dark">
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.22 24 12 24z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
+              />
+            </svg>
+            <span>Have a Google Account? Autofill your contact details instantly.</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setGoogleModalOpen(true)}
+            className="px-3.5 py-1.5 rounded-xl border border-border-gold hover:border-deep bg-cream/30 text-xs font-semibold text-dark hover:bg-cream cursor-pointer"
+          >
+            Sign in with Google
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
         {/* Left Column: Delivery Details & Payment Choice */}
@@ -406,6 +464,17 @@ export default function CheckoutPage() {
           </div>
         </aside>
       </form>
+
+      {/* Google Login Modal */}
+      <GoogleLoginModal
+        isOpen={googleModalOpen}
+        onClose={() => setGoogleModalOpen(false)}
+        defaultRole="CUSTOMER"
+        onSuccess={(user) => {
+          setFullName(user.name);
+          setPhoneNumber(user.phone);
+        }}
+      />
     </main>
   );
 }

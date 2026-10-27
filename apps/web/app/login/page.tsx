@@ -18,6 +18,7 @@ import {
   Languages,
   Check,
 } from "lucide-react";
+import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
 
 type PasswordCriteria = {
   minLength: boolean;
@@ -90,6 +91,7 @@ function LoginContent() {
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSubmitted, setForgotSubmitted] = useState(false);
+  const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   // Validation helper for Bangladeshi phone or standard email
   const validateIdentifier = (input: string) => {
@@ -687,8 +689,8 @@ function LoginContent() {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <button
               type="button"
-              onClick={() => handleSocialLogin("Google")}
-              className="flex items-center justify-center gap-2 border border-border-gold rounded-xl py-2.5 font-semibold text-dark hover:border-deep hover:bg-cream/40 transition cursor-pointer"
+              onClick={() => setGoogleModalOpen(true)}
+              className="flex items-center justify-center gap-2 border border-border-gold rounded-xl py-2.5 font-semibold text-dark hover:border-deep hover:bg-cream/40 transition cursor-pointer shadow-xs"
             >
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                 <path
@@ -708,7 +710,7 @@ function LoginContent() {
                   d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
                 />
               </svg>
-              <span>Google</span>
+              <span>Google Sign-In</span>
             </button>
 
             <button
@@ -778,6 +780,14 @@ function LoginContent() {
           </div>
         </div>
       )}
+
+      {/* Google Sign In Modal */}
+      <GoogleLoginModal
+        isOpen={googleModalOpen}
+        onClose={() => setGoogleModalOpen(false)}
+        defaultRole={activeTab === "signup" && signupRole === "SELLER" ? "SELLER" : "CUSTOMER"}
+        redirectUrl={redirectUrl}
+      />
 
       {/* Footer */}
       <footer className="bg-dark text-cream/70 text-center text-xs py-4 border-t border-gold/20">

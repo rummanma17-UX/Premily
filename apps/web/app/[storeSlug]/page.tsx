@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import type { Store, ProductListResponse } from "@/types";
+import { StoreService } from "@/lib/store-data";
+import type { Store, ProductListResponse, Product } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { MartBadge } from "@/components/badges/MartBadge";
 import { VerifiedBadge } from "@/components/badges/VerifiedBadge";
@@ -17,10 +18,31 @@ export default async function SellerStorefrontPage({
   const { storeSlug } = await params;
   const { q, category } = await searchParams;
 
-  // Fetch store details from API
-  let store = await apiFetch<Store>(`/api/stores/${storeSlug}`).catch(() => null);
+  // Fetch store details from StoreService or API
+  const localStore = StoreService.getStoreBySlug(storeSlug);
+  let store: Store | null = null;
 
-  // Fallback demo store for previewing if backend not yet seeded with this store
+  if (localStore) {
+    store = {
+      id: localStore.id,
+      slug: localStore.slug,
+      displayName: localStore.displayName,
+      description: localStore.description,
+      logoUrl: localStore.logoUrl,
+      bannerUrl: localStore.bannerUrl,
+      primaryColor: localStore.primaryColor,
+      isPremilyMart: localStore.isPremilyMart,
+      verificationStatus: localStore.verificationStatus,
+      homeDistrict: localStore.homeDistrict,
+      insideDistrictCost: localStore.insideDistrictCost,
+      outsideDistrictCost: localStore.outsideDistrictCost,
+      stats: localStore.stats,
+    };
+  } else {
+    store = await apiFetch<Store>(`/api/stores/${storeSlug}`).catch(() => null);
+  }
+
+  // Fallback demo store if not found
   if (!store) {
     store = {
       id: "store-demo",
@@ -45,15 +67,55 @@ export default async function SellerStorefrontPage({
   }
 
   // Fetch products belonging to this seller
-  const queryParams = new URLSearchParams();
-  queryParams.set("storeSlug", storeSlug);
-  if (q) queryParams.set("q", q);
-  if (category) queryParams.set("category", category);
+  let localProducts = StoreService.getProductsByStore(store.slug);
+  if (q) {
+    localProducts = localProducts.filter((p) =>
+      p.name.toLowerCase().includes(q.toLowerCase()) ||
+      p.description.toLowerCase().includes(q.toLowerCase())
+    );
+  }
+  if (category) {
+    localProducts = localProducts.filter(
+      (p) => p.categoryId.toLowerCase() === category.toLowerCase()
+    );
+  }
+  let productsList: Product[] = [];
 
-  const productData = await apiFetch<ProductListResponse>(
-    `/api/products?${queryParams.toString()}`
-  ).catch(() => ({
-    products: [
+  if (localProducts.length > 0) {
+    productsList = localProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      description: p.description,
+      categoryId: p.categoryId,
+      category: { id: p.categoryId, name: p.categoryName, slug: p.categoryId },
+      variants: [
+        {
+          id: `v_${p.id}`,
+          sku: `SKU-${p.id}`,
+          price: p.price.toString(),
+          compareAtPrice: p.compareAtPrice ? p.compareAtPrice.toString() : null,
+          stock: p.stock,
+          size: p.sizes[0] || "Standard",
+          color: p.colors[0] || "Default",
+        },
+      ],
+      images: [{ id: `img_${p.id}`, url: p.imageUrl, altText: p.name, position: 0 }],
+      store: {
+        id: store!.id,
+        slug: store!.slug,
+        displayName: store!.displayName,
+        isPremilyMart: store!.isPremilyMart,
+        verificationStatus: store!.verificationStatus,
+      },
+      avgRating: p.avgRating,
+      reviewCount: p.reviewCount,
+      salesCount: p.salesCount,
+    }));
+  }
+
+  const productData: ProductListResponse = {
+    products: productsList.length > 0 ? productsList : [
       {
         id: "prod-1",
         name: "Aura Curved Lounge Chair",
@@ -68,23 +130,9 @@ export default async function SellerStorefrontPage({
         reviewCount: 48,
         salesCount: 140,
       },
-      {
-        id: "prod-2",
-        name: "Velvet Accent Armchair",
-        slug: "velvet-accent-armchair",
-        description: "Mid-century modern velvet chair with brass legs.",
-        categoryId: "cat-1",
-        category: { id: "cat-1", name: "Chairs", slug: "chairs" },
-        variants: [{ id: "v2", sku: "VELVET-1", price: "22000", compareAtPrice: "28000", stock: 8, size: "Standard", color: "Emerald" }],
-        images: [{ id: "i2", url: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=600&q=80", altText: "Velvet Chair", position: 0 }],
-        store: { id: store.id, slug: store.slug, displayName: store.displayName, isPremilyMart: store.isPremilyMart, verificationStatus: store.verificationStatus },
-        avgRating: 4.8,
-        reviewCount: 36,
-        salesCount: 95,
-      },
     ],
-    pagination: { total: 2 },
-  }));
+    pagination: { total: productsList.length || 1 },
+  };
 
   const brandAccent = store.primaryColor || "#B8924B";
 
