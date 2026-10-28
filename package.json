@@ -11,7 +11,8 @@
     "dev": "npm run dev --workspace=web",
     "build": "npm run build --workspace=web",
     "start": "npm run start --workspace=web",
-    "lint": "npm run lint --workspace=web"
+    "lint": "npm run lint --workspace=web",
+    "seed": "npm run seed --workspace=api"
   },
   "dependencies": {
     "dotenv": "^18.0.9",
