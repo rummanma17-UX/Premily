@@ -23,6 +23,10 @@ PREMILY is a seller-focused e-commerce SaaS platform for Bangladesh. Sellers cre
    - Bangladesh 64-district delivery. Default platform rates: ৳70 Inside Dhaka (1–2 days), ৳150 Outside Dhaka (3–5 days).
    - Sellers can customize their home district and delivery fees (`insideDistrictCost`, `outsideDistrictCost`, and district overrides).
    - Checkouts with items from multiple stores charge shipping per-store (sellers fulfill independently).
+6. **STRICT: Never Delete or Modify `pnpm-workspace.yaml` Files**:
+   - `pnpm-workspace.yaml` (root) and `apps/web/pnpm-workspace.yaml` are MANDATORY for local developer runtime.
+   - Any AI agent or developer is STRICTLY FORBIDDEN from deleting, renaming, or pruning `pnpm-workspace.yaml` files.
+   - AI Studio and cloud environments operate alongside pnpm via `"workspaces": ["apps/*"]` in root `package.json`. Both configurations MUST permanently coexist.
 
 ---
 
@@ -75,8 +79,10 @@ Premily/
 ---
 ## 4. Dual Workspace Compatibility (`pnpm` & `npm`)
 
+- **Strict Preservation**: Both `pnpm-workspace.yaml` (root) and `apps/web/pnpm-workspace.yaml` must NEVER be deleted, stripped, or ignored by any AI assistant or automated script.
 - **Root Definition Strategy**: The repository supports dual workspace configurations so it compiles cleanly both locally via `pnpm` (driven by `pnpm-workspace.yaml`) and in standard cloud environments using native `npm workspaces` defined in the root `package.json`.
 - **Dependency Guardrails**: When utilizing `pnpm`, postinstall scripts requiring build authorization (e.g., `@firebase/util`, `protobufjs`) must be approved via `pnpm approve-builds` or managed through Corepack to maintain strict supply-chain policies.
+- **Lockfile Hygiene**: Local developer commits must track `pnpm-lock.yaml`. Temporary container lockfiles like `package-lock.json` and `bun.lock*` are strictly ignored via `.gitignore` to prevent lockfile conflicts.
 
 ## 5. Current State
 
