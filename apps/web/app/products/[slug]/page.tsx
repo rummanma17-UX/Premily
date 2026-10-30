@@ -8,13 +8,7 @@ import { DeliveryEstimator } from "@/components/product/DeliveryEstimator";
 import { ReviewsSection } from "@/components/product/ReviewsSection";
 import { MartBadge } from "@/components/badges/MartBadge";
 import { VerifiedBadge } from "@/components/badges/VerifiedBadge";
-import { DiscountBadge } from "@/components/badges/DiscountBadge";
-import { RatingStars } from "@/components/ui/RatingStars";
-import { Store, ChevronRight, Heart } from "lucide-react";
-
-function formatTaka(amount: number) {
-  return "৳" + amount.toLocaleString("en-BD");
-}
+import { Store, ChevronRight } from "lucide-react";
 
 export default async function ProductDetailPage({
   params,
@@ -81,14 +75,6 @@ export default async function ProductDetailPage({
       ],
     };
   }
-
-  const defaultVariant = product.variants[0];
-  const lowestPrice = product.variants.length > 0
-    ? Math.min(...product.variants.map((v) => parseFloat(v.price)))
-    : 0;
-  const compareAt = defaultVariant?.compareAtPrice ? parseFloat(defaultVariant.compareAtPrice) : null;
-  const discount = compareAt && compareAt > lowestPrice ? Math.round((1 - lowestPrice / compareAt) * 100) : 0;
-  const inStockCount = product.variants.reduce((acc, v) => acc + v.stock, 0);
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">

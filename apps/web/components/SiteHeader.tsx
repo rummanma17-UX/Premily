@@ -34,7 +34,8 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [, setCartVersion] = useState(0);
+  const cartCount = CartService.getItemCount();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,8 +53,7 @@ export function SiteHeader() {
     };
 
     loadUser();
-    setCartCount(CartService.getItemCount());
-    const handleCartUpdate = () => setCartCount(CartService.getItemCount());
+    const handleCartUpdate = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_auth_change", loadUser);
     window.addEventListener("premily_cart_change", handleCartUpdate);
     window.addEventListener("storage", loadUser);

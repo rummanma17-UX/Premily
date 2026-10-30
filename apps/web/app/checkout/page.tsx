@@ -16,17 +16,13 @@ import {
   Store,
 } from "lucide-react";
 import { StoreService } from "@/lib/store-data";
-import { CartService, type CartItem } from "@/lib/cart-service";
+import { CartService } from "@/lib/cart-service";
 import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
 import { MfsPaymentModal } from "@/components/checkout/MfsPaymentModal";
 import { MartBadge } from "@/components/badges/MartBadge";
 
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
-}
-
-function generateTrxId() {
-  return `BK${Date.now().toString(36).toUpperCase()}`;
 }
 
 function generateMockOrderNumber() {
@@ -67,22 +63,16 @@ export default function CheckoutPage() {
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   // Dynamic Cart and Multi-Store Grouping (AGENT.md Rule 5)
-  const [storeData, setStoreData] = useState(() => CartService.getStoreGroups("Dhaka"));
+  const [, setCartVersion] = useState(0);
   const [mfsModalOpen, setMfsModalOpen] = useState(false);
 
   useEffect(() => {
-    setStoreData(CartService.getStoreGroups(selectedDistrict));
-  }, [selectedDistrict]);
-
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      setStoreData(CartService.getStoreGroups(selectedDistrict));
-    };
+    const handleCartUpdate = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartUpdate);
     return () => window.removeEventListener("premily_cart_change", handleCartUpdate);
-  }, [selectedDistrict]);
+  }, []);
 
-  const { groups, totalSubtotal, totalShipping, grandTotal } = storeData;
+  const { groups, totalSubtotal, totalShipping, grandTotal } = CartService.getStoreGroups(selectedDistrict);
   const isDhaka = selectedDistrict.toLowerCase() === "dhaka";
 
   const executeOrderPlacement = (trxId: string | null = null, paymentStatus: "PENDING" | "VERIFIED" = "PENDING") => {

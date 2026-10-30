@@ -4,7 +4,6 @@
 // (AGENT.md Rule 5), and cross-component reactive updates.
 // ============================================================================
 
-import { BANGLADESH_DISTRICTS } from "./bangladesh-districts";
 import { StoreService } from "./store-data";
 
 export interface CartItem {
