@@ -52,8 +52,8 @@ export function SiteHeader() {
     };
 
     loadUser();
-    setCartCount(CartService.getItemCount());
     const handleCartUpdate = () => setCartCount(CartService.getItemCount());
+    const initialCartSync = window.setTimeout(handleCartUpdate, 0);
     window.addEventListener("premily_auth_change", loadUser);
     window.addEventListener("premily_cart_change", handleCartUpdate);
     window.addEventListener("storage", loadUser);
@@ -69,6 +69,7 @@ export function SiteHeader() {
       window.removeEventListener("premily_auth_change", loadUser);
       window.removeEventListener("premily_cart_change", handleCartUpdate);
       window.removeEventListener("storage", loadUser);
+      window.clearTimeout(initialCartSync);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);

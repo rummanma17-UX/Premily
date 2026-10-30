@@ -30,22 +30,20 @@ export function MfsPaymentModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [timer, setTimer] = useState(60);
 
-  useEffect(() => {
-    if (customerPhone) {
-      setWalletNumber(customerPhone);
-    }
-  }, [customerPhone]);
+  const resetForm = () => {
+    setStep("WALLET");
+    setWalletNumber(customerPhone || "01712345678");
+    setOtp("");
+    setPin("");
+    setError(null);
+    setIsProcessing(false);
+    setTimer(60);
+  };
 
-  useEffect(() => {
-    if (!isOpen) {
-      setStep("WALLET");
-      setOtp("");
-      setPin("");
-      setError(null);
-      setIsProcessing(false);
-      setTimer(60);
-    }
-  }, [isOpen]);
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -60,7 +58,6 @@ export function MfsPaymentModal({
   const isBkash = gateway === "BKASH";
   const brandName = isBkash ? "bKash" : "Nagad";
   const brandColor = isBkash ? "bg-[#E2136E]" : "bg-[#F7941E]";
-  const brandBorder = isBkash ? "border-[#E2136E]" : "border-[#F7941E]";
   const brandText = isBkash ? "text-[#E2136E]" : "text-[#F7941E]";
 
   const handleWalletSubmit = (e: React.FormEvent) => {
@@ -105,6 +102,7 @@ export function MfsPaymentModal({
       const generatedTrxId = `${isBkash ? "BK" : "NG"}${Date.now().toString(36).toUpperCase()}${Math.floor(1000 + Math.random() * 9000)}`;
       setStep("SUCCESS");
       setTimeout(() => {
+        resetForm();
         onSuccess(generatedTrxId);
       }, 1200);
     }, 1000);
@@ -126,7 +124,7 @@ export function MfsPaymentModal({
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition"
           >
             <X className="w-5 h-5" />
@@ -171,14 +169,14 @@ export function MfsPaymentModal({
                   />
                 </div>
                 <p className="text-[11px] text-muted mt-1.5">
-                  By clicking Proceed, you agree to PREMILY's terms and {brandName} automated payment agreement.
+                  By clicking Proceed, you agree to PREMILY&apos;s terms and {brandName} automated payment agreement.
                 </p>
               </div>
 
               <div className="pt-2 flex gap-2">
                 <button
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="w-1/3 py-2.5 rounded-xl border border-gray-200 text-xs font-semibold text-muted hover:bg-gray-50"
                 >
                   Cancel
@@ -225,7 +223,7 @@ export function MfsPaymentModal({
               </div>
 
               <div className="flex items-center justify-between text-xs text-muted">
-                <span>Didn't get code?</span>
+                <span>Didn&apos;t get code?</span>
                 {timer > 0 ? (
                   <span>Resend in {timer}s</span>
                 ) : (

@@ -11,17 +11,16 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@node-rs/argon2": "^2.0.2",
-    "@prisma/adapter-pg": "^7.9.1",
-    "@prisma/client": "^7.9.1",
+    "@prisma/adapter-pg": "7.9.1",
+    "@prisma/client": "7.9.1",
     "@prisma/client-runtime-utils": "7.9.1",
     "argon2": "^0.45.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.9",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.23.0",
+    "pg": "^8.23.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -31,7 +30,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.43",
     "@types/pg": "^8.23.1",
-    "prisma": "^7.9.1",
+    "prisma": "7.9.1",
     "tsx": "^4.23.12",
     "typescript": "^5.9.3"
   }

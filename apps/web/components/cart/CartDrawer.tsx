@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Store,
 } from "lucide-react";
-import { CartService, type CartItem, type StoreCartGroup } from "@/lib/cart-service";
+import { CartService } from "@/lib/cart-service";
 import { MartBadge } from "../badges/MartBadge";
 
 interface CartDrawerProps {
@@ -25,17 +25,12 @@ function formatTaka(amount: number) {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const [storeData, setStoreData] = useState(() => CartService.getStoreGroups("Dhaka"));
-  const [cartCount, setCartCount] = useState(0);
-
-  const refreshCart = () => {
-    setStoreData(CartService.getStoreGroups("Dhaka"));
-    setCartCount(CartService.getItemCount());
-  };
+  const [, setCartVersion] = useState(0);
+  const storeData = CartService.getStoreGroups("Dhaka");
+  const cartCount = CartService.getItemCount();
 
   useEffect(() => {
-    refreshCart();
-    const handleCartChange = () => refreshCart();
+    const handleCartChange = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartChange);
     return () => window.removeEventListener("premily_cart_change", handleCartChange);
   }, []);
