@@ -34,8 +34,7 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
-  const [, setCartVersion] = useState(0);
-  const cartCount = CartService.getItemCount();
+  const [cartCount, setCartCount] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,7 +52,8 @@ export function SiteHeader() {
     };
 
     loadUser();
-    const handleCartUpdate = () => setCartVersion((version) => version + 1);
+    const handleCartUpdate = () => setCartCount(CartService.getItemCount());
+    const initialCartSync = window.setTimeout(handleCartUpdate, 0);
     window.addEventListener("premily_auth_change", loadUser);
     window.addEventListener("premily_cart_change", handleCartUpdate);
     window.addEventListener("storage", loadUser);
@@ -69,6 +69,7 @@ export function SiteHeader() {
       window.removeEventListener("premily_auth_change", loadUser);
       window.removeEventListener("premily_cart_change", handleCartUpdate);
       window.removeEventListener("storage", loadUser);
+      window.clearTimeout(initialCartSync);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
