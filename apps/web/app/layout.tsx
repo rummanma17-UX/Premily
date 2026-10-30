@@ -4,6 +4,8 @@ import { SiteFooter } from "../components/SiteFooter";
 import { SiteHeader } from "../components/SiteHeader";
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 const cinzel = Cinzel({
   variable: "--font-cinzel",
   subsets: ["latin"],
@@ -116,13 +118,11 @@ export default function RootLayout({
       lang="en"
       className={`${cinzel.variable} ${jakarta.variable} h-full antialiased`}
     >
-      <head>
+      <body className="min-h-full flex flex-col">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrgJsonLd) }}
         />
-      </head>
-      <body className="min-h-full flex flex-col">
         <SiteHeader />
         {children}
         <SiteFooter />

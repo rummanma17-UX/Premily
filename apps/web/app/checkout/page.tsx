@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { BANGLADESH_DISTRICTS } from "@/lib/bangladesh-districts";
 import type { ConfirmedOrder } from "@/types";
@@ -13,9 +13,13 @@ import {
   Truck,
   RotateCcw,
   ShoppingBag,
+  Store,
 } from "lucide-react";
 import { StoreService } from "@/lib/store-data";
+import { CartService, type CartItem } from "@/lib/cart-service";
 import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
+import { MfsPaymentModal } from "@/components/checkout/MfsPaymentModal";
+import { MartBadge } from "@/components/badges/MartBadge";
 
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
@@ -62,32 +66,92 @@ export default function CheckoutPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
-  // Cart demo items
-  const [cartItems] = useState([
-    {
-      id: "cart-item-1",
-      productName: "Aura Curved Lounge Chair",
-      variantLabel: "Cream Boucle / Standard",
-      price: 18500,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=300&q=80",
-      storeName: "Aura Home Studio",
-      isMart: true,
-    },
-  ]);
+  // Dynamic Cart and Multi-Store Grouping (AGENT.md Rule 5)
+  const [storeData, setStoreData] = useState(() => CartService.getStoreGroups("Dhaka"));
+  const [mfsModalOpen, setMfsModalOpen] = useState(false);
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  useEffect(() => {
+    setStoreData(CartService.getStoreGroups(selectedDistrict));
+  }, [selectedDistrict]);
 
-  // Dynamic Shipping Calculation (Dhaka ৳70 vs Outside Dhaka ৳150)
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      setStoreData(CartService.getStoreGroups(selectedDistrict));
+    };
+    window.addEventListener("premily_cart_change", handleCartUpdate);
+    return () => window.removeEventListener("premily_cart_change", handleCartUpdate);
+  }, [selectedDistrict]);
+
+  const { groups, totalSubtotal, totalShipping, grandTotal } = storeData;
   const isDhaka = selectedDistrict.toLowerCase() === "dhaka";
-  const shippingFee = isDhaka ? 70 : 150;
-  const total = subtotal + shippingFee;
+
+  const executeOrderPlacement = (trxId: string | null = null, paymentStatus: "PENDING" | "VERIFIED" = "PENDING") => {
+    setIsPlacing(true);
+    try {
+      let firstOrderNumber = "";
+
+      for (const group of groups) {
+        const savedOrder = StoreService.addOrder({
+          storeId: group.storeId,
+          storeSlug: group.storeSlug,
+          storeName: group.storeName,
+          customerName: fullName.trim(),
+          customerPhone: phoneNumber.trim(),
+          shippingAddress: streetAddress.trim(),
+          shippingDistrict: selectedDistrict,
+          shippingCity: cityThana.trim() || selectedDistrict,
+          items: group.items.map((c) => ({
+            productId: c.productId,
+            name: c.name,
+            variantLabel: c.variantLabel,
+            price: c.price,
+            quantity: c.quantity,
+            imageUrl: c.imageUrl,
+          })),
+          subtotal: group.subtotal,
+          shippingCost: group.shippingCost,
+          total: group.subtotal + group.shippingCost,
+          paymentMethod,
+          paymentStatus,
+          transactionId: trxId,
+          orderStatus: "PENDING",
+        });
+
+        if (!firstOrderNumber) {
+          firstOrderNumber = savedOrder.orderNumber;
+        }
+      }
+
+      // Clear shopping cart after successful checkout
+      CartService.clearCart();
+
+      setOrderConfirmed({
+        orderNumber: firstOrderNumber || generateMockOrderNumber(),
+        total: grandTotal,
+        shippingDistrict: selectedDistrict,
+        paymentMethod,
+        shippingAddress: streetAddress,
+      });
+    } catch {
+      const mockOrderNumber = generateMockOrderNumber();
+      setOrderConfirmed({
+        orderNumber: mockOrderNumber,
+        total: grandTotal,
+        shippingDistrict: selectedDistrict,
+        paymentMethod,
+        shippingAddress: streetAddress,
+      });
+    } finally {
+      setIsPlacing(false);
+      setMfsModalOpen(false);
+    }
+  };
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    // Bangladeshi phone validation
+    // Bangladeshi phone validation (AGENT.md Rule 4)
     const phoneRegex = /^01[3-9]\d{8}$/;
     if (!phoneRegex.test(phoneNumber.trim())) {
       setErrorMessage("Please enter a valid 11-digit Bangladeshi phone number (e.g. 01712345678).");
@@ -99,55 +163,19 @@ export default function CheckoutPage() {
       return;
     }
 
-    setIsPlacing(true);
-
-    try {
-      // Register into unified PREMILY StoreService
-      const savedOrder = StoreService.addOrder({
-        storeId: "store-aura",
-        storeSlug: "aura-home",
-        storeName: cartItems[0]?.storeName || "Aura Home Studio",
-        customerName: fullName.trim(),
-        customerPhone: phoneNumber.trim(),
-        shippingAddress: streetAddress.trim(),
-        shippingDistrict: selectedDistrict,
-        shippingCity: cityThana.trim() || selectedDistrict,
-        items: cartItems.map((c) => ({
-          productId: c.id,
-          name: c.productName,
-          variantLabel: c.variantLabel,
-          price: c.price,
-          quantity: c.quantity,
-          imageUrl: c.image,
-        })),
-        subtotal,
-        shippingCost: shippingFee,
-        total,
-        paymentMethod,
-        paymentStatus: paymentMethod === "CASH_ON_DELIVERY" ? "PENDING" : "PENDING",
-        transactionId: paymentMethod !== "CASH_ON_DELIVERY" ? generateTrxId() : null,
-        orderStatus: "PENDING",
-      });
-
-      setOrderConfirmed({
-        orderNumber: savedOrder.orderNumber,
-        total,
-        shippingDistrict: selectedDistrict,
-        paymentMethod,
-        shippingAddress: streetAddress,
-      });
-    } catch {
-      const mockOrderNumber = generateMockOrderNumber();
-      setOrderConfirmed({
-        orderNumber: mockOrderNumber,
-        total,
-        shippingDistrict: selectedDistrict,
-        paymentMethod,
-        shippingAddress: streetAddress,
-      });
-    } finally {
-      setIsPlacing(false);
+    if (groups.length === 0 || groups.every((g) => g.items.length === 0)) {
+      setErrorMessage("Your cart is empty. Please add items to your cart before checking out.");
+      return;
     }
+
+    // If MFS payment is chosen, trigger the automated direct gateway modal
+    if (paymentMethod === "BKASH" || paymentMethod === "NAGAD") {
+      setMfsModalOpen(true);
+      return;
+    }
+
+    // Otherwise Cash on Delivery
+    executeOrderPlacement(null, "PENDING");
   };
 
   if (orderConfirmed) {
@@ -181,7 +209,7 @@ export default function CheckoutPage() {
           </div>
           <div className="flex justify-between pt-1 text-sm font-bold text-dark">
             <span>Total Payable:</span>
-            <span className="text-deep font-serif text-base">{formatTaka(total)}</span>
+            <span className="text-deep font-serif text-base">{formatTaka(orderConfirmed.total)}</span>
           </div>
         </div>
 
@@ -400,37 +428,81 @@ export default function CheckoutPage() {
             Order Summary
           </h2>
 
-          {/* Itemized List */}
-          <div className="space-y-3 border-b border-border-gold/30 pb-3 text-xs">
-            {cartItems.map((item) => (
-              <div key={item.id} className="flex gap-3 items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={item.image}
-                  alt={item.productName}
-                  className="w-12 h-12 rounded-xl object-cover border border-border-gold shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-dark truncate">{item.productName}</h4>
-                  <p className="text-[11px] text-muted">{item.variantLabel} • Qty {item.quantity}</p>
-                </div>
-                <span className="font-bold text-deep shrink-0">
-                  {formatTaka(item.price * item.quantity)}
-                </span>
+          {/* Itemized List Grouped by Store (AGENT.md Rule 5) */}
+          <div className="space-y-4 border-b border-border-gold/30 pb-3 text-xs">
+            {groups.length === 0 || groups.every((g) => g.items.length === 0) ? (
+              <div className="py-6 text-center space-y-3">
+                <p className="text-muted">Your cart is currently empty.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    CartService.addToCart({
+                      productId: "prod-aura-1",
+                      productSlug: "aura-curved-lounge-chair",
+                      name: "Aura Curved Lounge Chair",
+                      variantId: "var-cream",
+                      variantLabel: "Cream Boucle / Standard",
+                      price: 18500,
+                      compareAtPrice: 24000,
+                      quantity: 1,
+                      imageUrl: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&q=80",
+                      storeId: "store-aura",
+                      storeSlug: "aura-home",
+                      storeName: "Aura Home Studio",
+                      isPremilyMart: true,
+                    });
+                  }}
+                  className="px-4 py-2 rounded-xl gbtn text-xs font-semibold cursor-pointer"
+                >
+                  + Add Sample Boutique Chair
+                </button>
               </div>
-            ))}
+            ) : (
+              groups.map((group) => (
+                <div key={group.storeId} className="rounded-xl border border-border-gold/50 bg-cream/30 p-2.5 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-semibold text-dark pb-1 border-b border-border-gold/30">
+                    <span className="flex items-center gap-1 truncate">
+                      <Store className="w-3 h-3 text-deep" />
+                      {group.storeName}
+                      {group.isPremilyMart && <MartBadge size="sm" />}
+                    </span>
+                    <span className="text-muted font-normal text-[10px]">
+                      Ship: {formatTaka(group.shippingCost)}
+                    </span>
+                  </div>
+
+                  {group.items.map((item) => (
+                    <div key={item.id} className="flex gap-2.5 items-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        className="w-10 h-10 rounded-lg object-cover border border-border-gold shrink-0 bg-white"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-dark truncate text-xs">{item.name}</h4>
+                        <p className="text-[10px] text-muted">{item.variantLabel} • Qty {item.quantity}</p>
+                      </div>
+                      <span className="font-bold text-deep shrink-0 text-xs">
+                        {formatTaka(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
           </div>
 
           {/* Price Breakdown */}
           <div className="space-y-2 text-xs text-muted">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <b className="text-dark">{formatTaka(subtotal)}</b>
+              <b className="text-dark">{formatTaka(totalSubtotal)}</b>
             </div>
 
             <div className="flex justify-between items-center">
-              <span>Delivery Fee ({selectedDistrict})</span>
-              <b className="text-dark">{formatTaka(shippingFee)}</b>
+              <span>Delivery Fee ({selectedDistrict} • {groups.length} {groups.length > 1 ? "Stores" : "Store"})</span>
+              <b className="text-dark">{formatTaka(totalShipping)}</b>
             </div>
 
             <div className="text-[11px] text-muted italic flex items-center gap-1">
@@ -440,16 +512,20 @@ export default function CheckoutPage() {
 
             <div className="flex justify-between text-sm font-bold text-dark border-t border-border-gold/30 pt-3">
               <span>Total Payable</span>
-              <span className="text-deep font-serif text-lg">{formatTaka(total)}</span>
+              <span className="text-deep font-serif text-lg">{formatTaka(grandTotal)}</span>
             </div>
           </div>
 
           <button
             type="submit"
-            disabled={isPlacing}
+            disabled={isPlacing || grandTotal === 0}
             className="gbtn w-full py-3.5 rounded-xl text-xs uppercase tracking-wider font-bold shadow-md cursor-pointer transition-all hover:brightness-105 disabled:opacity-50"
           >
-            {isPlacing ? "Processing Order..." : `Confirm Order • ${formatTaka(total)}`}
+            {isPlacing
+              ? "Processing Order..."
+              : paymentMethod === "CASH_ON_DELIVERY"
+              ? `Confirm Order • ${formatTaka(grandTotal)}`
+              : `Pay via ${paymentMethod === "BKASH" ? "bKash" : "Nagad"} • ${formatTaka(grandTotal)}`}
           </button>
 
           <div className="pt-2 border-t border-border-gold/20 space-y-1.5 text-[10px] text-muted">
@@ -464,6 +540,17 @@ export default function CheckoutPage() {
           </div>
         </aside>
       </form>
+
+      {/* Automated MFS Payment Gateway Modal (bKash & Nagad) */}
+      <MfsPaymentModal
+        isOpen={mfsModalOpen}
+        onClose={() => setMfsModalOpen(false)}
+        gateway={paymentMethod === "NAGAD" ? "NAGAD" : "BKASH"}
+        amount={grandTotal}
+        customerPhone={phoneNumber}
+        storeName={groups[0]?.storeName || "PREMILY Verified Stores"}
+        onSuccess={(trxId) => executeOrderPlacement(trxId, "VERIFIED")}
+      />
 
       {/* Google Login Modal */}
       <GoogleLoginModal

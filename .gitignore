@@ -31,3 +31,8 @@ Thumbs.db
 
 # TypeScript build info
 *.tsbuildinfo
+
+# AI Studio & Testing Artifacts
+.aistudio/
+.playwright-cli/
+*.png

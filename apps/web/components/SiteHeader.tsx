@@ -17,6 +17,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
+import { CartService } from "@/lib/cart-service";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 
 type AuthUser = {
   id: string;
@@ -31,6 +33,8 @@ export function SiteHeader() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,7 +52,10 @@ export function SiteHeader() {
     };
 
     loadUser();
+    setCartCount(CartService.getItemCount());
+    const handleCartUpdate = () => setCartCount(CartService.getItemCount());
     window.addEventListener("premily_auth_change", loadUser);
+    window.addEventListener("premily_cart_change", handleCartUpdate);
     window.addEventListener("storage", loadUser);
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -60,6 +67,7 @@ export function SiteHeader() {
 
     return () => {
       window.removeEventListener("premily_auth_change", loadUser);
+      window.removeEventListener("premily_cart_change", handleCartUpdate);
       window.removeEventListener("storage", loadUser);
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -377,17 +385,20 @@ export function SiteHeader() {
               </div>
             )}
 
-            {/* Cart Icon Link */}
-            <Link
-              href="/checkout"
+            {/* Cart Icon Button */}
+            <button
+              type="button"
+              onClick={() => setCartDrawerOpen(true)}
               aria-label="Shopping cart"
-              className="relative p-2 hover:text-deep transition text-dark"
+              className="relative p-2 hover:text-deep transition text-dark cursor-pointer"
             >
               <ShoppingCart className="size-5 sm:size-6" aria-hidden="true" />
-              <span className="gbtn absolute -right-0.5 -top-0.5 grid size-5 place-items-center rounded-full text-[10px] font-bold">
-                1
-              </span>
-            </Link>
+              {cartCount > 0 && (
+                <span className="gbtn absolute -right-0.5 -top-0.5 grid size-5 place-items-center rounded-full text-[10px] font-bold">
+                  {cartCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -397,6 +408,12 @@ export function SiteHeader() {
           <span>Deliver to:</span> <b className="text-dark">Dhaka (1–2 days) · ৳70</b>
         </div>
       </header>
+
+      {/* Cart Drawer Slide-Over */}
+      <CartDrawer
+        isOpen={cartDrawerOpen}
+        onClose={() => setCartDrawerOpen(false)}
+      />
 
       {/* Google Login Modal triggered from header */}
       <GoogleLoginModal

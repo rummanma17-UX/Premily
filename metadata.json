@@ -1,5 +1,6 @@
 {
   "name": "PREMILY",
   "description": "Seller-focused e-commerce SaaS platform for Bangladesh.",
-  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

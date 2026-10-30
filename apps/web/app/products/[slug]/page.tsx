@@ -3,6 +3,7 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import type { Product } from "@/types";
 import { ImageGallery } from "@/components/product/ImageGallery";
+import { ProductBuyBox } from "@/components/product/ProductBuyBox";
 import { DeliveryEstimator } from "@/components/product/DeliveryEstimator";
 import { ReviewsSection } from "@/components/product/ReviewsSection";
 import { MartBadge } from "@/components/badges/MartBadge";
@@ -111,120 +112,8 @@ export default async function ProductDetailPage({
           <ImageGallery images={product.images} productName={product.name} />
         </div>
 
-        {/* Center Column: Product Buy Box & Details */}
-        <div className="premily-card p-5 sm:p-6 rounded-2xl border border-border-gold bg-white shadow-xs space-y-4">
-          {/* Trust Badges */}
-          <div className="flex items-center gap-2">
-            {product.store.isPremilyMart && <MartBadge size="sm" />}
-            {product.store.verificationStatus === "VERIFIED" && !product.store.isPremilyMart && (
-              <VerifiedBadge size="sm" />
-            )}
-            <span className="text-xs text-muted">Official Storefront</span>
-          </div>
-
-          <h1 className="font-serif text-xl sm:text-2xl font-bold text-dark leading-snug">
-            {product.name}
-          </h1>
-
-          {/* Ratings & Sales Summary */}
-          <div className="flex flex-wrap items-center gap-x-3 text-xs text-muted">
-            <RatingStars
-              rating={Number(product.avgRating ?? 0)}
-              showNumber
-              reviewCount={product.reviewCount}
-            />
-            {product.salesCount && product.salesCount > 0 ? (
-              <>
-                <span>•</span>
-                <span className="text-dark font-medium">{product.salesCount} sold</span>
-              </>
-            ) : null}
-            <span>•</span>
-            <span>Sold by:</span>
-            <Link
-              href={`/${product.store.slug}`}
-              className="text-deep font-semibold hover:underline"
-            >
-              {product.store.displayName}
-            </Link>
-          </div>
-
-          {/* Luxury Price Box */}
-          <div className="p-4 rounded-xl bg-cream border border-border-gold/60 flex items-center justify-between">
-            <div className="flex items-baseline gap-2.5">
-              <span className="font-serif text-2xl sm:text-3xl font-bold text-deep">
-                {formatTaka(lowestPrice)}
-              </span>
-              {compareAt && compareAt > lowestPrice && (
-                <s className="text-sm text-muted line-through">
-                  {formatTaka(compareAt)}
-                </s>
-              )}
-            </div>
-            {discount > 0 && <DiscountBadge discount={discount} />}
-          </div>
-
-          {/* Variants Selector */}
-          <div className="space-y-3 pt-1">
-            <label className="block text-xs font-semibold text-dark">
-              Available Options & Materials:
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {product.variants.map((v) => (
-                <div
-                  key={v.id}
-                  className={`px-3 py-2 rounded-xl text-xs border transition-all cursor-pointer ${
-                    v.stock > 0
-                      ? "border-border-gold hover:border-deep bg-surface-subtle text-dark"
-                      : "border-gray-200 bg-gray-50 text-gray-400 line-through"
-                  }`}
-                >
-                  <span className="font-medium">
-                    {[v.color, v.size].filter(Boolean).join(" - ") || "Standard"}
-                  </span>
-                  <span className="block text-[10px] text-muted font-normal mt-0.5">
-                    {formatTaka(parseFloat(v.price))} • {v.stock > 0 ? `${v.stock} in stock` : "Sold out"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Stock Indicator */}
-          <div className="text-xs text-muted pt-1">
-            Status:{" "}
-            {inStockCount > 0 ? (
-              <span className="font-semibold text-emerald-700">
-                In Stock ({inStockCount} units available)
-              </span>
-            ) : (
-              <span className="font-semibold text-rose-600">Currently Out of Stock</span>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3 pt-3">
-            <button
-              type="button"
-              className="p-3 rounded-full border border-border-gold hover:border-deep text-dark hover:text-deep transition-colors cursor-pointer"
-              title="Add to Wishlist"
-            >
-              <Heart className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
-              className="flex-1 py-3 px-4 rounded-full bg-dark text-cream hover:bg-black font-semibold text-xs sm:text-sm transition-colors cursor-pointer"
-            >
-              Add to Cart
-            </button>
-            <Link
-              href="/checkout"
-              className="gbtn flex-1 py-3 px-4 rounded-full text-center font-semibold text-xs sm:text-sm shadow-xs cursor-pointer"
-            >
-              Buy Now
-            </Link>
-          </div>
-        </div>
+        {/* Center Column: Interactive Product Buy Box & Details */}
+        <ProductBuyBox product={product} />
 
         {/* Right Column: Delivery Information & Seller Card */}
         <aside className="space-y-4">
