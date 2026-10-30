@@ -108,14 +108,8 @@ async function main() {
   for (const d of BANGLADESH_64_DISTRICTS) {
     await prisma.districtShipping.upsert({
       where: { districtName: d.name },
-      update: {
-        division: d.division,
-        zone: d.zone,
-        baseCost: d.cost,
-        estimatedDaysMin: d.minDays,
-        estimatedDaysMax: d.maxDays,
-        isActive: true,
-      },
+      // Preserve any district rate or activation settings already configured by an administrator.
+      update: {},
       create: {
         districtName: d.name,
         division: d.division,

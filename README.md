@@ -125,27 +125,17 @@ pnpm --filter web dev
 
 The frontend uses port `3000` by default.
 
-### 7. Apply category icon migration and seed demo data
+### 7. Seed development fixtures safely
 
-The category icon migration is applied by the normal Prisma migration command in step 4. Existing category rows receive a default icon based on their slug.
+The seed script is **non-destructive and additive**. It does not delete existing database records. Existing users, products, categories, orders, payments, stores, and district shipping settings are preserved; demo records are inserted only when their unique identifiers do not already exist.
 
-The demo seed script **deletes existing marketplace records before recreating its fixtures**. It refuses to run unless `ALLOW_DEMO_SEED_RESET=true` is explicitly set in the API environment. Only enable this on a disposable/empty development database when you intend to reset its contents:
+Run:
 
 ```bash
-PowerShell:
-
-```powershell
-$env:ALLOW_DEMO_SEED_RESET = "true"
 pnpm --filter api seed
 ```
 
-Bash:
-
-```bash
-ALLOW_DEMO_SEED_RESET=true pnpm --filter api seed
-```
-
-Do not run the demo seed against a database containing data you need to preserve.
+The script is intended for development fixtures. Do not use its demo accounts or sample orders as real production data.
 
 ## Backend Architecture
 
