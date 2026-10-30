@@ -6,8 +6,8 @@
     "**/build": true,
     "**/.cache": true,
 
-    //! sometime need
-    "**/prisma/migrations": true,
+    //! sometime needed
+    // "**/prisma/migrations": true,
 
     //! agents
     "**/.agents": true,
@@ -29,5 +29,8 @@
       "color": "foldercolorizer.color_ff00ff"
     }
   ],
-  "CodeGPT.apiKey": "CodeGPT Plus Beta"
+  "CodeGPT.apiKey": "CodeGPT Plus Beta",
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore"
 }
