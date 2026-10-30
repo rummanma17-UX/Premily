@@ -102,6 +102,12 @@ const BANGLADESH_64_DISTRICTS = [
 ];
 
 async function main() {
+  if (process.env.ALLOW_DEMO_SEED_RESET !== "true") {
+    throw new Error(
+      "This demo seed deletes existing marketplace data. Set ALLOW_DEMO_SEED_RESET=true only when you intentionally want to reset the database.",
+    );
+  }
+
   console.log("🌱 Starting complete PREMILY database seeding...");
 
   // 1. CLEAN EXISTING DATA IN ORDER (Child -> Parent to respect Foreign Key Constraints)
@@ -670,6 +676,7 @@ async function main() {
       id: "furniture",
       name: "Furniture",
       slug: "furniture",
+      icon: "Sofa",
       imageUrl:
         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80",
     },
@@ -680,6 +687,7 @@ async function main() {
       id: "lighting",
       name: "Lighting",
       slug: "lighting",
+      icon: "Lamp",
       imageUrl:
         "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
     },
@@ -690,6 +698,7 @@ async function main() {
       id: "living",
       name: "Living Room",
       slug: "living",
+      icon: "Armchair",
       imageUrl:
         "https://images.unsplash.com/photo-1533090161767-e6ffed986b88?auto=format&fit=crop&w=600&q=80",
     },
@@ -700,6 +709,7 @@ async function main() {
       id: "decor",
       name: "Decor & Pottery",
       slug: "decor",
+      icon: "Flower2",
       imageUrl:
         "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80",
     },
@@ -710,6 +720,7 @@ async function main() {
       id: "kitchen",
       name: "Kitchen & Dining",
       slug: "kitchen",
+      icon: "Utensils",
       imageUrl:
         "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
     },
@@ -720,6 +731,7 @@ async function main() {
       id: "textiles",
       name: "Textiles & Rugs",
       slug: "textiles",
+      icon: "LayoutGrid",
       imageUrl:
         "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80",
     },

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, Store, Truck } from "lucide-react";
 import { CategorySidebar } from "./CategorySections";
+import type { Category } from "@/types";
 
 const features = [
   {
@@ -20,10 +21,10 @@ const features = [
   },
 ];
 
-export function HeroSection() {
+export function HeroSection({ categories }: { categories: Category[] }) {
   return (
     <section className="grid gap-4 lg:grid-cols-[230px_minmax(0,1fr)_250px]">
-      <CategorySidebar />
+      <CategorySidebar categories={categories} />
 
       <div className="relative h-56 overflow-hidden rounded-2xl bg-dark sm:h-80 lg:h-105">
         {/* eslint-disable-next-line @next/next/no-img-element -- remote demo image; replace with approved PREMILY artwork later */}

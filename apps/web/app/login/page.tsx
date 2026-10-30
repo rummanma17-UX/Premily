@@ -18,7 +18,7 @@ import {
   Languages,
   Check,
 } from "lucide-react";
-import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
+import { apiFetch } from "@/lib/api";
 
 type PasswordCriteria = {
   minLength: boolean;
@@ -91,7 +91,6 @@ function LoginContent() {
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSubmitted, setForgotSubmitted] = useState(false);
-  const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   // Validation helper for Bangladeshi phone or standard email
   const validateIdentifier = (input: string) => {
@@ -132,42 +131,12 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      // In Next.js standalone, try calling the backend API if configured, otherwise persist client session
-      const authPayload = {
-        identifier: loginIdentifier.trim(),
-        password: loginPassword,
-      };
-
-      const res = await fetch("/api/auth/login", {
+      const data = await apiFetch<{ user: { id: string; name: string; phone: string; email: string | null; role: "CUSTOMER" | "SELLER" | "ADMIN" } }>("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(authPayload),
-      }).catch(() => null);
-
-      if (res && res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem("premily_user", JSON.stringify(data.user));
-          window.dispatchEvent(new Event("premily_auth_change"));
-        }
-      } else {
-        // Standalone simulated login session
-        const isSeller = loginIdentifier.toLowerCase().includes("seller") || loginIdentifier.includes("aura");
-        const mockUser = {
-          id: `usr_${Date.now().toString(36)}`,
-          name: loginIdentifier.includes("@")
-            ? loginIdentifier.split("@")[0]
-            : "Valued Member",
-          phone: !loginIdentifier.includes("@") ? loginIdentifier : "01711111111",
-          email: loginIdentifier.includes("@") ? loginIdentifier : null,
-          role: isSeller ? "SELLER" : "CUSTOMER",
-        };
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("premily_user", JSON.stringify(mockUser));
-          window.dispatchEvent(new Event("premily_auth_change"));
-        }
-      }
+        body: JSON.stringify({ identifier: loginIdentifier.trim(), password: loginPassword }),
+      });
+      localStorage.setItem("premily_user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("premily_auth_change"));
 
       setSuccessMessage("Welcome back! Redirecting to PREMILY…");
       setTimeout(() => {
@@ -195,6 +164,10 @@ function LoginContent() {
       setErrorMessage(validationError);
       return;
     }
+    if (signupIdentifier.includes("@")) {
+      setErrorMessage("A Bangladeshi mobile number is required to create an account. Email-only registration is not supported yet.");
+      return;
+    }
 
     if (!signupPassword || signupPassword.length < 6) {
       setErrorMessage("Password must be at least 6 characters.");
@@ -209,32 +182,17 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      const authPayload = {
-        name: signupName.trim(),
-        phone: !signupIdentifier.includes("@") ? signupIdentifier.trim() : undefined,
-        email: signupIdentifier.includes("@") ? signupIdentifier.trim() : undefined,
-        password: signupPassword,
-        role: signupRole,
-      };
-
-      await fetch("/api/auth/register", {
+      const data = await apiFetch<{ user: { id: string; name: string; phone: string; email: string | null; role: "CUSTOMER" | "SELLER" | "ADMIN" } }>("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(authPayload),
-      }).catch(() => null);
-
-      const userRecord = {
-        id: `usr_${Date.now().toString(36)}`,
-        name: signupName.trim(),
-        phone: authPayload.phone || "01712345678",
-        email: authPayload.email || null,
-        role: signupRole,
-      };
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem("premily_user", JSON.stringify(userRecord));
-        window.dispatchEvent(new Event("premily_auth_change"));
-      }
+        body: JSON.stringify({
+          name: signupName.trim(),
+          phone: signupIdentifier.trim(),
+          password: signupPassword,
+          role: signupRole,
+        }),
+      });
+      localStorage.setItem("premily_user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("premily_auth_change"));
 
       setSuccessMessage(
         signupRole === "SELLER"
@@ -256,37 +214,11 @@ function LoginContent() {
     }
   };
 
-  const handleSocialLogin = (provider: "Google" | "Facebook") => {
-    setLoading(true);
-    setSuccessMessage(`Authenticating with ${provider}…`);
-
-    setTimeout(() => {
-      const mockSocialUser = {
-        id: `usr_soc_${Date.now().toString(36)}`,
-        name: `${provider} User`,
-        email: `user@${provider.toLowerCase()}.com`,
-        role: "CUSTOMER",
-      };
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem("premily_user", JSON.stringify(mockSocialUser));
-        window.dispatchEvent(new Event("premily_auth_change"));
-      }
-
-      router.push(redirectUrl);
-    }, 1000);
-  };
-
   const handleForgotSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!forgotEmail.trim()) return;
-    setForgotSubmitted(true);
-    setTimeout(() => {
-      setForgotModalOpen(false);
-      setForgotSubmitted(false);
-      setForgotEmail("");
-      setSuccessMessage("Password reset instructions sent.");
-    }, 2000);
+    setForgotModalOpen(false);
+    setForgotEmail("");
+    setErrorMessage("Password recovery is not configured yet. Please contact PREMILY support.");
   };
 
   return (
@@ -511,7 +443,7 @@ function LoginContent() {
 
               <div className="space-y-1.5">
                 <label className="font-semibold text-dark block">
-                  Mobile Number or Email *
+                  Bangladeshi Mobile Number *
                 </label>
                 <div className="flex items-center border border-border-gold rounded-xl px-3 py-2.5 bg-cream/30 focus-within:bg-white focus-within:border-deep transition">
                   <Phone className="w-4 h-4 text-deep mr-2.5 shrink-0" />
@@ -520,12 +452,12 @@ function LoginContent() {
                     type="text"
                     value={signupIdentifier}
                     onChange={(e) => setSignupIdentifier(e.target.value)}
-                    placeholder="017xxxxxxxx or your@email.com"
+                    placeholder="01712345678"
                     className="w-full text-xs sm:text-sm outline-none bg-transparent text-dark placeholder:text-muted/60"
                   />
                 </div>
                 <span className="text-[10px] text-muted">
-                  Used for order notifications, OTP verification, and account recovery.
+                  Required for delivery coordination and order updates. You can add an email address to your account later.
                 </span>
               </div>
 
@@ -676,55 +608,6 @@ function LoginContent() {
             </form>
           )}
 
-          {/* Social Divider */}
-          <div className="relative flex py-1 items-center">
-            <div className="grow border-t border-border-gold/60"></div>
-            <span className="shrink mx-3 text-[11px] text-muted uppercase tracking-wider">
-              Or continue with
-            </span>
-            <div className="grow border-t border-border-gold/60"></div>
-          </div>
-
-          {/* Social Auth Providers */}
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <button
-              type="button"
-              onClick={() => setGoogleModalOpen(true)}
-              className="flex items-center justify-center gap-2 border border-border-gold rounded-xl py-2.5 font-semibold text-dark hover:border-deep hover:bg-cream/40 transition cursor-pointer shadow-xs"
-            >
-              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.22 24 12 24z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
-                />
-              </svg>
-              <span>Google Sign-In</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSocialLogin("Facebook")}
-              className="flex items-center justify-center gap-2 border border-border-gold rounded-xl py-2.5 font-semibold text-dark hover:border-deep hover:bg-cream/40 transition cursor-pointer"
-            >
-              <svg className="w-4 h-4 shrink-0 fill-[#1877F2]" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-              <span>Facebook</span>
-            </button>
-          </div>
-
           {/* Terms & Privacy Footnote */}
           <p className="text-[11px] text-center text-muted leading-relaxed">
             By proceeding, you agree to PREMILY&apos;s{" "}
@@ -742,7 +625,7 @@ function LoginContent() {
               Reset Your Password
             </h3>
             <p className="text-xs text-muted">
-              Enter your registered Bangladeshi mobile number or email address to receive password reset instructions.
+              Password recovery is not enabled yet. Contact PREMILY support for help accessing your account.
             </p>
 
             {forgotSubmitted ? (
@@ -780,14 +663,6 @@ function LoginContent() {
           </div>
         </div>
       )}
-
-      {/* Google Sign In Modal */}
-      <GoogleLoginModal
-        isOpen={googleModalOpen}
-        onClose={() => setGoogleModalOpen(false)}
-        defaultRole={activeTab === "signup" && signupRole === "SELLER" ? "SELLER" : "CUSTOMER"}
-        redirectUrl={redirectUrl}
-      />
 
       {/* Footer */}
       <footer className="bg-dark text-cream/70 text-center text-xs py-4 border-t border-gold/20">
