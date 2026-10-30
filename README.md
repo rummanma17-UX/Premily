@@ -132,6 +132,16 @@ The category icon migration is applied by the normal Prisma migration command in
 The demo seed script **deletes existing marketplace records before recreating its fixtures**. It refuses to run unless `ALLOW_DEMO_SEED_RESET=true` is explicitly set in the API environment. Only enable this on a disposable/empty development database when you intend to reset its contents:
 
 ```bash
+PowerShell:
+
+```powershell
+$env:ALLOW_DEMO_SEED_RESET = "true"
+pnpm --filter api seed
+```
+
+Bash:
+
+```bash
 ALLOW_DEMO_SEED_RESET=true pnpm --filter api seed
 ```
 
