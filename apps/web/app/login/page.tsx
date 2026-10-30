@@ -382,6 +382,23 @@ function LoginContent() {
                 {loading ? "Authenticating…" : "Sign In to PREMILY"}
               </button>
             </form>
+            <div className="relative py-1" aria-hidden="true">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border-gold/70" /></div>
+              <span className="relative mx-auto block w-fit bg-white px-3 text-[10px] uppercase tracking-widest text-muted">Or continue with</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setErrorMessage("Google sign-in is not configured on this environment yet. Please sign in with your phone number or email for now.")}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-border-gold bg-white py-3 text-xs font-semibold text-dark transition hover:border-deep hover:bg-cream/40"
+            >
+              <svg aria-hidden="true" viewBox="0 0 48 48" className="size-4">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.04 13.22l7.98 6.19C12.7 13.72 17.89 9.5 24 9.5Z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.25 5.62c4.24-3.91 7.51-9.69 7.51-17.27Z" />
+                <path fill="#FBBC05" d="M10.02 28.59A14.4 14.4 0 0 1 9.25 24c0-1.59.27-3.13.77-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 2.58 10.78l7.44-6.19Z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.25-5.62c-2.01 1.35-4.59 2.15-8.66 2.15-6.11 0-11.3-4.22-12.98-9.91l-7.98 6.19C6.51 43.62 14.62 48 24 48Z" />
+              </svg>
+              Continue with Google
+            </button>
           )}
 
           {/* TAB 2: SIGN UP FORM */}
