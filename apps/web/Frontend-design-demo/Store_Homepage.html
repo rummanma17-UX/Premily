@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Studio - Official Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { gold: "#D4B375", deep: "#B8924B", dark: "#1E1916", muted: "#68605B", cream: "#FAF3E8" },
+          fontFamily: { serif: ["Cinzel"], sans: ["Plus Jakarta Sans"] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: #F8F6F2; color: #1E1916; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card { background: #FFFFFF; border: 1px solid #EADFCD; border-radius: 14px; transition: all 0.2s ease; }
+    .card:hover { box-shadow: 0 10px 24px -10px rgba(184, 146, 75, 0.35); transform: translateY(-2px); }
+    .chip-active { background: #1E1916; color: #FAF3E8; border-color: #1E1916; }
+    .product-img { aspect-ratio: 4/3; object-fit: cover; width: 100%; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+</head>
+<body class="pb-16">
+
+  <!-- Top Announcement Bar for Customers -->
+  <div class="bg-dark text-cream text-xs py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-gold/20">
+    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-gold"></i>
+    <span>Free Express Delivery on orders over <b>৳10,000</b> | Use code <span class="text-gold font-mono font-bold">AURA10</span> for 10% OFF</span>
+  </div>
+
+  <!-- Store Header Banner & Identity -->
+  <header class="max-w-6xl mx-auto px-4 pt-4">
+    <div class="card overflow-hidden">
+      <!-- Store Cover Image -->
+      <div class="h-44 sm:h-60 w-full bg-dark relative">
+        <img src="https://picsum.photos/id/1068/1200/400" alt="Store Banner" class="w-full h-full object-cover opacity-85">
+        <div class="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent"></div>
+        <span class="absolute top-3 right-3 bg-dark/80 text-cream backdrop-blur-md text-[11px] px-3 py-1 rounded-full border border-gold/30 flex items-center gap-1.5 font-medium">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-gold"></i> Official Verified Premily Merchant
+        </span>
+      </div>
+
+      <!-- Store Info Container (Clean white area below banner) -->
+      <div class="p-5 sm:p-6 bg-white relative">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <!-- Logo & Store Details Stack -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+            
+            <!-- Store Avatar (ONLY this element overlaps the cover photo) -->
+            <div class="-mt-14 sm:-mt-16 w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white p-1.5 shadow-lg border border-gold/50 shrink-0 z-10 relative">
+              <img src="https://picsum.photos/id/1025/200/200" alt="Store Logo" class="w-full h-full object-cover rounded-xl">
+              <span class="absolute bottom-1 right-1 bg-emerald-500 text-white p-1 rounded-full ring-2 ring-white" title="Verified Store">
+                <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
+              </span>
+            </div>
+            
+            <!-- Store Text Details (NO overlap with cover photo) -->
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <h1 class="font-serif font-bold text-xl sm:text-2xl text-dark tracking-wide">AURA STUDIO</h1>
+                <span class="bg-amber-100 text-amber-900 text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-300">
+                  <i data-lucide="check-circle-2" class="w-3 h-3 text-amber-700"></i> Verified Merchant
+                </span>
+              </div>
+              <p class="text-xs sm:text-sm text-muted">Curated artisanal furniture, organic ceramics & minimalist architectural lighting designed for refined interiors.</p>
+              
+              <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted pt-1">
+                <span class="bg-amber-50 text-amber-900 px-2.5 py-1 rounded-md border border-amber-200/80 font-medium flex items-center gap-1">
+                  <i data-lucide="star" class="w-3.5 h-3.5 fill-gold text-gold"></i> <b>4.95</b> (1,420 reviews)
+                </span>
+                <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5 text-deep"></i> <b>12.81k</b> Followers</span>
+                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-deep"></i> Responds in <b>&lt; 15 mins</b></span>
+                <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3.5 h-3.5 text-deep"></i> Delivery: <b>1–2 days</b></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Search & Store Actions -->
+          <div class="flex items-center gap-2 w-full md:w-auto shrink-0 pt-2 md:pt-0">
+            <div class="relative flex-1 md:w-60">
+              <input type="text" placeholder="Search in Aura Studio..." class="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-stone-200 bg-stone-50 focus:bg-white focus:outline-none focus:border-gold transition-colors">
+              <i data-lucide="search" class="w-4 h-4 text-muted absolute left-3 top-2.5"></i>
+            </div>
+            <button class="bg-dark text-cream hover:bg-black text-xs font-semibold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-1.5 shrink-0 shadow-xs">
+              <i data-lucide="user-plus" class="w-3.5 h-3.5 text-gold"></i> Follow
+            </button>
+            <button class="bg-stone-100 text-dark hover:bg-stone-200 p-2.5 rounded-xl transition-colors border border-stone-200 shrink-0" title="Share Store">
+              <i data-lucide="share-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Store Highlights / Story Bubbles for Customers -->
+  <div class="max-w-6xl mx-auto px-4 mt-6">
+    <div class="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
+      <div class="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer">
+        <div class="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-gold to-dark">
+          <img src="https://picsum.photos/id/1068/150/150" class="w-full h-full object-cover rounded-full border-2 border-white" alt="New Arrival">
+        </div>
+        <span class="text-[11px] font-medium text-dark">New 2026</span>
+      </div>
+      <div class="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer">
+        <div class="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-gold to-amber-500">
+          <img src="https://picsum.photos/id/1060/150/150" class="w-full h-full object-cover rounded-full border-2 border-white" alt="Best Sellers">
+        </div>
+        <span class="text-[11px] font-medium text-dark">Best Sellers</span>
+      </div>
+      <div class="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer">
+        <div class="w-14 h-14 rounded-full p-0.5 bg-stone-300">
+          <img src="https://picsum.photos/id/1070/150/150" class="w-full h-full object-cover rounded-full border-2 border-white" alt="Lighting">
+        </div>
+        <span class="text-[11px] font-medium text-dark">Lighting</span>
+      </div>
+      <div class="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer">
+        <div class="w-14 h-14 rounded-full p-0.5 bg-stone-300">
+          <img src="https://picsum.photos/id/1080/150/150" class="w-full h-full object-cover rounded-full border-2 border-white" alt="Artisanal Decor">
+        </div>
+        <span class="text-[11px] font-medium text-dark">Handmade</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Store Coupons Section -->
+  <section class="max-w-6xl mx-auto px-4 mt-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="card p-3 bg-gradient-to-r from-amber-50 to-cream border-gold/40 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 grid place-items-center font-serif font-bold text-sm">10%</div>
+          <div>
+            <h3 class="text-xs font-bold text-dark">10% OFF Storewide</h3>
+            <p class="text-[10px] text-muted">Min spend ৳3,000 • Code: <b class="text-dark font-mono">AURA10</b></p>
+          </div>
+        </div>
+        <button class="text-xs font-semibold px-3 py-1.5 bg-dark text-gold rounded-lg hover:bg-black transition-colors">Collect</button>
+      </div>
+      <div class="card p-3 bg-gradient-to-r from-amber-50 to-cream border-gold/40 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 grid place-items-center font-serif font-bold text-sm">৳500</div>
+          <div>
+            <h3 class="text-xs font-bold text-dark">Flat ৳500 Discount</h3>
+            <p class="text-[10px] text-muted">For first-time customers</p>
+          </div>
+        </div>
+        <button class="text-xs font-semibold px-3 py-1.5 bg-dark text-gold rounded-lg hover:bg-black transition-colors">Collect</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Store Content Container -->
+  <main class="max-w-6xl mx-auto px-4 mt-8 space-y-8">
+
+    <!-- 📌 PINNED / HIGHLIGHTED PRODUCTS SECTION -->
+    <section>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-7 h-7 rounded-lg bg-amber-100 border border-amber-300 grid place-items-center text-amber-700">
+          <i data-lucide="star" class="w-4 h-4 fill-amber-500 text-amber-600"></i>
+        </span>
+        <div>
+          <h2 class="font-bold text-sm text-dark uppercase tracking-wider">Store Highlights</h2>
+          <p class="text-[11px] text-muted">Featured creations recommended by Aura Studio</p>
+        </div>
+      </div>
+
+      <!-- Uniform Grid (Matches regular products) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        
+        <!-- Pinned Card 1 -->
+        <div class="card overflow-hidden relative group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1060/400/300" class="product-img" alt="Aura Lounge Chair">
+              <!-- Glassmorphism Pinned Badge -->
+              <span class="absolute top-2.5 left-2.5 bg-dark/85 backdrop-blur-md text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-amber-400/40 flex items-center gap-1 shadow-md">
+                <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i> Pinned
+              </span>
+              <span class="absolute bottom-2 left-2 bg-dark/80 text-gold text-[10px] px-2 py-0.5 rounded font-mono">-23%</span>
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-semibold line-clamp-2 text-dark group-hover:text-deep transition-colors">Aura Curved Lounge Chair</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳18,500</span>
+                <span class="text-[10px] text-muted line-through">৳24,000</span>
+              </div>
+            </div>
+          </div>
+          <!-- Consistent Add to Cart Button -->
+          <div class="p-3 pt-0">
+            <button class="w-full bg-cream hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all border border-gold/30 flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Pinned Card 2 -->
+        <div class="card overflow-hidden relative group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1080/400/300" class="product-img" alt="Sculptural Vessel">
+              <span class="absolute top-2.5 left-2.5 bg-dark/85 backdrop-blur-md text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-amber-400/40 flex items-center gap-1 shadow-md">
+                <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i> Pinned
+              </span>
+              <span class="absolute bottom-2 left-2 bg-dark/80 text-gold text-[10px] px-2 py-0.5 rounded font-mono">-24%</span>
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-semibold line-clamp-2 text-dark group-hover:text-deep transition-colors">Sculptural Gold Ceramic Vessel</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳2,900</span>
+                <span class="text-[10px] text-muted line-through">৳3,800</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-cream hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all border border-gold/30 flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Pinned Card 3 -->
+        <div class="card overflow-hidden relative group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1062/400/300" class="product-img" alt="Travertine Table">
+              <span class="absolute top-2.5 left-2.5 bg-dark/85 backdrop-blur-md text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-amber-400/40 flex items-center gap-1 shadow-md">
+                <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i> Pinned
+              </span>
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-semibold line-clamp-2 text-dark group-hover:text-deep transition-colors">Travertine Minimal Side Table</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳24,000</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-cream hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all border border-gold/30 flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Pinned Card 4 -->
+        <div class="card overflow-hidden relative group hidden lg:flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1069/400/300" class="product-img" alt="Walnut Sideboard">
+              <span class="absolute top-2.5 left-2.5 bg-dark/85 backdrop-blur-md text-amber-300 text-[10px] font-semibold px-2 py-0.5 rounded-md border border-amber-400/40 flex items-center gap-1 shadow-md">
+                <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i> Pinned
+              </span>
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-semibold line-clamp-2 text-dark group-hover:text-deep transition-colors">Walnut Minimalist Sideboard</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳32,000</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-cream hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all border border-gold/30 flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <hr class="border-stone-200">
+
+    <!-- 🛍️ ALL STORE PRODUCTS CATALOG -->
+    <section>
+      <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <div>
+          <h2 class="font-bold text-base text-dark">All Collections</h2>
+          <p class="text-xs text-muted">Browse all items offered by Aura Studio</p>
+        </div>
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          <button class="chip-active text-xs px-3.5 py-1.5 rounded-full border border-stone-300 font-medium whitespace-nowrap">All (18)</button>
+          <button class="bg-white text-xs px-3.5 py-1.5 rounded-full border border-stone-200 text-muted font-medium hover:border-gold whitespace-nowrap">Furniture</button>
+          <button class="bg-white text-xs px-3.5 py-1.5 rounded-full border border-stone-200 text-muted font-medium hover:border-gold whitespace-nowrap">Lighting</button>
+          <button class="bg-white text-xs px-3.5 py-1.5 rounded-full border border-stone-200 text-muted font-medium hover:border-gold whitespace-nowrap">Decor</button>
+        </div>
+      </div>
+
+      <!-- Standard Product Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        
+        <!-- Standard Product Card 1 -->
+        <div class="card overflow-hidden group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1070/400/300" class="product-img" alt="Brass Sconce">
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-medium line-clamp-2 text-dark group-hover:text-deep transition-colors">Brass Wall Sconce Lamp</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳4,200</span>
+                <span class="text-[10px] text-muted line-through">৳5,500</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-stone-100 hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Standard Product Card 2 -->
+        <div class="card overflow-hidden group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1072/400/300" class="product-img" alt="Brass Pendant">
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-medium line-clamp-2 text-dark group-hover:text-deep transition-colors">Fluted Brass Pendant Light</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳6,800</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-stone-100 hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Standard Product Card 3 -->
+        <div class="card overflow-hidden group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1025/400/300" class="product-img" alt="Bedding">
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-medium line-clamp-2 text-dark group-hover:text-deep transition-colors">Pure Organic Linen Bedding Set</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳5,600</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-stone-100 hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Standard Product Card 4 -->
+        <div class="card overflow-hidden group flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img src="https://picsum.photos/id/1040/400/300" class="product-img" alt="Jute Rug">
+            </div>
+            <div class="p-3 space-y-1">
+              <h3 class="text-xs font-medium line-clamp-2 text-dark group-hover:text-deep transition-colors">Handwoven Natural Jute Rug</h3>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xs font-bold text-deep">৳7,800</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-3 pt-0">
+            <button class="w-full bg-stone-100 hover:bg-dark hover:text-gold text-dark text-xs font-semibold py-2 rounded-xl transition-all flex items-center justify-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Customer Reviews / Trust Section -->
+    <section class="card p-5 bg-gradient-to-br from-white to-cream/50">
+      <h2 class="font-bold text-sm text-dark mb-3 flex items-center gap-2">
+        <i data-lucide="message-square" class="w-4 h-4 text-deep"></i> Recent Customer Reviews
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="p-3 rounded-xl bg-white border border-stone-200/80 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-dark">Tanvir A.</span>
+            <span class="flex text-amber-500 text-xs">★★★★★</span>
+          </div>
+          <p class="text-xs text-muted">"The curved lounge chair exceeded expectations. Solid wood finish and arrived in Sylhet within 2 days!"</p>
+        </div>
+        <div class="p-3 rounded-xl bg-white border border-stone-200/80 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-dark">Nabila S.</span>
+            <span class="flex text-amber-500 text-xs">★★★★★</span>
+          </div>
+          <p class="text-xs text-muted">"Excellent packaging and premium quality brass sconce light. Will definitely order again."</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
