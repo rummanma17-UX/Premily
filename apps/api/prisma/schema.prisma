@@ -253,6 +253,7 @@ model Category {
   id        String     @id @default(cuid())
   name      String
   slug      String     @unique
+  icon      String
   imageUrl  String?
   parentId  String?
   parent    Category?  @relation("SubCategories", fields: [parentId], references: [id], onDelete: SetNull)

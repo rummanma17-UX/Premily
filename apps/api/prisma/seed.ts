@@ -11,11 +11,7 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 async function safeHash(password: string): Promise<string> {
-  try {
-    return await argon2.hash(password, { type: argon2.argon2id });
-  } catch {
-    return "$argon2id$v=19$m=65536,p=4,t=3$mockSaltValue$mockArgon2HashedPasswordKey12345";
-  }
+  return argon2.hash(password, { type: argon2.argon2id });
 }
 
 // 64 Bangladesh Districts Categorized into 8 Divisions
@@ -104,42 +100,16 @@ const BANGLADESH_64_DISTRICTS = [
 async function main() {
   console.log("🌱 Starting complete PREMILY database seeding...");
 
-  // 1. CLEAN EXISTING DATA IN ORDER (Child -> Parent to respect Foreign Key Constraints)
-  console.log("🧹 Clearing existing demo data for clean deterministic state...");
-  await prisma.payment.deleteMany().catch(() => {});
-  await prisma.orderItem.deleteMany().catch(() => {});
-  await prisma.order.deleteMany().catch(() => {});
-  await prisma.orderGroup.deleteMany().catch(() => {});
-  await prisma.cartItem.deleteMany().catch(() => {});
-  await prisma.cart.deleteMany().catch(() => {});
-  await prisma.review.deleteMany().catch(() => {});
-  await prisma.campaignProduct.deleteMany().catch(() => {});
-  await prisma.campaign.deleteMany().catch(() => {});
-  await prisma.productImage.deleteMany().catch(() => {});
-  await prisma.productVariant.deleteMany().catch(() => {});
-  await prisma.product.deleteMany().catch(() => {});
-  await prisma.category.deleteMany().catch(() => {});
-  await prisma.subscriptionPayment.deleteMany().catch(() => {});
-  await prisma.sellerSubscription.deleteMany().catch(() => {});
-  await prisma.storeShippingRate.deleteMany().catch(() => {});
-  await prisma.districtShipping.deleteMany().catch(() => {});
-  await prisma.store.deleteMany().catch(() => {});
-  await prisma.userAddress.deleteMany().catch(() => {});
-  await prisma.user.deleteMany().catch(() => {});
+  // Seeding is additive and non-destructive: never clear or overwrite existing marketplace data.
+  console.log("🔒 Non-destructive mode: existing users, orders, payments, products, and settings are preserved.");
 
   // 2. SEED ALL 64 BANGLADESH DISTRICTS
   console.log("🚚 Seeding all 64 Bangladesh districts with nationwide logistics rates...");
   for (const d of BANGLADESH_64_DISTRICTS) {
     await prisma.districtShipping.upsert({
       where: { districtName: d.name },
-      update: {
-        division: d.division,
-        zone: d.zone,
-        baseCost: d.cost,
-        estimatedDaysMin: d.minDays,
-        estimatedDaysMax: d.maxDays,
-        isActive: true,
-      },
+      // Preserve any district rate or activation settings already configured by an administrator.
+      update: {},
       create: {
         districtName: d.name,
         division: d.division,
@@ -394,14 +364,17 @@ async function main() {
         isDefault: true,
       },
     ],
+      skipDuplicates: true,
   });
 
   // 5. STORES & SELLER SUBSCRIPTIONS
   console.log("🏪 Seeding dedicated seller stores & ৳150/month subscriptions...");
 
   // Store 1: Aura Home Studio (VERIFIED, isPremilyMart: false)
-  const storeAura = await prisma.store.create({
-    data: {
+  const storeAura = await prisma.store.upsert({
+      where: { id: "store-aura" },
+      update: {},
+      create: {
       id: "store-aura",
       sellerId: sellerAura.id,
       slug: "aura-home",
@@ -468,8 +441,10 @@ async function main() {
   });
 
   // Store 2: Lumina Lighting Co. (VERIFIED, isPremilyMart: false)
-  const storeLumina = await prisma.store.create({
-    data: {
+  const storeLumina = await prisma.store.upsert({
+      where: { id: "store-lumina" },
+      update: {},
+      create: {
       id: "store-lumina",
       sellerId: sellerLumina.id,
       slug: "lumina-decor",
@@ -514,8 +489,10 @@ async function main() {
   });
 
   // Store 3: Clay & Craft Pottery (PENDING review, isPremilyMart: false)
-  const storeClay = await prisma.store.create({
-    data: {
+  const storeClay = await prisma.store.upsert({
+      where: { id: "store-clay" },
+      update: {},
+      create: {
       id: "store-clay",
       sellerId: sellerClay.id,
       slug: "clay-craft",
@@ -552,8 +529,10 @@ async function main() {
   });
 
   // Store 4: Official PREMILY Mart Brand Partner Store (RFL Home Solutions)
-  const storeRFL = await prisma.store.create({
-    data: {
+  const storeRFL = await prisma.store.upsert({
+      where: { id: "store-rfl" },
+      update: {},
+      create: {
       id: "store-rfl",
       sellerId: sellerRFL.id,
       slug: "rfl-official",
@@ -608,8 +587,10 @@ async function main() {
   });
 
   // Store 5: Heritage Jute & Weaves (UNVERIFIED, DRAFT)
-  await prisma.store.create({
-    data: {
+  await prisma.store.upsert({
+      where: { id: "store-heritage" },
+      update: {},
+      create: {
       id: "store-heritage",
       sellerId: sellerHeritage.id,
       slug: "heritage-jute",
@@ -642,8 +623,10 @@ async function main() {
   });
 
   // Store 6: Dhaka Luxury Imports (REJECTED, SUSPENDED)
-  await prisma.store.create({
-    data: {
+  await prisma.store.upsert({
+      where: { id: "store-rejected" },
+      update: {},
+      create: {
       id: "store-rejected",
       sellerId: sellerRejected.id,
       slug: "dhaka-luxury",
@@ -665,61 +648,79 @@ async function main() {
 
   // 6. CATEGORIES
   console.log("🗂️ Seeding product categories...");
-  const catFurniture = await prisma.category.create({
-    data: {
+  const catFurniture = await prisma.category.upsert({
+      where: { id: "furniture" },
+      update: {},
+      create: {
       id: "furniture",
       name: "Furniture",
       slug: "furniture",
+      icon: "Sofa",
       imageUrl:
         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80",
     },
   });
 
-  const catLighting = await prisma.category.create({
-    data: {
+  const catLighting = await prisma.category.upsert({
+      where: { id: "lighting" },
+      update: {},
+      create: {
       id: "lighting",
       name: "Lighting",
       slug: "lighting",
+      icon: "Lamp",
       imageUrl:
         "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80",
     },
   });
 
-  const catLiving = await prisma.category.create({
-    data: {
+  const catLiving = await prisma.category.upsert({
+      where: { id: "living" },
+      update: {},
+      create: {
       id: "living",
       name: "Living Room",
       slug: "living",
+      icon: "Armchair",
       imageUrl:
         "https://images.unsplash.com/photo-1533090161767-e6ffed986b88?auto=format&fit=crop&w=600&q=80",
     },
   });
 
-  const catDecor = await prisma.category.create({
-    data: {
+  const catDecor = await prisma.category.upsert({
+      where: { id: "decor" },
+      update: {},
+      create: {
       id: "decor",
       name: "Decor & Pottery",
       slug: "decor",
+      icon: "Flower2",
       imageUrl:
         "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=600&q=80",
     },
   });
 
-  const catKitchen = await prisma.category.create({
-    data: {
+  const catKitchen = await prisma.category.upsert({
+      where: { id: "kitchen" },
+      update: {},
+      create: {
       id: "kitchen",
       name: "Kitchen & Dining",
       slug: "kitchen",
+      icon: "Utensils",
       imageUrl:
         "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
     },
   });
 
-  const catTextiles = await prisma.category.create({
-    data: {
+  const catTextiles = await prisma.category.upsert({
+      where: { id: "textiles" },
+      update: {},
+      create: {
       id: "textiles",
       name: "Textiles & Rugs",
       slug: "textiles",
+      icon: "LayoutGrid",
       imageUrl:
         "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80",
     },
@@ -729,8 +730,10 @@ async function main() {
   console.log("🛋️ Seeding luxury artisan products, color/size variants, and galleries...");
 
   // Product 1: Aura Curved Lounge Chair (Aura Home Studio)
-  const pAuraChair = await prisma.product.create({
-    data: {
+  const pAuraChair = await prisma.product.upsert({
+      where: { id: "p1" },
+      update: {},
+      create: {
       id: "p1",
       storeId: storeAura.id,
       name: "Aura Curved Lounge Chair",
@@ -793,8 +796,10 @@ async function main() {
   });
 
   // Product 2: Velvet Accent Armchair (Aura Home Studio)
-  const pVelvetArmchair = await prisma.product.create({
-    data: {
+  const pVelvetArmchair = await prisma.product.upsert({
+      where: { id: "p2" },
+      update: {},
+      create: {
       id: "p2",
       storeId: storeAura.id,
       name: "Velvet Accent Armchair",
@@ -842,8 +847,10 @@ async function main() {
   });
 
   // Product 3: Travertine Coffee Table (Aura Home Studio)
-  const pTravertineTable = await prisma.product.create({
-    data: {
+  const pTravertineTable = await prisma.product.upsert({
+      where: { id: "p3" },
+      update: {},
+      create: {
       id: "p3",
       storeId: storeAura.id,
       name: "Travertine Coffee Table",
@@ -890,8 +897,10 @@ async function main() {
   });
 
   // Product 4: Nordic Minimalist Oak Credenza (Aura Home Studio)
-  const pOakCredenza = await prisma.product.create({
-    data: {
+  const pOakCredenza = await prisma.product.upsert({
+      where: { id: "p4" },
+      update: {},
+      create: {
       id: "p4",
       storeId: storeAura.id,
       name: "Nordic Minimalist Oak Credenza",
@@ -930,8 +939,10 @@ async function main() {
   });
 
   // Product 5: Aura Alabaster Brass Pendant (Lumina Lighting Co.)
-  const pAlabasterPendant = await prisma.product.create({
-    data: {
+  const pAlabasterPendant = await prisma.product.upsert({
+      where: { id: "p5" },
+      update: {},
+      create: {
       id: "p5",
       storeId: storeLumina.id,
       name: "Aura Alabaster Brass Pendant",
@@ -978,8 +989,10 @@ async function main() {
   });
 
   // Product 6: Sculptural Linear Wall Sconce (Lumina Lighting Co.)
-  const pLinearSconce = await prisma.product.create({
-    data: {
+  const pLinearSconce = await prisma.product.upsert({
+      where: { id: "p6" },
+      update: {},
+      create: {
       id: "p6",
       storeId: storeLumina.id,
       name: "Sculptural Linear Wall Sconce",
@@ -1017,8 +1030,10 @@ async function main() {
   });
 
   // Product 7: Artisan Terracotta Vase Trio (Clay & Craft Pottery)
-  const pTerracottaVase = await prisma.product.create({
-    data: {
+  const pTerracottaVase = await prisma.product.upsert({
+      where: { id: "p7" },
+      update: {},
+      create: {
       id: "p7",
       storeId: storeClay.id,
       name: "Artisan Terracotta Vase Trio",
@@ -1057,8 +1072,10 @@ async function main() {
   });
 
   // Product 8: Handmade Ceramic Dining Set (Clay & Craft Pottery)
-  const pCeramicDining = await prisma.product.create({
-    data: {
+  const pCeramicDining = await prisma.product.upsert({
+      where: { id: "p8" },
+      update: {},
+      create: {
       id: "p8",
       storeId: storeClay.id,
       name: "Handmade Ceramic Dining Set",
@@ -1097,8 +1114,10 @@ async function main() {
   });
 
   // Product 9: Moderna Modular Kitchen Island (RFL Home Solutions)
-  const pKitchenIsland = await prisma.product.create({
-    data: {
+  const pKitchenIsland = await prisma.product.upsert({
+      where: { id: "p9" },
+      update: {},
+      create: {
       id: "p9",
       storeId: storeRFL.id,
       name: "Moderna Modular Kitchen Island",
@@ -1137,8 +1156,10 @@ async function main() {
   });
 
   // Product 10: Sonali Golden Jute Braided Area Rug (Aura Home Studio)
-  const pJuteRug = await prisma.product.create({
-    data: {
+  const pJuteRug = await prisma.product.upsert({
+      where: { id: "p10" },
+      update: {},
+      create: {
       id: "p10",
       storeId: storeAura.id,
       name: "Sonali Golden Jute Braided Area Rug",
@@ -1240,12 +1261,15 @@ async function main() {
         status: "APPROVED",
       },
     ],
+      skipDuplicates: true,
   });
 
   // 9. CAMPAIGNS, PROMOTIONS & FLASH SALES
   console.log("🔥 Seeding flash sales, festive campaigns, and promotional items...");
-  const flashCampaign = await prisma.campaign.create({
-    data: {
+  const flashCampaign = await prisma.campaign.upsert({
+      where: { id: "camp-flash-gala" },
+      update: {},
+      create: {
       id: "camp-flash-gala",
       name: "Architectural Living Flash Gala",
       slug: "flash-gala",
@@ -1283,8 +1307,10 @@ async function main() {
     },
   });
 
-  await prisma.campaign.create({
-    data: {
+  await prisma.campaign.upsert({
+      where: { id: "camp-artisan-heritage" },
+      update: {},
+      create: {
       id: "camp-artisan-heritage",
       name: "Dhaka Artisan Heritage Week",
       slug: "artisan-heritage",
@@ -1318,8 +1344,10 @@ async function main() {
 
   // 10. ACTIVE CUSTOMER CARTS
   console.log("🛒 Seeding customer shopping carts...");
-  await prisma.cart.create({
-    data: {
+  await prisma.cart.upsert({
+      where: { userId: customer4.id },
+      update: {},
+      create: {
       userId: customer4.id,
       items: {
         create: [
@@ -1340,8 +1368,10 @@ async function main() {
   console.log("📦 Seeding multi-store customer orders across lifecycle states...");
 
   // Order Group 1: Customer Tahmid Rahman (Banani, Dhaka) -> Aura Home Studio (PROCESSING)
-  const group1 = await prisma.orderGroup.create({
-    data: {
+  const group1 = await prisma.orderGroup.upsert({
+      where: { id: "grp-98214" },
+      update: {},
+      create: {
       id: "grp-98214",
       groupNumber: "GRP-2026-98214",
       userId: customer1.id,
@@ -1353,8 +1383,10 @@ async function main() {
     },
   });
 
-  const order1 = await prisma.order.create({
-    data: {
+  const order1 = await prisma.order.upsert({
+      where: { id: "ord-1" },
+      update: {},
+      create: {
       id: "ord-1",
       orderNumber: "PRM-98214-DHK",
       orderGroupId: group1.id,
@@ -1407,8 +1439,10 @@ async function main() {
   });
 
   // Order Group 2: Customer Farzana Chowdhury (Chattogram) -> Aura Home Studio (SHIPPED)
-  const group2 = await prisma.orderGroup.create({
-    data: {
+  const group2 = await prisma.orderGroup.upsert({
+      where: { id: "grp-98215" },
+      update: {},
+      create: {
       id: "grp-98215",
       groupNumber: "GRP-2026-98215",
       userId: customer2.id,
@@ -1420,8 +1454,10 @@ async function main() {
     },
   });
 
-  await prisma.order.create({
-    data: {
+  await prisma.order.upsert({
+      where: { id: "ord-2" },
+      update: {},
+      create: {
       id: "ord-2",
       orderNumber: "PRM-98215-CTG",
       orderGroupId: group2.id,
@@ -1469,8 +1505,10 @@ async function main() {
   });
 
   // Order Group 3: Customer Mahbub Alam (Sylhet) -> Lumina Lighting Co. (DELIVERED)
-  const group3 = await prisma.orderGroup.create({
-    data: {
+  const group3 = await prisma.orderGroup.upsert({
+      where: { id: "grp-98216" },
+      update: {},
+      create: {
       id: "grp-98216",
       groupNumber: "GRP-2026-98216",
       userId: customer3.id,
@@ -1482,8 +1520,10 @@ async function main() {
     },
   });
 
-  await prisma.order.create({
-    data: {
+  await prisma.order.upsert({
+      where: { id: "ord-3" },
+      update: {},
+      create: {
       id: "ord-3",
       orderNumber: "PRM-98216-SYL",
       orderGroupId: group3.id,
@@ -1535,8 +1575,10 @@ async function main() {
   });
 
   // Order Group 4: Customer Shabnam Kabir (Uttara, Dhaka) -> Aura Home Studio (PENDING VERIFICATION)
-  const group4 = await prisma.orderGroup.create({
-    data: {
+  const group4 = await prisma.orderGroup.upsert({
+      where: { id: "grp-98217" },
+      update: {},
+      create: {
       id: "grp-98217",
       groupNumber: "GRP-2026-98217",
       userId: customer4.id,
@@ -1548,8 +1590,10 @@ async function main() {
     },
   });
 
-  await prisma.order.create({
-    data: {
+  await prisma.order.upsert({
+      where: { id: "ord-4" },
+      update: {},
+      create: {
       id: "ord-4",
       orderNumber: "PRM-98217-DHK",
       orderGroupId: group4.id,
@@ -1599,8 +1643,10 @@ async function main() {
   });
 
   // Order Group 5: Customer Nusrat Jahan (Dhanmondi, Dhaka) -> Clay & Craft Pottery (CONFIRMED)
-  const group5 = await prisma.orderGroup.create({
-    data: {
+  const group5 = await prisma.orderGroup.upsert({
+      where: { id: "grp-98218" },
+      update: {},
+      create: {
       id: "grp-98218",
       groupNumber: "GRP-2026-98218",
       userId: customer5.id,
@@ -1612,8 +1658,10 @@ async function main() {
     },
   });
 
-  await prisma.order.create({
-    data: {
+  await prisma.order.upsert({
+      where: { id: "ord-5" },
+      update: {},
+      create: {
       id: "ord-5",
       orderNumber: "PRM-98218-DHK",
       orderGroupId: group5.id,

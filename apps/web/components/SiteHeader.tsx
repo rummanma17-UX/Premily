@@ -14,9 +14,9 @@ import {
   ChevronDown,
   ShoppingBag,
   ExternalLink,
-  Sparkles,
 } from "lucide-react";
-import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
+import { apiFetch } from "@/lib/api";
+import type { DistrictShippingInfo } from "@/types";
 import { CartService } from "@/lib/cart-service";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 
@@ -32,31 +32,47 @@ type AuthUser = {
 export function SiteHeader() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [googleModalOpen, setGoogleModalOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [deliveryOpen, setDeliveryOpen] = useState(false);
+  const [districts, setDistricts] = useState<DistrictShippingInfo[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState("Dhaka");
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadUser = () => {
+    const loadUser = async () => {
       try {
-        const stored = localStorage.getItem("premily_user");
-        if (stored) {
-          setUser(JSON.parse(stored));
-        } else {
-          setUser(null);
-        }
+        const data = await apiFetch<{ user: AuthUser }>("/api/auth/me");
+        setUser(data.user);
+        localStorage.setItem("premily_user", JSON.stringify(data.user));
       } catch {
         setUser(null);
+        localStorage.removeItem("premily_user");
       }
     };
 
-    loadUser();
+    void loadUser();
+    const savedDistrict = localStorage.getItem("premily_delivery_district");
+    if (savedDistrict) setSelectedDistrict(savedDistrict);
+    apiFetch<DistrictShippingInfo[]>("/api/shipping/districts")
+      .then((records) => {
+        setDistricts(records);
+        const saved = localStorage.getItem("premily_delivery_district");
+        if (saved && !records.some((district) => district.districtName === saved)) {
+          localStorage.removeItem("premily_delivery_district");
+          setSelectedDistrict("Dhaka");
+        }
+      })
+      .catch((error) => console.error("Unable to load delivery districts:", error));
     const handleCartUpdate = () => setCartCount(CartService.getItemCount());
     const initialCartSync = window.setTimeout(handleCartUpdate, 0);
     window.addEventListener("premily_auth_change", loadUser);
     window.addEventListener("premily_cart_change", handleCartUpdate);
     window.addEventListener("storage", loadUser);
+    const syncDeliveryDistrict = () => {
+      setSelectedDistrict(localStorage.getItem("premily_delivery_district") || "Dhaka");
+    };
+    window.addEventListener("premily_delivery_change", syncDeliveryDistrict);
 
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -69,30 +85,22 @@ export function SiteHeader() {
       window.removeEventListener("premily_auth_change", loadUser);
       window.removeEventListener("premily_cart_change", handleCartUpdate);
       window.removeEventListener("storage", loadUser);
+      window.removeEventListener("premily_delivery_change", syncDeliveryDistrict);
       window.clearTimeout(initialCartSync);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
-      localStorage.removeItem("premily_user");
-      document.cookie = "premily_user_token=; path=/; max-age=0";
-      setUser(null);
-      setMenuOpen(false);
-      window.dispatchEvent(new Event("premily_auth_change"));
+      await apiFetch<void>("/api/auth/logout", { method: "POST" });
     } catch {
-      // silent
+      // The session may already have expired; clear the local display state anyway.
     }
-  };
-
-  const handleSwitchRole = (newRole: "CUSTOMER" | "SELLER" | "ADMIN") => {
-    if (!user) return;
-    const updated = { ...user, role: newRole };
-    localStorage.setItem("premily_user", JSON.stringify(updated));
-    setUser(updated);
-    window.dispatchEvent(new Event("premily_auth_change"));
+    localStorage.removeItem("premily_user");
+    setUser(null);
     setMenuOpen(false);
+    window.dispatchEvent(new Event("premily_auth_change"));
   };
 
   return (
@@ -150,16 +158,14 @@ export function SiteHeader() {
             বাংলা
           </button>
 
-          {/* Location Selector (Desktop/Tablet) */}
-          <button
-            type="button"
-            className="hidden cursor-pointer items-center gap-2 rounded-xl border border-gold/40 px-3 py-1.5 hover:bg-cream md:flex transition"
-            aria-label="Delivery location: Dhaka, estimated one to two days"
-          >
+          {/* Delivery district selector */}
+          <button type="button" onClick={() => setDeliveryOpen((open) => !open)}
+            aria-expanded={deliveryOpen} aria-label="Choose delivery district"
+            className="hidden cursor-pointer items-center gap-2 rounded-xl border border-gold/40 px-3 py-1.5 transition hover:bg-cream md:flex">
             <MapPin className="size-5 text-deep" aria-hidden="true" />
             <span className="text-left leading-tight">
               <span className="block text-[10px] text-muted">Deliver to</span>
-              <span className="block text-sm font-semibold text-dark">Dhaka · 1–2 days</span>
+              <span className="block text-sm font-semibold text-dark">{selectedDistrict} <ChevronDown className="ml-1 inline size-3" /></span>
             </span>
           </button>
 
@@ -291,49 +297,6 @@ export function SiteHeader() {
                       </Link>
                     </div>
 
-                    {/* Quick Demo Switch Role */}
-                    <div className="px-4 py-2 border-t border-border-gold/50 bg-surface-subtle">
-                      <div className="text-[10px] uppercase font-bold text-muted mb-1 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-gold" />
-                        <span>Switch Demo Role:</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-1 text-[10px]">
-                        <button
-                          type="button"
-                          onClick={() => handleSwitchRole("CUSTOMER")}
-                          className={`py-1 px-1 rounded-md font-semibold cursor-pointer border ${
-                            user.role === "CUSTOMER"
-                              ? "bg-dark text-white border-dark"
-                              : "bg-white text-dark border-border-gold hover:border-deep"
-                          }`}
-                        >
-                          Shopper
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSwitchRole("SELLER")}
-                          className={`py-1 px-1 rounded-md font-semibold cursor-pointer border ${
-                            user.role === "SELLER"
-                              ? "bg-dark text-white border-dark"
-                              : "bg-white text-dark border-border-gold hover:border-deep"
-                          }`}
-                        >
-                          Seller
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleSwitchRole("ADMIN")}
-                          className={`py-1 px-1 rounded-md font-semibold cursor-pointer border ${
-                            user.role === "ADMIN"
-                              ? "bg-dark text-white border-dark"
-                              : "bg-white text-dark border-border-gold hover:border-deep"
-                          }`}
-                        >
-                          Admin
-                        </button>
-                      </div>
-                    </div>
-
                     <div className="pt-1 border-t border-border-gold/40">
                       <button
                         type="button"
@@ -349,32 +312,6 @@ export function SiteHeader() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setGoogleModalOpen(true)}
-                  className="hidden sm:flex items-center gap-1.5 border border-border-gold rounded-xl px-2.5 py-1.5 hover:border-deep hover:bg-cream/40 transition text-xs font-semibold text-dark cursor-pointer shadow-xs"
-                >
-                  <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.22 24 12 24z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
-                    />
-                  </svg>
-                  <span>Google</span>
-                </button>
-
                 <Link
                   href="/login"
                   className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-dark hover:text-deep transition py-1.5 px-2.5 rounded-xl border border-transparent hover:border-border-gold hover:bg-cream"
@@ -404,10 +341,34 @@ export function SiteHeader() {
         </div>
 
         {/* Sub-header District Delivery Notice for Mobile */}
-        <div className="flex w-full items-center gap-1 bg-cream px-4 py-2 text-xs md:hidden border-t border-border-gold/40 text-muted">
+        <button type="button" onClick={() => setDeliveryOpen((open) => !open)}
+          aria-expanded={deliveryOpen}
+          className="flex w-full items-center gap-1 border-t border-border-gold/40 bg-cream px-4 py-2 text-left text-xs text-muted md:hidden">
           <MapPin className="size-3.5 text-deep" aria-hidden="true" />
-          <span>Deliver to:</span> <b className="text-dark">Dhaka (1–2 days) · ৳70</b>
-        </div>
+          <span>Deliver to:</span><b className="text-dark">{selectedDistrict}</b>
+          <ChevronDown className="size-3 text-deep" />
+        </button>
+        {deliveryOpen && (
+          <div className="absolute left-4 right-4 top-full z-50 rounded-xl border border-border-gold bg-white p-4 shadow-xl md:left-44 md:right-auto md:w-80">
+            <label htmlFor="header-delivery-district" className="mb-2 block text-xs font-semibold text-dark">Select delivery district</label>
+            <select id="header-delivery-district" value={selectedDistrict}
+              onChange={(event) => {
+                const district = event.target.value;
+                setSelectedDistrict(district);
+                localStorage.setItem("premily_delivery_district", district);
+                setDeliveryOpen(false);
+              }}
+              className="w-full cursor-pointer rounded-xl border border-border-gold bg-cream/50 px-3 py-2.5 text-sm text-dark outline-none focus:border-deep">
+              {districts.map((district) => <option key={district.districtName} value={district.districtName}>{district.districtName} · {district.division}</option>)}
+            </select>
+            {districts.length === 0 && <p className="mt-2 text-[11px] text-muted">Loading available districts…</p>}
+            {districts.find((district) => district.districtName === selectedDistrict) && (
+              <p className="mt-2 text-[11px] text-muted">
+                Estimated delivery: {districts.find((district) => district.districtName === selectedDistrict)!.estimatedDaysMin}–{districts.find((district) => district.districtName === selectedDistrict)!.estimatedDaysMax} days · ৳{Number(districts.find((district) => district.districtName === selectedDistrict)!.baseCost).toLocaleString("en-BD")}
+              </p>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Cart Drawer Slide-Over */}
@@ -416,12 +377,6 @@ export function SiteHeader() {
         onClose={() => setCartDrawerOpen(false)}
       />
 
-      {/* Google Login Modal triggered from header */}
-      <GoogleLoginModal
-        isOpen={googleModalOpen}
-        onClose={() => setGoogleModalOpen(false)}
-        defaultRole="CUSTOMER"
-      />
     </>
   );
 }

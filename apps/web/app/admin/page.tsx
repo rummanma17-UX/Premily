@@ -25,6 +25,7 @@ import {
 } from "@/lib/store-data";
 import { MartBadge } from "@/components/badges/MartBadge";
 import { VerifiedBadge } from "@/components/badges/VerifiedBadge";
+import { CategoryManagement } from "@/components/admin/CategoryManagement";
 
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
@@ -32,7 +33,7 @@ function formatTaka(amount: number) {
 
 export default function AdminPanelPage() {
   const [activeTab, setActiveTab] = useState<
-    "vendors" | "verifications" | "orders" | "logistics" | "campaigns" | "metrics"
+    "vendors" | "verifications" | "orders" | "logistics" | "categories" | "campaigns" | "metrics"
   >("vendors");
 
   const [stores, setStores] = useState<StoreRecord[]>(() => StoreService.getStores());
@@ -237,6 +238,21 @@ export default function AdminPanelPage() {
             <div className="flex items-center gap-2.5">
               <Truck className="w-4 h-4" />
               <span>64-District Base Rates</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("categories")}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium transition cursor-pointer ${
+              activeTab === "categories"
+                ? "bg-gold text-dark font-bold shadow-xs"
+                : "text-cream/80 hover:text-cream hover:bg-white/5"
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Tag className="w-4 h-4" />
+              <span>Product Categories</span>
             </div>
           </button>
 
@@ -709,6 +725,8 @@ export default function AdminPanelPage() {
             </div>
           </div>
         )}
+
+        {activeTab === "categories" && <CategoryManagement />}
 
         {/* TAB 5: CAMPAIGNS & FLASH SALES */}
         {activeTab === "campaigns" && (

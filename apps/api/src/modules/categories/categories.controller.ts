@@ -1,31 +1,40 @@
 import type { Request, Response, NextFunction } from "express";
-import { getAllCategories, createCategory } from "./categories.service.js";
-import { createCategorySchema } from "./categories.schema.js";
+import {
+  getAllCategories,
+  createCategory,
+  updateCategory,
+} from "./categories.service.js";
+import {
+  createCategorySchema,
+  updateCategorySchema,
+} from "./categories.schema.js";
 
-export async function listCategories(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export async function listCategories(_req: Request, res: Response, next: NextFunction) {
   try {
-    const categories = await getAllCategories();
-    res.json(categories);
+    res.json(await getAllCategories());
   } catch (err) {
     next(err);
   }
 }
 
-export async function addCategory(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-){
+export async function addCategory(req: Request, res: Response, next: NextFunction) {
   try {
     const parsed = createCategorySchema.parse(req.body);
-    const category = await createCategory(parsed);
-    res.status(201).json(category)
+    res.status(201).json(await createCategory(parsed));
+  } catch (err) {
+    next(err);
   }
-  catch(err){
-    next(err)
+}
+
+export async function editCategory(
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const parsed = updateCategorySchema.parse(req.body);
+    res.json(await updateCategory(req.params.id, parsed));
+  } catch (err) {
+    next(err);
   }
 }
