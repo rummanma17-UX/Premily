@@ -4,9 +4,10 @@ import { hashPassword, signToken, verifyPassword } from "./auth.utils.js";
 
 export async function registerUser(data: RegisterInput) {
   const hashedPassword = await hashPassword(data.password);
-
-  // Normalize empty email to null so unique constraint is not violated
-  const email = data.email && data.email.trim().length > 0 ? data.email.trim().toLowerCase() : null;
+  const email =
+    data.email && data.email.trim().length > 0
+      ? data.email.trim().toLowerCase()
+      : null;
 
   const user = await prisma.user.create({
     data: {
@@ -18,8 +19,9 @@ export async function registerUser(data: RegisterInput) {
     },
   });
 
-  const { password, ...safeUser } = user;
-  return safeUser;
+  const { password: _password, ...safeUser } = user;
+  const token = signToken({ userId: user.id, role: user.role });
+  return { user: safeUser, token };
 }
 
 export async function loginUser(data: LoginInput) {
@@ -32,18 +34,16 @@ export async function loginUser(data: LoginInput) {
       : { email: rawIdentifier.toLowerCase() },
   });
 
-  if (!user) {
+  if (!user || !user.isActive) {
     throw new Error("INVALID_CREDENTIALS");
   }
 
   const isValid = await verifyPassword(user.password, data.password);
-
   if (!isValid) {
     throw new Error("INVALID_CREDENTIALS");
   }
 
   const token = signToken({ userId: user.id, role: user.role });
-
-  const { password, ...safeUser } = user;
+  const { password: _password, ...safeUser } = user;
   return { user: safeUser, token };
 }

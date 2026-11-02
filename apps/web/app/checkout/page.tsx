@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { BANGLADESH_DISTRICTS } from "@/lib/bangladesh-districts";
+import { apiFetch } from "@/lib/api";
+import type { DistrictShippingInfo } from "@/types";
 import type { ConfirmedOrder } from "@/types";
 import {
   MapPin,
@@ -17,7 +19,6 @@ import {
 } from "lucide-react";
 import { StoreService } from "@/lib/store-data";
 import { CartService } from "@/lib/cart-service";
-import { GoogleLoginModal } from "@/components/auth/GoogleLoginModal";
 import { MfsPaymentModal } from "@/components/checkout/MfsPaymentModal";
 import { MartBadge } from "@/components/badges/MartBadge";
 
@@ -54,13 +55,14 @@ export default function CheckoutPage() {
   });
   const [streetAddress, setStreetAddress] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("Dhaka");
+  const [districts, setDistricts] = useState<Array<Pick<DistrictShippingInfo, "districtName" | "division">>>([]);
+  const [districtLoadError, setDistrictLoadError] = useState<string | null>(null);
   const [cityThana, setCityThana] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"CASH_ON_DELIVERY" | "BKASH" | "NAGAD">("BKASH");
 
   const [isPlacing, setIsPlacing] = useState(false);
   const [orderConfirmed, setOrderConfirmed] = useState<ConfirmedOrder | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   // Dynamic Cart and Multi-Store Grouping (AGENT.md Rule 5)
   const [, setCartVersion] = useState(0);
@@ -69,7 +71,25 @@ export default function CheckoutPage() {
   useEffect(() => {
     const handleCartUpdate = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartUpdate);
+    const savedDistrict = localStorage.getItem("premily_delivery_district");
+    if (savedDistrict) setSelectedDistrict(savedDistrict);
     return () => window.removeEventListener("premily_cart_change", handleCartUpdate);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiFetch<DistrictShippingInfo[]>("/api/shipping/districts")
+      .then((records) => {
+        if (cancelled) return;
+        setDistricts(records.map(({ districtName, division }) => ({ districtName, division })));
+        setDistrictLoadError(null);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setDistricts(BANGLADESH_DISTRICTS.map(({ name, division }) => ({ districtName: name, division })));
+        setDistrictLoadError("Live district data is unavailable. Showing the standard district list.");
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const { groups, totalSubtotal, totalShipping, grandTotal } = CartService.getStoreGroups(selectedDistrict);
@@ -236,41 +256,6 @@ export default function CheckoutPage() {
         </span>
       </div>
 
-      {/* Google 1-Click Fast Autofill Banner */}
-      {!fullName && (
-        <div className="p-3.5 rounded-2xl bg-white border border-border-gold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-xs">
-          <div className="flex items-center gap-2.5 text-xs text-dark">
-            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.22 24 12 24z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"
-              />
-            </svg>
-            <span>Have a Google Account? Autofill your contact details instantly.</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setGoogleModalOpen(true)}
-            className="px-3.5 py-1.5 rounded-xl border border-border-gold hover:border-deep bg-cream/30 text-xs font-semibold text-dark hover:bg-cream cursor-pointer"
-          >
-            Sign in with Google
-          </button>
-        </div>
-      )}
-
       <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6 items-start">
         {/* Left Column: Delivery Details & Payment Choice */}
         <div className="space-y-5">
@@ -328,15 +313,23 @@ export default function CheckoutPage() {
                 <label className="font-semibold text-muted">District (64 Districts) *</label>
                 <select
                   value={selectedDistrict}
-                  onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-border-gold bg-cream/50 text-dark outline-none focus:border-deep transition cursor-pointer"
+                  onChange={(e) => {
+                    setSelectedDistrict(e.target.value);
+                    localStorage.setItem("premily_delivery_district", e.target.value);
+                    window.dispatchEvent(new Event("premily_delivery_change"));
+                  }}
+                  disabled={districts.length === 0}
+                  required
+                  className="w-full appearance-auto px-3.5 py-2.5 rounded-xl border border-border-gold bg-cream/50 text-dark outline-none focus:border-deep transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {BANGLADESH_DISTRICTS.map((d) => (
-                    <option key={d.name} value={d.name}>
-                      {d.name} ({d.division})
+                  <option value="" disabled>Select your delivery district</option>
+                  {districts.map((district) => (
+                    <option key={district.districtName} value={district.districtName}>
+                      {district.districtName} ({district.division})
                     </option>
                   ))}
                 </select>
+                {districtLoadError && <p className="text-[10px] text-amber-700">{districtLoadError}</p>}
               </div>
 
               <div className="space-y-1">
@@ -542,16 +535,6 @@ export default function CheckoutPage() {
         onSuccess={(trxId) => executeOrderPlacement(trxId, "VERIFIED")}
       />
 
-      {/* Google Login Modal */}
-      <GoogleLoginModal
-        isOpen={googleModalOpen}
-        onClose={() => setGoogleModalOpen(false)}
-        defaultRole="CUSTOMER"
-        onSuccess={(user) => {
-          setFullName(user.name);
-          setPhoneNumber(user.phone);
-        }}
-      />
     </main>
   );
 }

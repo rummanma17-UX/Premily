@@ -71,9 +71,17 @@ pnpm install
 
 ### 2. Configure the backend
 
-Copy `apps/api/.env.example` to `apps/api/.env`.
+Create `apps/api/.env` and configure:
 
-Configure the database URL, port, environment, and JWT secret. Never commit real secrets.
+```env
+DATABASE_URL="postgresql://premily:premily_dev_password@localhost:15432/premily_db?schema=public"
+PORT=4000
+NODE_ENV=development
+JWT_SECRET="replace-with-a-random-secret-at-least-32-characters-long"
+WEB_ORIGIN="http://localhost:3000"
+```
+
+Never commit real secrets. The root `.env.example` documents the frontend/API connection variables as well.
 
 ### 3. Start PostgreSQL
 
@@ -101,9 +109,13 @@ pnpm --filter api dev
 
 The API uses port `4000` by default. Its health endpoint is available at `/health`.
 
-### 6. Start the frontend
+### 6. Configure and start the frontend
 
-In another terminal, copy `apps/web/.env.local.example` to `apps/web/.env.local`.
+Create `apps/web/.env.local` with:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
 
 Then run:
 
@@ -112,6 +124,18 @@ pnpm --filter web dev
 ```
 
 The frontend uses port `3000` by default.
+
+### 7. Seed development fixtures safely
+
+The seed script is **non-destructive and additive**. It does not delete existing database records. Existing users, products, categories, orders, payments, stores, and district shipping settings are preserved; demo records are inserted only when their unique identifiers do not already exist.
+
+Run:
+
+```bash
+pnpm --filter api seed
+```
+
+The script is intended for development fixtures. Do not use its demo accounts or sample orders as real production data.
 
 ## Backend Architecture
 
