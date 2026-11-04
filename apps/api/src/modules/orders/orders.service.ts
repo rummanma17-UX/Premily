@@ -278,7 +278,7 @@ export async function getMyOrders(userId: string) {
   });
 }
 
-export async function getOrderById(userId: string, orderId: string) {
+export async function getSellerOrders(sellerId: string) {\n  return prisma.order.findMany({\n    where: { store: { sellerId } },\n    include: { items: true, payments: true, store: true, user: { select: { name: true, phone: true } } },\n    orderBy: { createdAt: "desc" },\n  });\n}\n\nexport async function getOrderById(userId: string, orderId: string) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: { items: true, payments: true, store: true },
