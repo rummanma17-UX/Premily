@@ -30,6 +30,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const cartCount = CartService.getItemCount();
 
   useEffect(() => {
+    void CartService.loadCart().catch((error) => console.error("Unable to load cart:", error));
     const handleCartChange = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartChange);
     return () => window.removeEventListener("premily_cart_change", handleCartChange);
@@ -138,9 +139,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                               <div className="flex items-center border border-border-gold rounded-lg bg-white overflow-hidden text-xs">
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    CartService.updateQuantity(item.id, item.quantity - 1)
-                                  }
+                                  onClick={() => void CartService.updateQuantity(item.id, item.quantity - 1).catch((error) => console.error(error))}
                                   className="px-2 py-0.5 text-muted hover:text-dark hover:bg-cream"
                                 >
                                   <Minus className="w-3 h-3" />
@@ -150,9 +149,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 </span>
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    CartService.updateQuantity(item.id, item.quantity + 1)
-                                  }
+                                  onClick={() => void CartService.updateQuantity(item.id, item.quantity + 1).catch((error) => console.error(error))}
                                   className="px-2 py-0.5 text-muted hover:text-dark hover:bg-cream"
                                 >
                                   <Plus className="w-3 h-3" />
@@ -163,7 +160,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                           <button
                             type="button"
-                            onClick={() => CartService.removeFromCart(item.id)}
+                            onClick={() => void CartService.removeFromCart(item.id).catch((error) => console.error(error))
                             className="text-gray-400 hover:text-rose-600 p-1 transition"
                             title="Remove item"
                           >
