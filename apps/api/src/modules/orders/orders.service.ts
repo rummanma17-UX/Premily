@@ -93,7 +93,6 @@ async function createOrderFromItemsTx(
   const storeIds = Array.from(storeGroups.keys());
   const stores = await tx.store.findMany({
     where: { id: { in: storeIds } },
-    include: { shippingRates: true },
   });
 
   const storeMap = new Map(stores.map((s) => [s.id, s]));
@@ -120,18 +119,10 @@ async function createOrderFromItemsTx(
     const homeDistrict = store?.homeDistrict?.trim().toLowerCase() ?? "dhaka";
     const isHome = destination === homeDistrict;
 
-    const districtOverride = store?.shippingRates.find(
-      (r) => r.districtName.trim().toLowerCase() === destination,
-    );
-
-    let fee = isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE;
-    if (districtOverride) {
-      fee = Number(districtOverride.rate);
-    } else if (isHome && store?.insideDistrictCost) {
-      fee = Number(store.insideDistrictCost);
-    } else if (!isHome && store?.outsideDistrictCost) {
-      fee = Number(store.outsideDistrictCost);
-    }
+    const configuredRate = isHome ? store?.insideDistrictCost : store?.outsideDistrictCost;
+    const fee = configuredRate == null
+      ? (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE)
+      : Number(configuredRate);
 
     const storeShipping = new Prisma.Decimal(fee);
     const storeTotal = storeSubtotal.plus(storeShipping);

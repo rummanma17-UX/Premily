@@ -40,67 +40,7 @@ export default async function ProductsCatalogPage({
     apiFetch<Category[]>("/api/categories").catch(() => []),
   ]);
 
-  // Demo fallback products if backend is cold/empty
-  const products: Product[] = productsData?.products?.length
-    ? productsData.products
-    : [
-        {
-          id: "cat-prod-1",
-          name: "Aura Curved Lounge Chair",
-          slug: "aura-curved-chair",
-          description: "Solid oak with textured boucle upholstery.",
-          categoryId: "cat-1",
-          category: { id: "cat-1", name: "Furniture", slug: "furniture" },
-          variants: [{ id: "v1", sku: "AURA-1", price: "18500", compareAtPrice: "24000", stock: 12, size: "Standard", color: "Beige" }],
-          images: [{ id: "i1", url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80", altText: "Chair", position: 0 }],
-          store: { id: "s1", slug: "aura-home", displayName: "Aura Home", isPremilyMart: true, verificationStatus: "VERIFIED" },
-          avgRating: 4.9,
-          reviewCount: 312,
-          salesCount: 540,
-        },
-        {
-          id: "cat-prod-2",
-          name: "Brass Wall Sconce Lamp",
-          slug: "brass-wall-sconce",
-          description: "Hand-brushed solid brass with warm ambient lighting.",
-          categoryId: "cat-2",
-          category: { id: "cat-2", name: "Lighting", slug: "lighting" },
-          variants: [{ id: "v2", sku: "BRASS-1", price: "4200", compareAtPrice: "5500", stock: 20, size: "Standard", color: "Antique Gold" }],
-          images: [{ id: "i2", url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=600&q=80", altText: "Lamp", position: 0 }],
-          store: { id: "s2", slug: "lumina", displayName: "Lumina Studio", isPremilyMart: false, verificationStatus: "VERIFIED" },
-          avgRating: 4.8,
-          reviewCount: 94,
-          salesCount: 320,
-        },
-        {
-          id: "cat-prod-3",
-          name: "Travertine Minimalist Coffee Table",
-          slug: "travertine-table",
-          description: "Honed raw travertine stone table with monolithic base.",
-          categoryId: "cat-1",
-          category: { id: "cat-1", name: "Furniture", slug: "furniture" },
-          variants: [{ id: "v3", sku: "TRAV-1", price: "24000", compareAtPrice: "30000", stock: 5, size: "Large", color: "Natural Sand" }],
-          images: [{ id: "i3", url: "https://images.unsplash.com/photo-1533090161767-e6ffed986b88?auto=format&fit=crop&w=600&q=80", altText: "Table", position: 0 }],
-          store: { id: "s1", slug: "aura-home", displayName: "Aura Home", isPremilyMart: true, verificationStatus: "VERIFIED" },
-          avgRating: 5.0,
-          reviewCount: 42,
-          salesCount: 98,
-        },
-        {
-          id: "cat-prod-4",
-          name: "Sculptural Ceramic Vase",
-          slug: "sculptural-ceramic-vase",
-          description: "Artisan matte ceramic vessel for minimalist interiors.",
-          categoryId: "cat-3",
-          category: { id: "cat-3", name: "Decor", slug: "decor" },
-          variants: [{ id: "v4", sku: "VASE-1", price: "2900", compareAtPrice: "3800", stock: 25, size: "Standard", color: "Terracotta" }],
-          images: [{ id: "i4", url: "https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&w=600&q=80", altText: "Vase", position: 0 }],
-          store: { id: "s3", slug: "clay-co", displayName: "Clay & Craft", isPremilyMart: false, verificationStatus: "VERIFIED" },
-          avgRating: 4.7,
-          reviewCount: 65,
-          salesCount: 210,
-        },
-      ];
+  const products: Product[] = productsData?.products ?? [];
 
   const totalCount = productsData?.pagination?.total ?? products.length;
 
