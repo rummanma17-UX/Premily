@@ -184,7 +184,7 @@ export function SiteHeader() {
             action="/products"
             method="get"
             role="search"
-            className="order-last flex w-full min-w-0 overflow-hidden rounded-full border-2 border-gold bg-surface sm:order-none sm:w-auto sm:flex-1"
+            className="order-last flex w-full min-w-0 overflow-hidden rounded-full border-2 border-gold bg-surface sm:order-0 sm:w-auto sm:flex-1"
           >
             <label htmlFor="site-search" className="sr-only">
               Search products
@@ -230,7 +230,7 @@ export function SiteHeader() {
                     )}
                   </div>
                   <div className="hidden sm:block text-left">
-                    <span className="block max-w-[100px] truncate text-xs font-bold text-dark leading-tight">
+                    <span className="block max-w-25 truncate text-xs font-bold text-dark leading-tight">
                       {user.name}
                     </span>
                     <span className="block text-[9px] font-semibold text-deep uppercase tracking-wider">

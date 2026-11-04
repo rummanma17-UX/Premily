@@ -17,86 +17,85 @@ async function safeHash(password: string): Promise<string> {
 // 64 Bangladesh Districts Categorized into 8 Divisions
 const BANGLADESH_64_DISTRICTS = [
   // Dhaka Division (13 districts)
-  { name: "Dhaka", division: "Dhaka", zone: "INSIDE_DHAKA" as const, cost: 70, minDays: 1, maxDays: 2 },
-  { name: "Gazipur", division: "Dhaka", zone: "DHAKA_SUBURB" as const, cost: 100, minDays: 2, maxDays: 3 },
-  { name: "Narayanganj", division: "Dhaka", zone: "DHAKA_SUBURB" as const, cost: 100, minDays: 2, maxDays: 3 },
-  { name: "Faridpur", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Gopalganj", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Kishoreganj", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Madaripur", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Manikganj", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Munshiganj", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Narsingdi", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Rajbari", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Shariatpur", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Tangail", division: "Dhaka", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Dhaka",         division: "Dhaka",      zone: "INSIDE_DHAKA"  as const, cost:  70, minDays: 1, maxDays: 2 },
+  { name: "Gazipur",       division: "Dhaka",      zone: "DHAKA_SUBURB"  as const, cost: 100, minDays: 2, maxDays: 3 },
+  { name: "Narayanganj",   division: "Dhaka",      zone: "DHAKA_SUBURB"  as const, cost: 100, minDays: 2, maxDays: 3 },
+  { name: "Faridpur",      division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Gopalganj",     division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Kishoreganj",   division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Madaripur",     division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Manikganj",     division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Munshiganj",    division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Narsingdi",     division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Rajbari",       division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Shariatpur",    division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Tangail",       division: "Dhaka",      zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Chattogram Division (11 districts)
-  { name: "Chattogram", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Bandarban", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Chattogram",   division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Bandarban",    division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
   { name: "Brahmanbaria", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Chandpur", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Cox's Bazar", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Cumilla", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Feni", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Chandpur",     division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Cox's Bazar",  division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Cumilla",      division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Feni",         division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
   { name: "Khagrachhari", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Lakshmipur", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Noakhali", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Rangamati", division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Lakshmipur",   division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Noakhali",     division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Rangamati",    division: "Chattogram", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Sylhet Division (4 districts)
-  { name: "Sylhet", division: "Sylhet", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Habiganj", division: "Sylhet", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Moulvibazar", division: "Sylhet", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Sunamganj", division: "Sylhet", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Sylhet",       division: "Sylhet",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Habiganj",     division: "Sylhet",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Moulvibazar",  division: "Sylhet",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Sunamganj",    division: "Sylhet",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Rajshahi Division (8 districts)
-  { name: "Rajshahi", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Bogura", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Chapainawabganj", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Joypurhat", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Naogaon", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Natore", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Pabna", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Sirajganj", division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Rajshahi",       division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Bogura",         division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Chapainawabganj",division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Joypurhat",      division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Naogaon",        division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Natore",         division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Pabna",          division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Sirajganj",      division: "Rajshahi", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Khulna Division (10 districts)
-  { name: "Khulna", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Bagerhat", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Chuadanga", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Jashore", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Jhenaidah", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Kushtia", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Magura", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Meherpur", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Narail", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Satkhira", division: "Khulna", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Khulna",       division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Bagerhat",     division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Chuadanga",    division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Jashore",      division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Jhenaidah",    division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Kushtia",      division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Magura",       division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Meherpur",     division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Narail",       division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Satkhira",     division: "Khulna",     zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Barishal Division (6 districts)
-  { name: "Barishal", division: "Barishal", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Barguna", division: "Barishal", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Bhola", division: "Barishal", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Jhalokathi", division: "Barishal", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Patuakhali", division: "Barishal", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Pirojpur", division: "Barishal", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Barishal",     division: "Barishal",   zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Barguna",      division: "Barishal",   zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Bhola",        division: "Barishal",   zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Jhalokathi",   division: "Barishal",   zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Patuakhali",   division: "Barishal",   zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Pirojpur",     division: "Barishal",   zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Rangpur Division (8 districts)
-  { name: "Rangpur", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Dinajpur", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Gaibandha", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Kurigram", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Lalmonirhat", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Nilphamari", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Panchagarh", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Thakurgaon", division: "Rangpur", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Rangpur",      division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Dinajpur",     division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Gaibandha",    division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Kurigram",     division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Lalmonirhat",  division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Nilphamari",   division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Panchagarh",   division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Thakurgaon",   division: "Rangpur",    zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 
   // Mymensingh Division (4 districts)
-  { name: "Mymensingh", division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Jamalpur", division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Netrokona", division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
-  { name: "Sherpur", division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Mymensingh",   division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Jamalpur",     division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Netrokona",    division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
+  { name: "Sherpur",      division: "Mymensingh", zone: "OUTSIDE_DHAKA" as const, cost: 150, minDays: 3, maxDays: 5 },
 ];
-
 async function main() {
   console.log("🌱 Starting complete PREMILY database seeding...");
 
@@ -123,6 +122,30 @@ async function main() {
   }
   console.log(`✅ Seeded ${BANGLADESH_64_DISTRICTS.length} Bangladesh districts.`);
 
+  // 2A. BRANDS
+  // Brand affiliation is controlled by PREMILY admins, never by sellers themselves.
+  console.log("🏷️ Seeding approved brand directory...");
+  const brandSeeds = [
+    { id: "brand-pran-rfl", name: "PRAN-RFL", slug: "pran-rfl" },
+    { id: "brand-samsung", name: "Samsung", slug: "samsung" },
+    { id: "brand-xiaomi", name: "Xiaomi", slug: "xiaomi" },
+    { id: "brand-apple", name: "Apple", slug: "apple" },
+    { id: "brand-walton", name: "Walton", slug: "walton" },
+    { id: "brand-singer", name: "Singer", slug: "singer" },
+    { id: "brand-philips", name: "Philips", slug: "philips" },
+  ];
+
+  const brands = new Map<string, { id: string }>();
+  for (const brand of brandSeeds) {
+    const saved = await prisma.brand.upsert({
+      where: { slug: brand.slug },
+      update: { isActive: true },
+      create: { ...brand, isActive: true },
+    });
+    brands.set(brand.slug, saved);
+  }
+  console.log(`✅ Seeded ${brandSeeds.length} brands.`);
+
   // 3. SEED USERS & AUTHENTICATION (Phone-First, argon2 passwords)
   console.log("👤 Seeding administrators, sellers, and customers...");
   const adminPasswordHash = await safeHash("admin123");
@@ -144,6 +167,7 @@ async function main() {
     },
   });
 
+  // Demo seller accounts represent customers who completed seller onboarding; production uses the same User row/ID.
   // Seller 1: Verified Luxury Artisan Store (Aura Home Studio)
   const sellerAura = await prisma.user.upsert({
     where: { phone: "01711111111" },
@@ -368,45 +392,42 @@ async function main() {
   });
 
   // 5. STORES & SELLER SUBSCRIPTIONS
-  console.log("🏪 Seeding dedicated seller stores & ৳150/month subscriptions...");
+  console.log("🏪 Seeding seller stores and subscription examples...");
 
-  // Store 1: Aura Home Studio (VERIFIED, isPremilyMart: false)
+  // Demo seller accounts represent customers who completed seller onboarding.
+  // In production, the same existing User row is upgraded from CUSTOMER to SELLER.
+
   const storeAura = await prisma.store.upsert({
-      where: { id: "store-aura" },
-      update: {},
-      create: {
+    where: { id: "store-aura" },
+    update: {},
+    create: {
       id: "store-aura",
       sellerId: sellerAura.id,
       slug: "aura-home",
       displayName: "Aura Home Studio",
-      description:
-        "Curated bespoke furniture, textured boucle seating, and architectural brass & travertine home essentials.",
-      logoUrl:
-        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=200&q=80",
-      bannerUrl:
-        "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80",
+      description: "Curated bespoke furniture, textured boucle seating, and architectural brass & travertine home essentials.",
+      logoUrl: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=200&q=80",
+      bannerUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80",
       primaryColor: "#B8924B",
       seoTitle: "Aura Home Studio | Bespoke Luxury Furniture Bangladesh",
-      seoDescription:
-        "Explore curated textured boucle armchairs, monolithic travertine tables, and artisanal oak furnishings in Dhaka.",
+      seoDescription: "Explore curated textured boucle armchairs, monolithic travertine tables, and artisanal oak furnishings in Dhaka.",
       status: "ACTIVE",
       isPublished: true,
       publishedAt: new Date("2026-01-15T00:00:00Z"),
-      isPremilyMart: false, // Strict Rule: Ordinary sellers NEVER get Mart badge!
+      isPremilyMart: false,
       verificationStatus: "VERIFIED",
       verifiedAt: new Date("2026-01-16T10:00:00Z"),
       verifiedBy: admin.id,
       tradeLicenseNo: "TRAD/DSCC/019284/2024",
       nidNumber: "19942691234567890",
-      verificationNote:
-        "Verified with Dhaka South City Corporation trade license & biometric NID.",
+      verificationNote: "Verified with Dhaka South City Corporation trade license and NID.",
       homeDistrict: "Dhaka",
       insideDistrictCost: 70,
       outsideDistrictCost: 150,
       subscription: {
         create: {
           planCode: "seller_monthly",
-          amount: 150.0,
+          amount: 150,
           currency: "BDT",
           status: "ACTIVE",
           trialStartsAt: new Date("2026-01-15T00:00:00Z"),
@@ -416,49 +437,36 @@ async function main() {
           provider: "bKash",
           providerSubscriptionId: "SUB-AURA-BK-8891",
           payments: {
-            create: [
-              {
-                amount: 150.0,
-                currency: "BDT",
-                status: "PAID",
-                provider: "bKash",
-                providerTransactionId: "BK-SUB-99214A",
-                periodStart: new Date("2026-10-15T00:00:00Z"),
-                periodEnd: new Date("2026-11-15T00:00:00Z"),
-                paidAt: new Date("2026-10-15T01:30:00Z"),
-              },
-            ],
+            create: [{
+              amount: 150,
+              currency: "BDT",
+              status: "PAID",
+              provider: "bKash",
+              providerTransactionId: "BK-SUB-99214A",
+              periodStart: new Date("2026-10-15T00:00:00Z"),
+              periodEnd: new Date("2026-11-15T00:00:00Z"),
+              paidAt: new Date("2026-10-15T01:30:00Z"),
+            }],
           },
         },
-      },
-      shippingRates: {
-        create: [
-          { districtName: "Gazipur", rate: 100 },
-          { districtName: "Narayanganj", rate: 90 },
-        ],
       },
     },
   });
 
-  // Store 2: Lumina Lighting Co. (VERIFIED, isPremilyMart: false)
   const storeLumina = await prisma.store.upsert({
-      where: { id: "store-lumina" },
-      update: {},
-      create: {
+    where: { id: "store-lumina" },
+    update: {},
+    create: {
       id: "store-lumina",
       sellerId: sellerLumina.id,
       slug: "lumina-decor",
       displayName: "Lumina Lighting Co.",
-      description:
-        "Artisan brass sconces, sculpted alabaster chandeliers, and minimalist ambient warm lighting.",
-      logoUrl:
-        "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=200&q=80",
-      bannerUrl:
-        "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1600&q=80",
+      description: "Artisan brass sconces, sculpted alabaster chandeliers, and minimalist ambient warm lighting.",
+      logoUrl: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=200&q=80",
+      bannerUrl: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1600&q=80",
       primaryColor: "#D4B375",
       seoTitle: "Lumina Lighting Co. | Ambient Sculptural Fixtures",
-      seoDescription:
-        "Hand-finished brass pendants and linear architectural wall lights crafted for high-end Bangladeshi residences.",
+      seoDescription: "Hand-finished brass pendants and linear architectural wall lights crafted for high-end Bangladeshi residences.",
       status: "ACTIVE",
       isPublished: true,
       publishedAt: new Date("2026-02-15T00:00:00Z"),
@@ -475,40 +483,33 @@ async function main() {
       subscription: {
         create: {
           planCode: "seller_monthly",
-          amount: 150.0,
+          amount: 150,
           currency: "BDT",
           status: "TRIALING",
           trialStartsAt: new Date("2026-10-15T00:00:00Z"),
           trialEndsAt: new Date("2026-11-15T00:00:00Z"),
         },
       },
-      shippingRates: {
-        create: [{ districtName: "Sylhet", rate: 130 }],
-      },
     },
   });
 
-  // Store 3: Clay & Craft Pottery (PENDING review, isPremilyMart: false)
   const storeClay = await prisma.store.upsert({
-      where: { id: "store-clay" },
-      update: {},
-      create: {
+    where: { id: "store-clay" },
+    update: {},
+    create: {
       id: "store-clay",
       sellerId: sellerClay.id,
       slug: "clay-craft",
       displayName: "Clay & Craft Pottery",
-      description:
-        "Handcrafted Bangladeshi stoneware, matte black terracotta planters, and ceramic tableware from Dhamrai artisans.",
-      logoUrl:
-        "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=200&q=80",
-      bannerUrl:
-        "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1600&q=80",
+      description: "Handcrafted Bangladeshi stoneware, matte black terracotta planters, and ceramic tableware from Dhamrai artisans.",
+      logoUrl: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=200&q=80",
+      bannerUrl: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1600&q=80",
       primaryColor: "#8C6239",
       status: "ACTIVE",
       isPublished: true,
       publishedAt: new Date("2026-10-20T00:00:00Z"),
       isPremilyMart: false,
-      verificationStatus: "PENDING", // Crucial for testing PREMILY Admin verification workflow!
+      verificationStatus: "PENDING",
       tradeLicenseNo: "TRAD/DHAMRAI/004921/2025",
       nidNumber: "19912612341234123",
       verificationNote: "Pending review of Dhamrai cottage industry certificate.",
@@ -518,7 +519,7 @@ async function main() {
       subscription: {
         create: {
           planCode: "seller_monthly",
-          amount: 150.0,
+          amount: 150,
           currency: "BDT",
           status: "TRIALING",
           trialStartsAt: new Date("2026-10-20T00:00:00Z"),
@@ -528,39 +529,40 @@ async function main() {
     },
   });
 
-  // Store 4: Official PREMILY Mart Brand Partner Store (RFL Home Solutions)
+  // RFL receives its brand identity badge. It is NOT the PREMILY Mart store.
   const storeRFL = await prisma.store.upsert({
-      where: { id: "store-rfl" },
-      update: {},
-      create: {
+    where: { id: "store-rfl" },
+    update: {
+      brandId: brands.get("pran-rfl")!.id,
+      isPremilyMart: false,
+    },
+    create: {
       id: "store-rfl",
       sellerId: sellerRFL.id,
+      brandId: brands.get("pran-rfl")!.id,
       slug: "rfl-official",
       displayName: "RFL Home Solutions",
-      description:
-        "Official PRAN-RFL architectural living and modular Italian kitchen hardware partner store.",
-      logoUrl:
-        "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=200&q=80",
-      bannerUrl:
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
+      description: "Official PRAN-RFL architectural living and modular kitchen products.",
+      logoUrl: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=200&q=80",
+      bannerUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
       primaryColor: "#BE123C",
       status: "ACTIVE",
       isPublished: true,
       publishedAt: new Date("2025-11-01T00:00:00Z"),
-      isPremilyMart: true, // Strict Rule: Only Official Brand Partners get Mart badge!
+      isPremilyMart: false,
       verificationStatus: "VERIFIED",
       verifiedAt: new Date("2025-11-02T12:00:00Z"),
       verifiedBy: admin.id,
       tradeLicenseNo: "CORP/RFL/2024/0991",
       nidNumber: "19752690001112223",
-      verificationNote: "Official corporate brand partnership agreement on file.",
+      verificationNote: "Official corporate brand partnership verified by PREMILY.",
       homeDistrict: "Dhaka",
       insideDistrictCost: 70,
       outsideDistrictCost: 150,
       subscription: {
         create: {
           planCode: "seller_monthly",
-          amount: 150.0,
+          amount: 150,
           currency: "BDT",
           status: "ACTIVE",
           trialStartsAt: new Date("2025-11-01T00:00:00Z"),
@@ -570,37 +572,33 @@ async function main() {
           provider: "Corporate Wire",
           providerSubscriptionId: "SUB-RFL-CORP-01",
           payments: {
-            create: [
-              {
-                amount: 150.0,
-                currency: "BDT",
-                status: "PAID",
-                provider: "Corporate Wire",
-                providerTransactionId: "CORP-TXN-2026-99",
-                paidAt: new Date("2026-10-01T09:00:00Z"),
-              },
-            ],
+            create: [{
+              amount: 150,
+              currency: "BDT",
+              status: "PAID",
+              provider: "Corporate Wire",
+              providerTransactionId: "CORP-TXN-2026-99",
+              periodStart: new Date("2026-10-01T00:00:00Z"),
+              periodEnd: new Date("2027-01-01T00:00:00Z"),
+              paidAt: new Date("2026-10-01T09:00:00Z"),
+            }],
           },
         },
       },
     },
   });
 
-  // Store 5: Heritage Jute & Weaves (UNVERIFIED, DRAFT)
   await prisma.store.upsert({
-      where: { id: "store-heritage" },
-      update: {},
-      create: {
+    where: { id: "store-heritage" },
+    update: {},
+    create: {
       id: "store-heritage",
       sellerId: sellerHeritage.id,
       slug: "heritage-jute",
       displayName: "Heritage Jute & Weaves",
-      description:
-        "Traditional Sonali Aash golden jute rugs, woven table runners, and macrame wall art from Narayanganj.",
-      logoUrl:
-        "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=200&q=80",
-      bannerUrl:
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
+      description: "Traditional Sonali Aash golden jute rugs, woven table runners, and macrame wall art from Narayanganj.",
+      logoUrl: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=200&q=80",
+      bannerUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
       primaryColor: "#A16207",
       status: "DRAFT",
       isPublished: false,
@@ -612,21 +610,22 @@ async function main() {
       subscription: {
         create: {
           planCode: "seller_monthly",
-          amount: 150.0,
+          amount: 150,
           currency: "BDT",
           status: "TRIALING",
-          trialStartsAt: new Date(),
-          trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          // Represents a seller who explicitly selected the free tier during onboarding.
+          trialStartsAt: new Date("2026-10-25T00:00:00Z"),
+          trialEndsAt: new Date("2026-11-25T00:00:00Z"),
         },
       },
     },
   });
 
-  // Store 6: Dhaka Luxury Imports (REJECTED, SUSPENDED)
+  // Rejected seller is intentionally left without an active subscription.
   await prisma.store.upsert({
-      where: { id: "store-rejected" },
-      update: {},
-      create: {
+    where: { id: "store-rejected" },
+    update: {},
+    create: {
       id: "store-rejected",
       sellerId: sellerRejected.id,
       slug: "dhaka-luxury",
@@ -638,8 +637,7 @@ async function main() {
       isPremilyMart: false,
       verificationStatus: "REJECTED",
       tradeLicenseNo: "EXPIRED/2019/001",
-      verificationNote:
-        "Trade license expired and blurry NID scan provided. Rejected by admin governance.",
+      verificationNote: "Trade license expired and unclear identity documents; application rejected by admin.",
       homeDistrict: "Dhaka",
       insideDistrictCost: 70,
       outsideDistrictCost: 150,
@@ -1205,6 +1203,49 @@ async function main() {
     include: { variants: true },
   });
 
+  // 7A. VARIANT-SPECIFIC IMAGES
+  // Product gallery images are shared product-level images; these images belong to individual variants.
+  console.log("🖼️ Seeding variant-specific image galleries...");
+  const variantImageSeeds = [
+    { sku: "AURA-CHR-CRM-STD", url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=80", altText: "Cream Boucle Aura Chair - Standard", position: 0 },
+    { sku: "AURA-CHR-GRY-STD", url: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1200&q=80", altText: "Charcoal Grey Aura Chair - Standard", position: 0 },
+    { sku: "AURA-CHR-CRM-LRG", url: "https://images.unsplash.com/photo-1598300056393-4aac492f4344?auto=format&fit=crop&w=1200&q=80", altText: "Cream Boucle Aura Chair - Large", position: 0 },
+    { sku: "VLV-ARM-EMR-STD", url: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1200&q=80", altText: "Emerald Green Velvet Armchair", position: 0 },
+    { sku: "VLV-ARM-BLU-STD", url: "https://images.unsplash.com/photo-1598300056393-4aac492f4344?auto=format&fit=crop&w=1200&q=80", altText: "Midnight Blue Velvet Armchair", position: 0 },
+    { sku: "TRV-TBL-BGE-90", url: "https://images.unsplash.com/photo-1533090161767-e6ffed986b88?auto=format&fit=crop&w=1200&q=80", altText: "Warm Beige Travertine Coffee Table - 90cm", position: 0 },
+    { sku: "TRV-TBL-IVR-110", url: "https://images.unsplash.com/photo-1499933374294-4584851497cc?auto=format&fit=crop&w=1200&q=80", altText: "Ivory Travertine Coffee Table - 110cm", position: 0 },
+    { sku: "CRD-OAK-NAT-160", url: "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1200&q=80", altText: "Natural White Oak Credenza - 160cm", position: 0 },
+    { sku: "ALB-PND-BRS-30", url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80", altText: "Alabaster Brass Pendant - 30cm", position: 0 },
+    { sku: "ALB-PND-BRS-45", url: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1200&q=80", altText: "Alabaster Brass Pendant - 45cm", position: 0 },
+    { sku: "LNR-SCN-BLK-60", url: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80", altText: "Black Linear Wall Sconce - 60cm", position: 0 },
+    { sku: "TER-VAS-RAW-TRI", url: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=1200&q=80", altText: "Raw Terracotta Vase Trio", position: 0 },
+    { sku: "CRM-DIN-OTM-16", url: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1200&q=80", altText: "Off-white Ceramic Dining Set - 16 pieces", position: 0 },
+    { sku: "MOD-KTN-MRB-180", url: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80", altText: "Moderna Marble and Walnut Kitchen Island", position: 0 },
+    { sku: "JUT-RUG-NAT-5X8", url: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80", altText: "Natural Jute Rug - 5 by 8 feet", position: 0 },
+    { sku: "JUT-RUG-NAT-8X10", url: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80", altText: "Natural Jute Rug - 8 by 10 feet", position: 0 },
+  ];
+
+  const variantImagesToCreate = [];
+  for (const image of variantImageSeeds) {
+    const variant = await prisma.productVariant.findUnique({
+      where: { sku: image.sku },
+      select: { id: true },
+    });
+    if (!variant) {
+      throw new Error(`Cannot seed variant image: SKU ${image.sku} was not found.`);
+    }
+    variantImagesToCreate.push({
+      variantId: variant.id,
+      url: image.url,
+      altText: image.altText,
+      position: image.position,
+    });
+  }
+  await prisma.productVariantImage.createMany({
+    data: variantImagesToCreate,
+    skipDuplicates: true,
+  });
+
   // 8. VERIFIED CUSTOMER REVIEWS
   console.log("⭐ Seeding verified buyer reviews and seller responses...");
   await prisma.review.createMany({
@@ -1716,17 +1757,19 @@ async function main() {
   console.log("==================================================");
   console.log("Summary of Seeded Entities:");
   console.log(`- Districts: ${BANGLADESH_64_DISTRICTS.length} across 8 divisions`);
-  console.log("- Superadmin: admin@premily.com / 01700000001 (Pass: admin123)");
+  console.log("- Development superadmin seeded (use local-only credentials from your seed documentation).");
   console.log("- Sellers:");
-  console.log("    1. Aura Home Studio (Verified Luxury): rummanma17@gmail.com / 01711111111");
-  console.log("    2. Lumina Lighting Co. (Verified Lighting): kamrul@lumina.bd / 01822222222");
-  console.log("    3. Clay & Craft Pottery (Pending Verification): nazmul@claycraft.com / 01933333333");
-  console.log("    4. RFL Home Solutions (Official PREMILY Mart Partner): partner@rflbd.com / 01744444444");
-  console.log("    5. Heritage Jute & Weaves (Unverified Draft): tanvir@heritagejute.bd / 01555555555");
-  console.log("    6. Dhaka Luxury Imports (Rejected Suspended): info@dhakaluxury.xyz / 01766666666");
+  console.log("    1. Aura Home Studio (Verified Luxury)");
+  console.log("    2. Lumina Lighting Co. (Verified Lighting)");
+  console.log("    3. Clay & Craft Pottery (Pending Verification)");
+  console.log("    4. RFL Home Solutions (PRAN-RFL affiliated brand store)");
+  console.log("    5. Heritage Jute & Weaves (Unverified Draft)");
+  console.log("    6. Dhaka Luxury Imports (Rejected Suspended)");
   console.log("- Customers: 5 phone-first customer accounts (Tahmid, Farzana, Mahbub, Shabnam, Nusrat)");
+  console.log(`- Brands: ${brandSeeds.length} approved brand records`);
   console.log("- Categories: 6 luxury categories (Furniture, Lighting, Living, Decor, Kitchen, Textiles)");
-  console.log("- Products: 10 handcrafted products with variants and image galleries");
+  console.log(`- Products: 10 products, ${variantImageSeeds.length} variant-specific images, plus product galleries`);
+  console.log("- Trial extensions: approved, pending, and rejected request examples");
   console.log("- Campaigns: 2 active campaigns (Flash Sale 40% Gala, Dhaka Artisan Heritage)");
   console.log("- Customer Orders: 5 orders spanning PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED");
   console.log("- Payments: bKash, Nagad, and Cash On Delivery records");

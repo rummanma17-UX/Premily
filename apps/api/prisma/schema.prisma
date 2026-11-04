@@ -27,6 +27,8 @@ model User {
   verifiedPayments  Payment[]          @relation("PaymentVerifier")
   reviews           Review[]           @relation("CustomerReviews")
   addresses         UserAddress[]      @relation("CustomerAddresses")
+  trialExtensionRequests         TrialExtensionRequest[] @relation("TrialExtensionRequester")
+  reviewedTrialExtensionRequests TrialExtensionRequest[] @relation("TrialExtensionReviewer")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,6 +75,9 @@ model Store {
   sellerId    String      @unique
   seller      User        @relation("StoreOwner", fields: [sellerId], references: [id], onDelete: Restrict)
 
+  brandId String?
+  brand   Brand? @relation(fields: [brandId], references: [id])
+
   slug        String      @unique
   displayName String
   description String?
@@ -99,15 +104,15 @@ model Store {
   nidNumber           String?
   verificationNote    String?
 
-  // Store-specific shipping rate overrides
-  insideDistrictCost  Decimal?                @db.Decimal(10, 2) // Custom rate for seller's local district
-  outsideDistrictCost Decimal?                @db.Decimal(10, 2) // Custom rate for outside districts
-  homeDistrict        String?                                    // Seller's base district (e.g. "Chattogram")
+  // Seller configures two rates: their home district and every other district.
+  // Null means use the platform's DistrictShipping default for the destination.
+  insideDistrictCost  Decimal? @db.Decimal(10, 2)
+  outsideDistrictCost Decimal? @db.Decimal(10, 2)
+  homeDistrict        String?  // Seller's base district (e.g. "Chattogram")
 
   products      Product[]
   orders        Order[]
   subscription  SellerSubscription?
-  shippingRates StoreShippingRate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -133,20 +138,19 @@ enum StoreVerificationStatus {
   REJECTED
 }
 
-model StoreShippingRate {
-  id           String   @id @default(cuid())
-  storeId      String
-  store        Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  districtName String   // Specific district (e.g. "Sylhet")
-  rate         Decimal  @db.Decimal(10, 2)
+model Brand {
+  id       String  @id @default(cuid())
+  name     String  @unique
+  slug     String  @unique
+  isActive Boolean @default(true)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  stores Store[]
 
-  @@unique([storeId, districtName])
-  @@map("store_shipping_rates")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("brands")
 }
-
 // ==========================================
 // NATIONWIDE LOGISTICS (DEFAULT DISTRICT RATES)
 // ==========================================
@@ -184,11 +188,21 @@ model SellerSubscription {
 
   status SubscriptionStatus @default(TRIALING)
 
-  trialStartsAt      DateTime  @default(now())
-  trialEndsAt        DateTime
+  // Created only when an existing CUSTOMER completes seller onboarding
+  // and activates the free-trial plan. It does not start at customer signup.
+  trialStartsAt DateTime // Explicitly set when the seller activates the free trial
+  trialEndsAt   DateTime // Calculated from trialStartsAt and the configured trial length
+
+  // Paid billing period. On every successful payment, the new period starts
+  // at the actual payment time and ends one calendar month later.
   currentPeriodStart DateTime?
   currentPeriodEnd   DateTime?
 
+  // Set when a renewal becomes due: currentPeriodEnd + 3 days.
+  // Clear it after successful payment or when the subscription is cancelled.
+  gracePeriodEndsAt DateTime?
+
+  // Cancellation is scheduled for the end of the already-paid period.
   cancelAtPeriodEnd Boolean   @default(false)
   cancelledAt       DateTime?
 
@@ -196,7 +210,8 @@ model SellerSubscription {
   providerCustomerId     String?
   providerSubscriptionId String? @unique
 
-  payments SubscriptionPayment[]
+  payments                SubscriptionPayment[]
+  trialExtensionRequests  TrialExtensionRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -243,6 +258,45 @@ enum SubscriptionPaymentStatus {
   PAID
   FAILED
   REFUNDED
+}
+
+// Sellers may request either one or two additional trial months.
+enum TrialExtensionDuration {
+  ONE_MONTH
+  TWO_MONTHS
+}
+
+enum TrialExtensionRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model TrialExtensionRequest {
+  id             String             @id @default(cuid())
+  subscriptionId String
+  subscription   SellerSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+
+  requestedById String
+  requestedBy   User   @relation("TrialExtensionRequester", fields: [requestedById], references: [id], onDelete: Restrict)
+
+  requestedDuration TrialExtensionDuration
+  reason            String?
+  status            TrialExtensionRequestStatus @default(PENDING)
+
+  reviewedById String?
+  reviewedBy   User?     @relation("TrialExtensionReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+  adminNote    String?
+  appliedAt    DateTime? // Set when an approved extension is applied to trialEndsAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subscriptionId, status, createdAt])
+  @@index([requestedById, createdAt])
+  @@index([status, createdAt])
+  @@map("trial_extension_requests")
 }
 
 // ==========================================
@@ -327,6 +381,7 @@ model ProductVariant {
 
   cartItems  CartItem[]
   orderItems OrderItem[]
+  images     ProductVariantImage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -346,6 +401,20 @@ model ProductImage {
 
   @@unique([productId, position])
   @@map("product_images")
+}
+
+// Optional gallery images for a specific variant (e.g. a particular color).
+model ProductVariantImage {
+  id        String @id @default(cuid())
+  url       String
+  altText   String?
+  position  Int    @default(0)
+
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([variantId, position])
+  @@map("product_variant_images")
 }
 
 // ==========================================
@@ -377,6 +446,7 @@ enum CampaignType {
   FLASH_SALE
   FESTIVAL
   SEASONAL
+  FREE_DELIVERY
   CLEARANCE
 }
 
@@ -609,3 +679,57 @@ enum PaymentStatus {
   FAILED
   REFUNDED
 }
+
+
+/**
+
+Look at prisma.schema and answer these question.
+
+is that isactive neccessary? and why?
+ model User {
+  isActive  Boolean @default(true)
+} 
+
+what is that
+@@index([userId, isDefault])
+
+U am kinda confused explain this because I feel like it kinda doesnt meets my expectation. also because there should be 2 rates one inside dist and another outside dist
+model StoreShippingRate {
+  id           String   @id @default(cuid())
+  storeId      String
+  store        Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  districtName String   // Specific district (e.g. "Sylhet")
+  rate         Decimal  @db.Decimal(10, 2)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([storeId, districtName])
+  @@map("store_shipping_rates")
+}
+
+why this isactive in here too? is that redundent?
+model Brand{
+  isActive Boolean @default(true)
+}
+
+and can you explain me why all the status for (deeply)?
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+why review should have status? review should be auto approved
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+
+
+**/
