@@ -37,9 +37,9 @@ export function ProductBuyBox({ product }: { product: Product }) {
   const inStockCount = product.variants.reduce((acc, v) => acc + v.stock, 0);
   const isOutOfStock = selectedVariant.stock <= 0;
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (isOutOfStock) return;
-    CartService.addToCart({
+    await CartService.addToCart({
       productId: product.id,
       productSlug: product.slug,
       name: product.name,
@@ -48,7 +48,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
       price,
       compareAtPrice: compareAt,
       quantity,
-      imageUrl: product.images[0]?.url || "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&q=80",
+      imageUrl: product.images[0]?.url || "",
       storeId: product.store.id,
       storeSlug: product.store.slug,
       storeName: product.store.displayName,
@@ -59,7 +59,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (isOutOfStock) return;
     CartService.addToCart({
       productId: product.id,
