@@ -54,11 +54,7 @@ export async function getProductBySlug(slug: string, storeSlug?: string | undefi
       variants: true,
       images: { orderBy: { position: "asc" } },
       category: true,
-      store: {
-        include: {
-          shippingRates: true,
-        },
-      },
+      store: true,
       reviews: {
         take: 5,
         orderBy: { createdAt: "desc" },
