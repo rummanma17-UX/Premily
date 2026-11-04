@@ -36,9 +36,9 @@ export default function AdminPanelPage() {
     "vendors" | "verifications" | "orders" | "logistics" | "categories" | "campaigns" | "metrics"
   >("vendors");
 
-  const [stores, setStores] = useState<StoreRecord[]>(() => StoreService.getStores());
-  const [orders, setOrders] = useState<OrderRecord[]>(() => StoreService.getOrders());
-  const [campaigns, setCampaigns] = useState<CampaignRecord[]>(() => StoreService.getCampaigns());
+  const [stores, setStores] = useState<StoreRecord[]>([]);
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [vendorFilter, setVendorFilter] = useState<"ALL" | "MART" | "VERIFIED" | "PENDING">("ALL");
 
@@ -53,6 +53,7 @@ export default function AdminPanelPage() {
   const [adminBanner, setAdminBanner] = useState<string | null>(null);
 
   useEffect(() => {
+    void StoreService.loadAdminData().catch((error) => notify(error instanceof Error ? error.message : "Unable to load admin data."));
     const handleUpdate = () => {
       setStores(StoreService.getStores());
       setOrders(StoreService.getOrders());
@@ -74,10 +75,7 @@ export default function AdminPanelPage() {
   const handleConfirmMartToggle = () => {
     if (!martTargetStore) return;
     const nextStatus = !martTargetStore.isPremilyMart;
-    StoreService.updateStore({
-      id: martTargetStore.id,
-      isPremilyMart: nextStatus,
-    });
+    void StoreService.updateStore({ id: martTargetStore.id, isPremilyMart: nextStatus }).then(() => StoreService.loadAdminData()).catch((error) => notify(error instanceof Error ? error.message : "Could not update Mart status."));
     setMartTargetStore(null);
     notify(
       nextStatus
@@ -88,21 +86,13 @@ export default function AdminPanelPage() {
 
   // Rule 3: Seller Verification Approval / Rejection
   const handleApproveVerification = (storeId: string) => {
-    StoreService.updateStore({
-      id: storeId,
-      verificationStatus: "VERIFIED",
-      verificationNote: "Verified and approved by PREMILY Superadmin.",
-    });
+    void StoreService.updateStore({ id: storeId, verificationStatus: "VERIFIED", verificationNote: "Verified and approved by PREMILY Superadmin." }).then(() => StoreService.loadAdminData()).catch((error) => notify(error instanceof Error ? error.message : "Could not approve verification."));
     setReviewStore(null);
     notify("Seller Trade License & NID approved as VERIFIED.");
   };
 
   const handleRejectVerification = (storeId: string) => {
-    StoreService.updateStore({
-      id: storeId,
-      verificationStatus: "REJECTED",
-      verificationNote: rejectionReason || "Document verification rejected. Please resubmit valid trade license.",
-    });
+    void StoreService.updateStore({ id: storeId, verificationStatus: "REJECTED", verificationNote: rejectionReason || "Document verification rejected. Please resubmit valid trade license." }).then(() => StoreService.loadAdminData()).catch((error) => notify(error instanceof Error ? error.message : "Could not reject verification."));
     setReviewStore(null);
     setRejectionReason("");
     notify("Seller verification marked as REJECTED.");
@@ -110,21 +100,7 @@ export default function AdminPanelPage() {
 
   // Payment Verification for bKash / Nagad
   const handleVerifyPayment = (orderId: string) => {
-    StoreService.verifyOrderPayment(orderId, "VERIFIED");
-    notify("MFS Transaction ID verified successfully!");
-  };
-
-  // Toggle Campaign
-  const handleToggleCampaign = (id: string) => {
-    StoreService.toggleCampaign(id);
-  };
-
-  // Reset to seed data
-  const handleResetData = () => {
-    if (confirm("Reset all PREMILY demo data back to architectural default state?")) {
-      StoreService.resetToDefaults();
-      notify("Platform data restored to default seed state.");
-    }
+    void StoreService.verifyOrderPayment(orderId).then(() => notify("Payment proof verified successfully.")).catch((error) => notify(error instanceof Error ? error.message : "Payment verification failed."));
   };
 
   // Filtered stores
@@ -145,7 +121,7 @@ export default function AdminPanelPage() {
   const pendingVerificationCount = stores.filter((s) => s.verificationStatus === "PENDING").length;
   const martPartnerCount = stores.filter((s) => s.isPremilyMart).length;
   const totalPlatformGMV = orders.reduce((sum, o) => sum + o.total, 0);
-  const totalSubscriptionMRR = stores.filter((s) => s.subscription.status === "ACTIVE").length * 150;
+  const totalSubscriptionMRR = 0;
 
   return (
     <div className="min-h-screen bg-cream flex flex-col lg:flex-row">
@@ -296,7 +272,7 @@ export default function AdminPanelPage() {
 
           <button
             type="button"
-            onClick={handleResetData}
+            onClick={() => void StoreService.loadAdminData().catch((error) => notify(error instanceof Error ? error.message : "Refresh failed."))}
             className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-gold/30 text-[10px] text-light-gold hover:bg-white/5 transition cursor-pointer"
           >
             <RotateCcw className="w-3 h-3" />
@@ -784,8 +760,8 @@ export default function AdminPanelPage() {
                           : "gbtn"
                       }`}
                     >
-                      {camp.isActive ? "Pause Campaign" : "Activate Campaign"}
-                    </button>
+                      Campaign controls are not available in the API yet
+                    </span>
                   </div>
                 </div>
               ))}
