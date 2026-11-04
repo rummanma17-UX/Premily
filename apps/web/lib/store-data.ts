@@ -270,7 +270,7 @@ function notifyDataChanged() {
 }
 
 async function fetchCampaigns(admin = false): Promise<CampaignRecord[]> {
-  const endpoint = admin ? "/api/campaigns/admin" : "/api/campaigns";
+  const endpoint = "/api/campaigns";
   const records = await apiFetch<ApiCampaign[]>(endpoint);
   return records.map(mapCampaign);
 }
@@ -288,7 +288,7 @@ export const StoreService = {
     const [storeResult, orderResult, campaignResult] = await Promise.all([
       apiFetch<{ stores: ApiStore[] }>("/api/admin/stores?limit=100"),
       apiFetch<{ orders: ApiOrder[] }>("/api/admin/orders?limit=100"),
-      fetchCampaigns(true),
+      fetchCampaigns(),
     ]);
     cache.stores = storeResult.stores.map(mapStore);
     cache.orders = orderResult.orders.map(mapOrder);
@@ -301,12 +301,12 @@ export const StoreService = {
     const [rawStore, rawProducts, rawOrders] = await Promise.all([
       apiFetch<ApiStore>("/api/stores/mine"),
       apiFetch<ApiProduct[]>("/api/products/mine"),
-      apiFetch<ApiOrder[]>("/api/orders/seller"),
+      apiFetch<{ orders: ApiOrder[] }>("/api/admin/orders?limit=100"),
     ]);
     const store = mapStore(rawStore);
     cache.stores = [store];
     cache.products = rawProducts.map((product) => mapProduct({ ...product, store: { ...product.store, ...rawStore } }));
-    cache.orders = rawOrders.map((order) => mapOrder({ ...order, store: order.store ?? rawStore }));
+    cache.orders = rawOrders.orders.filter((order) => order.storeId === rawStore.id).map((order) => mapOrder({ ...order, store: order.store ?? rawStore }));
     notifyDataChanged();
     return { store, products: cache.products, orders: cache.orders };
   },
@@ -330,7 +330,7 @@ export const StoreService = {
         body: JSON.stringify({ isPremilyMart: updated.isPremilyMart }),
       });
     }
-    if (updated.verificationStatus !== undefined) {
+    if (updated.verificationStatus !== undefined && current) {
       raw = await apiFetch<ApiStore>(`/api/admin/stores/${updated.id}/verification`, {
         method: "PATCH",
         body: JSON.stringify({
