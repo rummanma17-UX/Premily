@@ -5,7 +5,6 @@ export async function getStoreBySlug(slug: string) {
   const store = await prisma.store.findUnique({
     where: { slug },
     include: {
-      shippingRates: true,
       _count: {
         select: {
           products: { where: { status: "ACTIVE" } },
