@@ -63,6 +63,8 @@ export type Store = {
   logoUrl: string | null;
   bannerUrl: string | null;
   primaryColor: string | null;
+  status?: "DRAFT" | "PENDING_REVIEW" | "ACTIVE" | "SUSPENDED" | "CLOSED";
+  isPublished?: boolean;
   isPremilyMart: boolean;
   verificationStatus: "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED";
   verifiedAt?: string | null;
