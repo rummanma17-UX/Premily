@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PREMILY | Seller Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:"#D4B375", deep:"#B8924B", lightgold:"#E3C793",
+            dark:"#1E1916", cream:"#FAF3E8", muted:"#68605B",
+            bordergold:"#EADFCD"
+          },
+          fontFamily: {
+            sans:["Plus Jakarta Sans","sans-serif"],
+            serif:["Cinzel","serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { --gold:#D4B375;--deep:#B8924B;--dark:#1E1916;--cream:#FAF3E8;--muted:#68605B;--line:#EADFCD; }
+    * { box-sizing:border-box; }
+    body { margin:0;background:#F3EFE9;color:var(--dark);font-family:"Plus Jakarta Sans",sans-serif; }
+    .sidebar {
+      width:250px;background:#fff;border-right:1px solid var(--line);
+      flex-shrink:0;display:flex;flex-direction:column;
+    }
+    .nav-item {
+      display:flex;align-items:center;gap:12px;width:100%;
+      padding:11px 13px;border-radius:11px;color:var(--muted);
+      font-size:12px;font-weight:600;text-align:left;transition:.2s;
+    }
+    .nav-item:hover,.nav-item.active { background:var(--cream);color:var(--deep); }
+    .nav-item.active { font-weight:800; }
+    .card { background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 14px rgba(30,25,22,.025); }
+    .gbtn { background:linear-gradient(135deg,#E3C793,#B8924B);color:var(--dark);font-weight:800;transition:.2s; }
+    .gbtn:hover { filter:brightness(1.05);transform:translateY(-1px); }
+    .view { display:none; }
+    .view.active { display:block;animation:appear .22s ease; }
+    @keyframes appear { from {opacity:0;transform:translateY(5px)} to {opacity:1;transform:none} }
+    .field { width:100%;border:1px solid var(--line);background:white;border-radius:10px;padding:10px 12px;font-size:12px;outline:none; }
+    .field:focus { border-color:var(--deep);box-shadow:0 0 0 3px #D4B37522; }
+    .pill { display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;font-size:9px;font-weight:800; }
+    .green { background:#DCFCE7;color:#166534; }
+    .amber { background:#FEF3C7;color:#92400E; }
+    .red { background:#FFE4E6;color:#9F1239; }
+    .blue { background:#DBEAFE;color:#1D4ED8; }
+    .gray { background:#F1F0EE;color:#625D57; }
+    .metric-icon { width:38px;height:38px;border-radius:12px;background:var(--cream);color:var(--deep);display:grid;place-items:center; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%;border-collapse:collapse;white-space:nowrap;font-size:11px; }
+    th { padding:13px 14px;color:var(--muted);background:#FAF8F4;font-size:10px;text-transform:uppercase;letter-spacing:.06em;text-align:left; }
+    td { padding:14px;border-top:1px solid #F0E9DE; }
+    tr:hover td { background:#FFFCF7; }
+    .bar { height:8px;background:#F1ECE4;border-radius:20px;overflow:hidden; }
+    .bar span { display:block;height:100%;background:linear-gradient(90deg,#E3C793,#B8924B);border-radius:20px; }
+    dialog { border:0;border-radius:18px;padding:0;width:min(560px,calc(100% - 28px));box-shadow:0 25px 90px #1e191655; }
+    dialog::backdrop { background:#1e191677;backdrop-filter:blur(3px); }
+    .mobile-overlay { display:none; }
+    @media(max-width:1023px) {
+      .sidebar { position:fixed;z-index:60;inset:0 auto 0 0;transform:translateX(-100%);transition:.25s; }
+      .sidebar.open { transform:translateX(0); }
+      .mobile-overlay.show { display:block;position:fixed;inset:0;background:#0008;z-index:50; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="min-h-screen flex">
+  <div id="overlay" class="mobile-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar min-h-screen">
+    <div class="p-5 border-b border-bordergold">
+      <div class="font-serif text-lg font-bold tracking-wider">PREMILY<span class="text-deep">.</span></div>
+      <div class="text-[9px] uppercase tracking-[.18em] text-muted mt-1">Seller workspace</div>
+      <div class="mt-5 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-dark text-gold grid place-items-center font-bold text-xs">AH</div>
+        <div class="min-w-0">
+          <b class="block text-xs truncate">Aura Home Studio</b>
+          <span class="pill green mt-1">Verified seller</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+      <p class="px-3 pt-3 pb-2 text-[9px] uppercase tracking-[.17em] text-muted font-bold">Store management</p>
+      <button class="nav-item active" data-view="overview"><i data-lucide="layout-dashboard" class="w-4 h-4"></i>Overview</button>
+      <button class="nav-item" data-view="products"><i data-lucide="package" class="w-4 h-4"></i>My Products <span class="ml-auto text-[9px] bg-cream text-deep px-2 py-1 rounded-full">18</span></button>
+      <button class="nav-item" data-view="orders"><i data-lucide="shopping-bag" class="w-4 h-4"></i>Store Orders <span class="ml-auto text-[9px] bg-amber-100 text-amber-800 px-2 py-1 rounded-full">4</span></button>
+      <button class="nav-item" data-view="reviews"><i data-lucide="star" class="w-4 h-4"></i>Customer Reviews</button>
+
+      <p class="px-3 pt-6 pb-2 text-[9px] uppercase tracking-[.17em] text-muted font-bold">Store configuration</p>
+      <button class="nav-item" data-view="shipping"><i data-lucide="truck" class="w-4 h-4"></i>Shipping Settings</button>
+      <button class="nav-item" data-view="storefront"><i data-lucide="store" class="w-4 h-4"></i>Storefront Profile</button>
+      <button class="nav-item" data-view="verification"><i data-lucide="shield-check" class="w-4 h-4"></i>Verification</button>
+      <button class="nav-item" data-view="subscription"><i data-lucide="credit-card" class="w-4 h-4"></i>Subscription</button>
+    </nav>
+
+    <div class="p-4 border-t border-bordergold bg-cream/40">
+      <div class="flex gap-3 items-center">
+        <div class="w-9 h-9 rounded-full bg-dark text-gold grid place-items-center font-bold text-xs">AH</div>
+        <div class="flex-1 min-w-0"><b class="block text-xs truncate">Arif Hossain</b><small class="text-[10px] text-muted">Store owner</small></div>
+        <button title="Sign out" onclick="alert('Demo: sign out')"><i data-lucide="log-out" class="w-4 h-4 text-muted"></i></button>
+      </div>
+      <a href="/" class="block text-[10px] font-bold text-deep mt-4">← View marketplace</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 min-w-0">
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-bordergold px-4 sm:px-7 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3 min-w-0">
+        <button class="lg:hidden p-2 rounded-lg hover:bg-cream" onclick="toggleSidebar()"><i data-lucide="menu"></i></button>
+        <div>
+          <div class="text-[10px] text-muted">SELLER PORTAL / AURA HOME STUDIO</div>
+          <h1 id="pageTitle" class="font-bold text-sm sm:text-base">Store Overview</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-4">
+        <span class="hidden sm:inline-flex pill green"><span class="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span> Store active</span>
+        <button class="relative p-2 rounded-xl border border-bordergold" onclick="alert('Demo: notifications')"><i data-lucide="bell" class="w-4 h-4"></i><span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span></button>
+        <a href="#" class="text-[10px] text-deep font-bold hidden sm:block">View public store ↗</a>
+      </div>
+    </header>
+
+    <div class="max-w-[1450px] mx-auto p-4 sm:p-7 space-y-6">
+
+      <!-- OVERVIEW -->
+      <section id="view-overview" class="view active space-y-6">
+        <div class="card p-5 sm:p-6 bg-gradient-to-r from-dark to-[#3A332E] text-cream flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span class="text-[9px] uppercase tracking-[.2em] text-gold font-bold">Your business at a glance</span>
+            <h2 class="font-serif text-xl sm:text-2xl font-bold mt-2">Welcome back, Arif.</h2>
+            <p class="text-[10px] text-cream/65 mt-2">Your store is active. You have 4 orders that need attention.</p>
+          </div>
+          <button class="gbtn rounded-full px-5 py-3 text-[10px] flex items-center gap-2" onclick="openProductModal()"><i data-lucide="plus" class="w-4 h-4"></i> Add new product</button>
+        </div>
+
+        <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+          <div class="card p-4 sm:p-5"><div class="flex justify-between"><span class="text-[10px] text-muted font-semibold">Gross sales</span><span class="metric-icon"><i data-lucide="wallet" class="w-4 h-4"></i></span></div><b class="block text-xl sm:text-2xl mt-3">৳3,40,500</b><span class="text-[10px] text-emerald-700 font-bold">↑ 14.2% <span class="text-muted font-normal">this month</span></span></div>
+          <div class="card p-4 sm:p-5"><div class="flex justify-between"><span class="text-[10px] text-muted font-semibold">Store orders</span><span class="metric-icon"><i data-lucide="shopping-bag" class="w-4 h-4"></i></span></div><b class="block text-xl sm:text-2xl mt-3">128</b><span class="text-[10px] text-muted">12 new this week</span></div>
+          <div class="card p-4 sm:p-5"><div class="flex justify-between"><span class="text-[10px] text-muted font-semibold">Active products</span><span class="metric-icon"><i data-lucide="package" class="w-4 h-4"></i></span></div><b class="block text-xl sm:text-2xl mt-3">18</b><span class="text-[10px] text-amber-700 font-bold">2 products low on stock</span></div>
+          <div class="card p-4 sm:p-5"><div class="flex justify-between"><span class="text-[10px] text-muted font-semibold">Average rating</span><span class="metric-icon"><i data-lucide="star" class="w-4 h-4"></i></span></div><b class="block text-xl sm:text-2xl mt-3">4.9 ★</b><span class="text-[10px] text-muted">Based on 312 reviews</span></div>
+        </div>
+
+        <div class="grid xl:grid-cols-3 gap-4">
+          <div class="card p-5 xl:col-span-2">
+            <div class="flex items-start justify-between gap-3">
+              <div><h3 class="font-bold text-sm">Sales performance</h3><p class="text-[10px] text-muted mt-1">Gross order value · BDT</p></div>
+              <select class="field !w-auto"><option>Last 30 days</option><option>Last 7 days</option><option>This year</option></select>
+            </div>
+            <div class="h-52 relative mt-5">
+              <div class="absolute inset-0 flex flex-col justify-between">
+                <div class="border-b border-dashed border-bordergold"></div><div class="border-b border-dashed border-bordergold"></div><div class="border-b border-dashed border-bordergold"></div><div class="border-b border-bordergold"></div>
+              </div>
+              <svg viewBox="0 0 700 200" preserveAspectRatio="none" class="absolute inset-0 w-full h-full">
+                <defs><linearGradient id="sellerArea" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4B375" stop-opacity=".4"/><stop offset="1" stop-color="#D4B375" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 170 C55 160 65 140 115 145 S185 105 230 118 S300 80 350 90 S415 50 465 70 S550 25 590 45 S650 18 700 12 L700 200 L0 200 Z" fill="url(#sellerArea)"/>
+                <path d="M0 170 C55 160 65 140 115 145 S185 105 230 118 S300 80 350 90 S415 50 465 70 S550 25 590 45 S650 18 700 12" fill="none" stroke="#B8924B" stroke-width="3"/>
+              </svg>
+            </div>
+            <div class="flex justify-between text-[9px] text-muted mt-3"><span>Oct 06</span><span>Oct 12</span><span>Oct 18</span><span>Oct 24</span><span>Oct 30</span><span>Nov 05</span></div>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-bold text-sm">Order pipeline</h3><p class="text-[10px] text-muted mt-1">Where your orders currently stand</p>
+            <div class="space-y-4 mt-6">
+              <div><div class="flex justify-between text-[10px] mb-2"><span>Pending</span><b>4</b></div><div class="bar"><span style="width:25%"></span></div></div>
+              <div><div class="flex justify-between text-[10px] mb-2"><span>Processing</span><b>8</b></div><div class="bar"><span style="width:48%"></span></div></div>
+              <div><div class="flex justify-between text-[10px] mb-2"><span>Shipped</span><b>6</b></div><div class="bar"><span style="width:37%"></span></div></div>
+              <div><div class="flex justify-between text-[10px] mb-2"><span>Delivered</span><b>110</b></div><div class="bar"><span style="width:90%"></span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid xl:grid-cols-3 gap-4">
+          <div class="card xl:col-span-2 overflow-hidden">
+            <div class="p-5 border-b border-bordergold flex justify-between items-center"><div><h3 class="font-bold text-sm">Latest orders</h3><p class="text-[10px] text-muted mt-1">Your most recent customer orders</p></div><button onclick="switchView('orders')" class="text-deep text-[10px] font-bold">View all →</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>District</th><th>Total</th><th>Status</th></tr></thead><tbody>
+              <tr><td class="font-bold">ORD-98214</td><td>Tahmid Rahman</td><td>Dhaka</td><td>৳18,570</td><td><span class="pill blue">Processing</span></td></tr>
+              <tr><td class="font-bold">ORD-98215</td><td>Farzana Chowdhury</td><td>Chattogram</td><td>৳22,150</td><td><span class="pill blue">Shipped</span></td></tr>
+              <tr><td class="font-bold">ORD-98217</td><td>Shabnam Kabir</td><td>Dhaka</td><td>৳24,070</td><td><span class="pill amber">Pending</span></td></tr>
+            </tbody></table></div>
+          </div>
+          <div class="card p-5">
+            <div class="flex justify-between items-center"><h3 class="font-bold text-sm">Inventory alerts</h3><span class="pill amber">2 alerts</span></div>
+            <div class="space-y-4 mt-5">
+              <div class="flex gap-3"><span class="metric-icon"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span><div><b class="block text-xs">Travertine Coffee Table</b><small class="text-[10px] text-muted">Only 2 units remaining</small></div></div>
+              <div class="flex gap-3"><span class="metric-icon"><i data-lucide="package" class="w-4 h-4"></i></span><div><b class="block text-xs">Velvet Accent Armchair</b><small class="text-[10px] text-muted">Only 3 units remaining</small></div></div>
+              <button onclick="switchView('products')" class="text-[10px] font-bold text-deep">Manage inventory →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section id="view-products" class="view space-y-5">
+        <div class="flex flex-wrap justify-between items-end gap-3">
+          <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Your catalogue</p><h2 class="font-serif text-2xl font-bold mt-1">My Products</h2><p class="text-xs text-muted mt-1">Manage listings, variants, pricing, and stock levels.</p></div>
+          <button class="gbtn rounded-xl px-4 py-2.5 text-[10px] flex items-center gap-2" onclick="openProductModal()"><i data-lucide="plus" class="w-4 h-4"></i> Add product</button>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="card p-4"><small class="text-muted">All products</small><b id="productCount" class="block text-2xl mt-1">18</b></div>
+          <div class="card p-4"><small class="text-muted">Active</small><b class="block text-2xl mt-1 text-emerald-700">14</b></div>
+          <div class="card p-4"><small class="text-muted">Draft</small><b class="block text-2xl mt-1">2</b></div>
+          <div class="card p-4"><small class="text-muted">Low stock</small><b class="block text-2xl mt-1 text-amber-700">2</b></div>
+        </div>
+        <div class="card p-4">
+          <div class="flex flex-col sm:flex-row gap-2 mb-4">
+            <input id="productSearch" class="field sm:max-w-sm" placeholder="Search your products...">
+            <select class="field sm:max-w-[170px]" id="productStatus"><option value="">All statuses</option><option>Active</option><option>Draft</option><option>Archived</option></select>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Product</th><th>Variants</th><th>Price range</th><th>Total stock</th><th>Sales</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="productRows">
+              <tr><td><div class="flex items-center gap-3"><img class="w-10 h-10 rounded-lg object-cover" src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100"><span><b>Aura Curved Lounge Chair</b><small class="block text-muted">Furniture</small></span></div></td><td>3</td><td>৳18,500–24,000</td><td><span class="pill green">12 units</span></td><td>140</td><td><span class="pill green">Active</span></td><td><button class="text-deep font-bold" onclick="alert('Demo: edit product details')">Edit</button></td></tr>
+              <tr><td><div class="flex items-center gap-3"><img class="w-10 h-10 rounded-lg object-cover" src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=100"><span><b>Velvet Accent Armchair</b><small class="block text-muted">Furniture</small></span></div></td><td>2</td><td>৳22,000</td><td><span class="pill amber">3 units</span></td><td>95</td><td><span class="pill green">Active</span></td><td><button class="text-deep font-bold" onclick="alert('Demo: edit product details')">Edit</button></td></tr>
+              <tr><td><div class="flex items-center gap-3"><img class="w-10 h-10 rounded-lg object-cover" src="https://images.unsplash.com/photo-1533090161767-e6ffed986b88?w=100"><span><b>Travertine Coffee Table</b><small class="block text-muted">Living Room</small></span></div></td><td>2</td><td>৳24,000</td><td><span class="pill amber">2 units</span></td><td>42</td><td><span class="pill green">Active</span></td><td><button class="text-deep font-bold" onclick="alert('Demo: edit product details')">Edit</button></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </section>
+
+      <!-- ORDERS -->
+      <section id="view-orders" class="view space-y-5">
+        <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Order management</p><h2 class="font-serif text-2xl font-bold mt-1">Store Orders</h2><p class="text-xs text-muted mt-1">Process customer orders and keep each order's status updated.</p></div>
+        <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+          <div class="card p-4"><small class="text-muted">Pending</small><b class="block text-2xl mt-1 text-amber-700">4</b></div>
+          <div class="card p-4"><small class="text-muted">Processing</small><b class="block text-2xl mt-1">8</b></div>
+          <div class="card p-4"><small class="text-muted">Shipped</small><b class="block text-2xl mt-1 text-blue-700">6</b></div>
+          <div class="card p-4"><small class="text-muted">Delivered</small><b class="block text-2xl mt-1 text-emerald-700">110</b></div>
+        </div>
+        <div class="card p-4">
+          <div class="flex flex-col sm:flex-row gap-2 mb-4">
+            <input id="orderSearch" class="field sm:max-w-sm" placeholder="Search order or customer...">
+            <select id="orderFilter" class="field sm:max-w-[180px]"><option value="">All statuses</option><option>Pending</option><option>Confirmed</option><option>Processing</option><option>Shipped</option><option>Delivered</option></select>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>District</th><th>Total</th><th>Payment</th><th>Status</th><th>Update</th></tr></thead>
+            <tbody id="orderRows">
+              <tr><td class="font-bold">ORD-98214</td><td>Tahmid Rahman<small class="block text-muted">01723456789</small></td><td>Lounge Chair × 1</td><td>Dhaka</td><td>৳18,570</td><td><span class="pill green">Verified · bKash</span></td><td class="status-cell"><span class="pill blue">Processing</span></td><td><select class="field !w-32 status-select" onchange="updateOrder(this)"><option>Processing</option><option>Shipped</option><option>Delivered</option></select></td></tr>
+              <tr><td class="font-bold">ORD-98215</td><td>Farzana Chowdhury<small class="block text-muted">01834567890</small></td><td>Armchair × 1</td><td>Chattogram</td><td>৳22,150</td><td><span class="pill amber">COD</span></td><td class="status-cell"><span class="pill blue">Shipped</span></td><td><select class="field !w-32 status-select" onchange="updateOrder(this)"><option>Shipped</option><option>Delivered</option></select></td></tr>
+              <tr><td class="font-bold">ORD-98217</td><td>Shabnam Kabir<small class="block text-muted">01756789012</small></td><td>Coffee Table × 1</td><td>Dhaka</td><td>৳24,070</td><td><span class="pill amber">bKash pending</span></td><td class="status-cell"><span class="pill amber">Pending</span></td><td><select class="field !w-32 status-select" onchange="updateOrder(this)"><option>Pending</option><option>Confirmed</option><option>Cancelled</option></select></td></tr>
+            </tbody>
+          </table></div>
+          <p class="text-[10px] text-muted mt-3">Order status changes in this preview are local demo actions. Real transitions must be validated by the API.</p>
+        </div>
+      </section>
+
+      <!-- REVIEWS -->
+      <section id="view-reviews" class="view space-y-5">
+        <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Customer experience</p><h2 class="font-serif text-2xl font-bold mt-1">Customer Reviews</h2><p class="text-xs text-muted mt-1">Read feedback on your products and reply publicly to customers.</p></div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="card p-4"><small class="text-muted">Average rating</small><b class="block text-2xl mt-1">4.9 ★</b></div>
+          <div class="card p-4"><small class="text-muted">Total reviews</small><b class="block text-2xl mt-1">312</b></div>
+          <div class="card p-4"><small class="text-muted">5-star reviews</small><b class="block text-2xl mt-1 text-emerald-700">278</b></div>
+          <div class="card p-4"><small class="text-muted">Replies needed</small><b class="block text-2xl mt-1 text-amber-700">7</b></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <article class="card p-5">
+            <div class="flex justify-between items-start gap-2"><div><b class="text-xs">Nusrat Jahan</b><p class="text-[10px] text-muted mt-1">Aura Curved Lounge Chair · 02 Nov 2026</p></div><span class="pill green">Verified purchase</span></div>
+            <div class="text-amber-500 mt-3">★★★★★</div>
+            <h3 class="font-bold text-sm mt-2">Beautiful craftsmanship</h3>
+            <p class="text-xs leading-relaxed text-muted mt-2">The chair looks even better in person. The fabric quality and finishing are excellent.</p>
+            <div class="mt-4 border-t border-bordergold pt-4">
+              <label class="text-[10px] font-bold">Your reply</label>
+              <textarea class="field mt-2 review-reply" rows="2" placeholder="Thank the customer or respond to feedback..."></textarea>
+              <button class="gbtn rounded-lg px-4 py-2 text-[10px] mt-2" onclick="replyReview(this)">Post reply</button>
+            </div>
+          </article>
+          <article class="card p-5">
+            <div class="flex justify-between items-start gap-2"><div><b class="text-xs">Tanvir Ahmed</b><p class="text-[10px] text-muted mt-1">Velvet Accent Armchair · 29 Oct 2026</p></div><span class="pill green">Verified purchase</span></div>
+            <div class="text-amber-500 mt-3">★★★★☆</div>
+            <h3 class="font-bold text-sm mt-2">Good product, delivery was slow</h3>
+            <p class="text-xs leading-relaxed text-muted mt-2">The quality is good, but delivery took longer than expected.</p>
+            <div class="mt-4 border-t border-bordergold pt-4">
+              <label class="text-[10px] font-bold">Your reply</label>
+              <div class="text-xs bg-cream rounded-xl p-3 mt-2">Thank you for your feedback. We will work to improve delivery timing.</div>
+              <span class="text-[9px] text-muted mt-2 block">Seller replied</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SHIPPING -->
+      <section id="view-shipping" class="view space-y-5">
+        <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Delivery configuration</p><h2 class="font-serif text-2xl font-bold mt-1">Shipping Settings</h2><p class="text-xs text-muted mt-1">Set your dispatch district and two simple shipping rates.</p></div>
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="card p-5 lg:col-span-2">
+            <h3 class="font-bold text-sm">Your delivery rates</h3>
+            <p class="text-[10px] text-muted mt-1 mb-5">These values are used when calculating delivery fees for orders from your store.</p>
+            <form id="shippingForm" onsubmit="saveShipping(event)" class="space-y-4">
+              <label class="block text-xs font-bold">Store's home district
+                <select id="homeDistrict" class="field mt-1">
+                  <option>Dhaka</option><option>Sylhet</option><option>Chattogram</option><option>Rajshahi</option><option>Khulna</option><option>Barishal</option><option>Rangpur</option><option>Mymensingh</option>
+                </select>
+              </label>
+              <div class="grid sm:grid-cols-2 gap-4">
+                <label class="block text-xs font-bold">Inside your district (৳)
+                  <input id="insideRate" type="number" min="0" class="field mt-1" value="70" required>
+                  <small class="block text-[10px] text-muted mt-1">Applied when the customer is in your home district.</small>
+                </label>
+                <label class="block text-xs font-bold">Outside your district (৳)
+                  <input id="outsideRate" type="number" min="0" class="field mt-1" value="150" required>
+                  <small class="block text-[10px] text-muted mt-1">Applied for all other destination districts.</small>
+                </label>
+              </div>
+              <button class="gbtn rounded-xl px-5 py-2.5 text-[10px]">Save shipping rules</button>
+            </form>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-bold text-sm">Rate calculator</h3>
+            <p class="text-[10px] text-muted mt-1">Preview your shipping fee.</p>
+            <label class="block text-[10px] font-bold mt-5">Customer district<select id="destination" class="field mt-1" onchange="calculateDemoShipping()"><option>Dhaka</option><option>Sylhet</option><option>Chattogram</option><option>Rajshahi</option></select></label>
+            <div class="bg-cream rounded-xl p-4 mt-4">
+              <small class="text-[10px] text-muted">Estimated delivery charge</small>
+              <b id="shippingPreview" class="block text-3xl mt-1">৳70</b>
+              <small id="shippingType" class="text-[10px] text-muted">Inside district</small>
+            </div>
+            <p class="text-[10px] text-muted mt-4 leading-relaxed">Platform default rates may apply when a seller rate is not configured. Confirm the final calculation with the checkout API.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- STOREFRONT -->
+      <section id="view-storefront" class="view space-y-5">
+        <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Brand identity</p><h2 class="font-serif text-2xl font-bold mt-1">Storefront Profile</h2><p class="text-xs text-muted mt-1">Manage how customers see your business on the Premily marketplace.</p></div>
+        <div class="card p-5">
+          <div class="h-40 rounded-xl bg-cover bg-center" style="background-image:linear-gradient(90deg,#1E1916A8,#1E191633),url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200')"></div>
+          <div class="flex items-end gap-4 -mt-8 px-4 relative">
+            <div class="w-16 h-16 rounded-2xl bg-white border-4 border-white shadow grid place-items-center font-serif font-bold text-deep text-xl">AH</div>
+            <div class="pb-1"><b class="text-sm">Aura Home Studio</b><span class="pill green ml-2">Verified</span><p class="text-[10px] text-muted">premily.com/store/aura-home</p></div>
+          </div>
+        </div>
+        <div class="card p-5">
+          <form onsubmit="saveProfile(event)" class="grid sm:grid-cols-2 gap-4">
+            <label class="block text-xs font-bold">Store display name<input class="field mt-1" id="storeName" value="Aura Home Studio" required></label>
+            <label class="block text-xs font-bold">Store slug<input class="field mt-1" id="storeSlug" value="aura-home" required></label>
+            <label class="block text-xs font-bold sm:col-span-2">Store description<textarea id="storeDescription" class="field mt-1" rows="3">Premium furniture and home decor for modern living.</textarea></label>
+            <label class="block text-xs font-bold">Logo URL<input class="field mt-1" value="https://example.com/logo.png"></label>
+            <label class="block text-xs font-bold">Banner URL<input class="field mt-1" value="https://example.com/banner.jpg"></label>
+            <label class="block text-xs font-bold">Brand accent colour<input class="field mt-1" type="color" value="#B8924B"></label>
+            <div class="sm:col-span-2"><button class="gbtn rounded-xl px-5 py-2.5 text-[10px]">Save storefront profile</button></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- VERIFICATION -->
+      <section id="view-verification" class="view space-y-5">
+        <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Seller compliance</p><h2 class="font-serif text-2xl font-bold mt-1">Business Verification</h2><p class="text-xs text-muted mt-1">Review the verification status of your store and submit business information.</p></div>
+        <div class="card p-5 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex gap-3 items-center"><span class="metric-icon"><i data-lucide="shield-check" class="w-5 h-5"></i></span><div><b class="block text-sm">Verification status</b><span class="text-[10px] text-muted">Your documents have been approved.</span></div></div>
+          <span class="pill green">Verified</span>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card p-5">
+            <h3 class="font-bold text-sm mb-4">Business information</h3>
+            <form class="space-y-3" onsubmit="saveVerification(event)">
+              <label class="block text-xs font-bold">Trade license number<input id="tradeLicense" class="field mt-1" value="TRD-DHK-2025-01824"></label>
+              <label class="block text-xs font-bold">NID number<input id="nidNumber" class="field mt-1" value="************" autocomplete="off"></label>
+              <label class="block text-xs font-bold">Note to verification team<textarea class="field mt-1" rows="3" placeholder="Additional context for your application..."></textarea></label>
+              <button class="gbtn rounded-xl px-5 py-2.5 text-[10px]">Save information</button>
+            </form>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-bold text-sm mb-4">Verification checklist</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between"><div><b class="text-xs">Trade license</b><small class="block text-[10px] text-muted">Business registration document</small></div><span class="pill green">Approved</span></div>
+              <div class="border-t border-bordergold"></div>
+              <div class="flex items-center justify-between"><div><b class="text-xs">Seller identity</b><small class="block text-[10px] text-muted">Identity verification</small></div><span class="pill green">Approved</span></div>
+              <div class="border-t border-bordergold"></div>
+              <div class="flex items-center justify-between"><div><b class="text-xs">Store information</b><small class="block text-[10px] text-muted">Business details</small></div><span class="pill green">Approved</span></div>
+            </div>
+            <p class="text-[10px] text-muted leading-relaxed mt-6">Document uploads and protected document storage need to be connected to the backend before this section can accept real files.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUBSCRIPTION -->
+      <section id="view-subscription" class="view space-y-5">
+        <div><p class="text-[10px] text-deep font-bold uppercase tracking-widest">Seller account</p><h2 class="font-serif text-2xl font-bold mt-1">Subscription</h2><p class="text-xs text-muted mt-1">Monitor your free trial, billing cycle, and subscription history.</p></div>
+        <div class="card p-6 bg-gradient-to-r from-dark to-[#3A332E] text-cream">
+          <div class="flex flex-wrap justify-between items-start gap-4">
+            <div><span class="text-[9px] text-gold uppercase tracking-[.18em] font-bold">Current plan</span><h3 class="font-serif text-2xl font-bold mt-2">Seller Monthly</h3><p class="text-[10px] text-white/60 mt-1">Access to your Premily seller workspace</p></div>
+            <span class="pill green">Active</span>
+          </div>
+          <div class="mt-7 flex flex-wrap items-end justify-between gap-4">
+            <div><b class="text-3xl">৳150 <span class="text-xs font-normal text-white/60">/ month</span></b><p class="text-[10px] text-white/60 mt-1">Billing currency: BDT</p></div>
+            <div class="text-right"><small class="text-[10px] text-white/55">Next billing date</small><b class="block text-sm">01 December 2026</b></div>
+          </div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card p-5">
+            <h3 class="font-bold text-sm">Subscription timeline</h3>
+            <div class="mt-5 space-y-5">
+              <div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 grid place-items-center"><i data-lucide="check" class="w-4 h-4"></i></span><div><b class="text-xs">Trial activated</b><small class="block text-[10px] text-muted">01 October 2026</small></div></div>
+              <div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 grid place-items-center"><i data-lucide="check" class="w-4 h-4"></i></span><div><b class="text-xs">Paid plan started</b><small class="block text-[10px] text-muted">01 November 2026</small></div></div>
+              <div class="flex gap-3"><span class="w-7 h-7 rounded-full bg-cream text-deep grid place-items-center"><i data-lucide="calendar" class="w-4 h-4"></i></span><div><b class="text-xs">Next renewal</b><small class="block text-[10px] text-muted">01 December 2026</small></div></div>
+            </div>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-bold text-sm">Need more trial time?</h3>
+            <p class="text-xs text-muted mt-2 leading-relaxed">You may request an additional one or two months. An administrator must review and approve the request.</p>
+            <button onclick="requestExtension()" class="gbtn rounded-xl px-5 py-2.5 text-[10px] mt-5">Request trial extension</button>
+            <p id="extensionNotice" class="text-[10px] text-emerald-700 mt-3 hidden">Your demo request has been submitted.</p>
+          </div>
+        </div>
+        <div class="card p-5">
+          <h3 class="font-bold text-sm mb-4">Payment history</h3>
+          <div class="table-wrap"><table><thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead><tbody>
+            <tr><td>01 Nov 2026</td><td>SUB-2026-1101</td><td>৳150</td><td>bKash</td><td><span class="pill green">Paid</span></td></tr>
+            <tr><td>01 Oct 2026</td><td>TRIAL-2026-1001</td><td>৳0</td><td>Free trial</td><td><span class="pill green">Activated</span></td></tr>
+          </tbody></table></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<dialog id="productModal">
+  <div class="p-5 border-b border-bordergold flex justify-between items-center">
+    <div><h2 class="font-bold text-base">Add a product</h2><p class="text-[10px] text-muted mt-1">Create a new listing in your store.</p></div>
+    <button onclick="closeProductModal()" class="p-2 rounded-lg hover:bg-cream"><i data-lucide="x" class="w-4 h-4"></i></button>
+  </div>
+  <form id="productForm" onsubmit="addProduct(event)" class="p-5 space-y-3">
+    <label class="block text-xs font-bold">Product name<input id="newProductName" class="field mt-1" required placeholder="e.g. Oak Coffee Table"></label>
+    <label class="block text-xs font-bold">Description<textarea class="field mt-1" rows="2" required placeholder="Describe your product..."></textarea></label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="block text-xs font-bold">Category<select class="field mt-1"><option>Furniture</option><option>Lighting</option><option>Decor</option></select></label>
+      <label class="block text-xs font-bold">SKU<input class="field mt-1" required placeholder="AUR-001"></label>
+      <label class="block text-xs font-bold">Price (৳)<input type="number" class="field mt-1" required min="1" placeholder="15000"></label>
+      <label class="block text-xs font-bold">Initial stock<input type="number" class="field mt-1" required min="0" placeholder="10"></label>
+    </div>
+    <label class="block text-xs font-bold">Product image URL<input class="field mt-1" type="url" placeholder="https://..."></label>
+    <div class="flex justify-end gap-2 pt-3">
+      <button type="button" onclick="closeProductModal()" class="rounded-xl border border-bordergold px-4 py-2 text-[10px] font-bold">Cancel</button>
+      <button class="gbtn rounded-xl px-5 py-2 text-[10px]">Create product</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="fixed bottom-5 right-5 z-[100] bg-dark text-cream text-xs px-5 py-3 rounded-xl shadow-xl opacity-0 pointer-events-none transition-opacity"></div>
+
+<script>
+  const titles = {
+    overview:"Store Overview",products:"My Products",orders:"Store Orders",
+    reviews:"Customer Reviews",shipping:"Shipping Settings",
+    storefront:"Storefront Profile",verification:"Business Verification",
+    subscription:"Subscription"
+  };
+
+  function switchView(name) {
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(v => v.classList.remove("active"));
+    document.getElementById("view-" + name).classList.add("active");
+    document.querySelector(`[data-view="${name}"]`).classList.add("active");
+    document.getElementById("pageTitle").textContent = titles[name];
+    if (window.innerWidth < 1024) toggleSidebar();
+    lucide.createIcons();
+  }
+
+  document.querySelectorAll("[data-view]").forEach(btn =>
+    btn.addEventListener("click", () => switchView(btn.dataset.view))
+  );
+
+  function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+  }
+
+  let toastTimeout;
+  function toast(message) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    el.classList.remove("opacity-0");
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => el.classList.add("opacity-0"), 2600);
+  }
+
+  function openProductModal() { document.getElementById("productModal").showModal(); }
+  function closeProductModal() { document.getElementById("productModal").close(); }
+
+  function addProduct(event) {
+    event.preventDefault();
+    const name = document.getElementById("newProductName").value.trim();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><b></b><small class="block text-muted">New listing</small></td>
+      <td>1</td><td>Price set in demo</td>
+      <td><span class="pill green">New stock</span></td>
+      <td>0</td><td><span class="pill gray">Draft</span></td>
+      <td><button class="text-deep font-bold" onclick="alert('Demo: edit product')">Edit</button></td>`;
+    row.querySelector("b").textContent = name;
+    document.getElementById("productRows").prepend(row);
+    document.getElementById("productCount").textContent =
+      Number(document.getElementById("productCount").textContent) + 1;
+    event.target.reset();
+    closeProductModal();
+    toast("Product added to this demo.");
+  }
+
+  function updateOrder(select) {
+    const value = select.value;
+    const cell = select.closest("tr").querySelector(".status-cell");
+    const css = value === "Delivered" ? "green" : value === "Cancelled" ? "red" :
+      value === "Pending" ? "amber" : value === "Shipped" ? "blue" : "gray";
+    cell.innerHTML = `<span class="pill ${css}"></span>`;
+    cell.querySelector("span").textContent = value;
+    toast("Demo order status updated.");
+  }
+
+  function replyReview(button) {
+    const textarea = button.parentElement.querySelector("textarea");
+    if (!textarea.value.trim()) { toast("Write a reply first."); return; }
+    const message = document.createElement("div");
+    message.className = "text-xs bg-cream rounded-xl p-3 mt-2";
+    message.textContent = textarea.value.trim();
+    textarea.parentElement.replaceChildren(message);
+    toast("Demo reply posted.");
+  }
+
+  function saveShipping(event) {
+    event.preventDefault();
+    calculateDemoShipping();
+    toast("Shipping rules saved in this demo.");
+  }
+
+  function calculateDemoShipping() {
+    const home = document.getElementById("homeDistrict").value;
+    const destination = document.getElementById("destination").value;
+    const inside = Number(document.getElementById("insideRate").value || 0);
+    const outside = Number(document.getElementById("outsideRate").value || 0);
+    const isInside = home === destination;
+    document.getElementById("shippingPreview").textContent =
+      "৳" + (isInside ? inside : outside).toLocaleString("en-BD");
+    document.getElementById("shippingType").textContent =
+      isInside ? "Inside your home district" : "Outside your home district";
+  }
+
+  function saveProfile(event) {
+    event.preventDefault();
+    toast("Storefront profile saved in this demo.");
+  }
+
+  function saveVerification(event) {
+    event.preventDefault();
+    toast("Business information saved in this demo.");
+  }
+
+  function requestExtension() {
+    document.getElementById("extensionNotice").classList.remove("hidden");
+    toast("Demo trial extension request submitted.");
+  }
+
+  function filterTable(inputId, tableId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener("input", () => {
+      const query = input.value.toLowerCase();
+      document.querySelectorAll(`#${tableId} tr`).forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
+      });
+    });
+  }
+
+  filterTable("productSearch","productRows");
+  filterTable("orderSearch","orderRows");
+
+  document.getElementById("productStatus").addEventListener("change", e => {
+    const value = e.target.value.toLowerCase();
+    document.querySelectorAll("#productRows tr").forEach(row => {
+      row.style.display = !value || row.innerText.toLowerCase().includes(value) ? "" : "none";
+    });
+  });
+
+  document.getElementById("orderFilter").addEventListener("change", e => {
+    const value = e.target.value.toLowerCase();
+    document.querySelectorAll("#orderRows tr").forEach(row => {
+      row.style.display = !value || row.innerText.toLowerCase().includes(value) ? "" : "none";
+    });
+  });
+
+  document.getElementById("homeDistrict").addEventListener("change", calculateDemoShipping);
+  document.getElementById("insideRate").addEventListener("input", calculateDemoShipping);
+  document.getElementById("outsideRate").addEventListener("input", calculateDemoShipping);
+
+  lucide.createIcons();
+  calculateDemoShipping();
+</script>
+</body>
+</html>
