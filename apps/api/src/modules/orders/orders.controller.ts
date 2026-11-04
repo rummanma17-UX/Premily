@@ -8,7 +8,7 @@ import {
 import {
   buyNow,
   checkoutFromCart,
-  getMyOrders,
+  getMyOrders,\n  getSellerOrders,
   getOrderById,
   OutOfStockError,
   submitPaymentProof,
@@ -77,7 +77,7 @@ export async function myOrders(
   }
 }
 
-export async function getOrder(
+export async function sellerOrders(req: AuthRequest, res: Response, next: NextFunction) {\n  try {\n    const orders = await getSellerOrders(req.user!.userId);\n    res.json(orders);\n  } catch (err) { next(err); }\n}\n\nexport async function getOrder(
   req: AuthRequest,
   res: Response,
   next: NextFunction,
