@@ -822,38 +822,13 @@ export default function SellerPanelPage() {
 
                     <div>
                       <span className="text-muted block text-[11px]">Logistics & Tracking</span>
-                      {o.courierPartner ? (
-                        <div className="space-y-0.5">
-                          <span className="font-semibold text-dark block">
-                            Courier: {o.courierPartner}
-                          </span>
-                          <span className="font-mono text-[11px] text-deep block">
-                            Consignment ID: {o.consignmentId}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-muted text-[11px] italic">
-                          Courier consignment not generated yet.
-                        </span>
-                      )}
+                      <span className="text-muted text-[11px] italic">Courier booking is not connected to a courier provider.</span>
                     </div>
                   </div>
 
                   {/* Order Status Action Workflow */}
                   <div className="pt-2 border-t border-border-gold/30 flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold text-muted">Courier:</span>
-                      <select
-                        value={courierPartner}
-                        onChange={(e) => setCourierPartner(e.target.value as "Steadfast" | "Pathao" | "RedX" | "Paperfly")}
-                        className="px-2 py-1 rounded-lg border border-border-gold bg-white text-xs outline-none"
-                      >
-                        <option value="Steadfast">Steadfast Courier</option>
-                        <option value="Pathao">Pathao Express</option>
-                        <option value="RedX">RedX Logistics</option>
-                        <option value="Paperfly">Paperfly BD</option>
-                      </select>
-                    </div>
+                    <div className="text-[11px] text-muted">Courier booking is not connected.</div>
 
                     <div className="flex items-center gap-2">
                       {o.orderStatus === "PENDING" && (
@@ -882,7 +857,7 @@ export default function SellerPanelPage() {
                           onClick={() => handleUpdateOrderStatus(o.id, "SHIPPED")}
                           className="gbtn px-3 py-1.5 rounded-lg font-semibold text-xs cursor-pointer"
                         >
-                          Handover to {courierPartner} (Ship)
+                          Mark as Shipped
                         </button>
                       )}
 

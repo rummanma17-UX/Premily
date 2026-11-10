@@ -13,8 +13,6 @@ import {
   ChevronUp,
   Copy,
   Check,
-  PhoneCall,
-  UserCheck,
 } from "lucide-react";
 import {
   StoreService,
