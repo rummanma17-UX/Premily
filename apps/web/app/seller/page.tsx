@@ -33,10 +33,6 @@ function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
 }
 
-function generateConsignmentId(partner: string) {
-  return `${partner.substring(0, 3).toUpperCase()}-${Date.now().toString(36).toUpperCase()}-BD`;
-}
-
 const LUXURY_BANNER_PRESETS = [
   {
     name: "Minimalist Boucle Living",
@@ -137,8 +133,6 @@ export default function SellerPanelPage() {
   const [prodImage, setProdImage] = useState("");
   const [prodDesc, setProdDesc] = useState("");
 
-  const [courierPartner, setCourierPartner] = useState<"Steadfast" | "Pathao" | "RedX" | "Paperfly">("Steadfast");
-
   const currentStoreSlug = currentStore.slug;
 
   useEffect(() => {
@@ -163,9 +157,9 @@ export default function SellerPanelPage() {
   };
 
   // Save Storefront Profile
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updated = StoreService.updateStore({
+    const updated = await StoreService.updateStore({
       id: currentStore.id,
       displayName,
       slug: slug.toLowerCase().replace(/\s+/g, "-"),
@@ -178,9 +172,9 @@ export default function SellerPanelPage() {
   };
 
   // Save Shipping Rules
-  const handleSaveShipping = (e: React.FormEvent) => {
+  const handleSaveShipping = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updated = StoreService.updateStore({
+    const updated = await StoreService.updateStore({
       id: currentStore.id,
       homeDistrict,
       insideDistrictCost: Number(insideCost),
@@ -207,15 +201,13 @@ export default function SellerPanelPage() {
   };
 
   // Submit Trade License & NID verification (AGENT.md Point 3)
-  const handleSubmitVerification = (e: React.FormEvent) => {
+  const handleSubmitVerification = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updated = StoreService.updateStore({
+    const updated = await StoreService.updateStore({
       id: currentStore.id,
-      verificationStatus: "PENDING",
       tradeLicenseNo: tradeLicense.trim(),
       nidNumber: nidNumber.trim(),
       verificationNote: verificationNote.trim() || "Documents submitted by merchant for PREMILY Admin review.",
-      submittedAt: new Date().toISOString(),
     });
     setCurrentStore(updated);
     showFeedback("Verification documents submitted for PREMILY Admin review.");
@@ -250,13 +242,13 @@ export default function SellerPanelPage() {
     setProductModalOpen(true);
   };
 
-  const handleSaveProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     const sizesArray = prodSizes.split(",").map((s) => s.trim()).filter(Boolean);
     const colorsArray = prodColors.split(",").map((c) => c.trim()).filter(Boolean);
 
     if (editingProductId) {
-      StoreService.updateProduct(editingProductId, {
+      await StoreService.updateProduct(editingProductId, {
         name: prodName,
         categoryName: prodCategory,
         price: Number(prodPrice),
@@ -269,7 +261,7 @@ export default function SellerPanelPage() {
       });
       showFeedback(`Product "${prodName}" updated!`);
     } else {
-      StoreService.addProduct({
+      await StoreService.addProduct({
         storeId: currentStore.id,
         storeSlug: currentStore.slug,
         storeName: currentStore.displayName,
@@ -292,47 +284,29 @@ export default function SellerPanelPage() {
     setProductModalOpen(false);
   };
 
-  const handleDeleteProduct = (id: string, name: string) => {
+  const handleDeleteProduct = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to delete "${name}" from your store catalog?`)) {
-      StoreService.deleteProduct(id);
+      await StoreService.deleteProduct(id);
       showFeedback(`Product "${name}" deleted.`);
     }
   };
 
   // Order Fulfillment progression
-  const handleUpdateOrderStatus = (orderId: string, nextStatus: OrderStatus) => {
-    const consignmentId = generateConsignmentId(courierPartner);
-    StoreService.updateOrderStatus(orderId, nextStatus, {
-      partner: courierPartner,
-      consignmentId,
-    });
-    showFeedback(`Order updated to ${nextStatus}! Consignment booked with ${courierPartner}.`);
+  const handleUpdateOrderStatus = async (orderId: string, nextStatus: OrderStatus) => {
+    try {
+      await StoreService.updateOrderStatus(orderId, nextStatus);
+      setOrders(StoreService.getOrders());
+      showFeedback(`Order status updated to ${nextStatus}. Courier booking is not connected yet.`);
+    } catch (error) {
+      showFeedback(error instanceof Error ? error.message : "Unable to update order status.");
+    }
   };
 
   // Subscription Renewal (৳150/month)
   const handleRenewSubscription = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubscriptionRenewing(true);
-
-    setTimeout(() => {
-      const renewalDate = new Date();
-      renewalDate.setMonth(renewalDate.getMonth() + 1);
-
-      const updated = StoreService.updateStore({
-        id: currentStore.id,
-        subscription: {
-          status: "ACTIVE",
-          planAmount: 150,
-          trialEndsAt: currentStore.subscription.trialEndsAt,
-          currentPeriodEnd: renewalDate.toISOString(),
-        },
-      });
-      setCurrentStore(updated);
-      setSubscriptionRenewing(false);
-      setSubscriptionModalOpen(false);
-      setMfsTrxId("");
-      showFeedback("৳150 monthly subscription renewed successfully!");
-    }, 1200);
+    setSubscriptionModalOpen(false);
+    showFeedback("Online subscription payment is not integrated yet. No payment was processed.");
   };
 
   const totalStoreRevenue = orders

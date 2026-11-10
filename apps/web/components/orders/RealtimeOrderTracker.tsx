@@ -13,7 +13,6 @@ import {
   ChevronUp,
   Copy,
   Check,
-  Play,
   PhoneCall,
   UserCheck,
 } from "lucide-react";
@@ -40,6 +39,7 @@ const STEP_LABELS: Record<OrderStatus, string> = {
   SHIPPED: "In Transit with Courier",
   DELIVERED: "Delivered to Doorstep",
   CANCELLED: "Cancelled",
+  RETURNED: "Returned",
 };
 
 export function RealtimeOrderTracker() {
@@ -57,11 +57,11 @@ export function RealtimeOrderTracker() {
   const [, startTransition] = useTransition();
 
   // Load and refresh orders from StoreService and optional tracking endpoint
-  const syncLatestOrders = useCallback((isManual = false) => {
+  const syncLatestOrders = useCallback(async (isManual = false) => {
     setIsSyncing(true);
-    startTransition(() => {
-      try {
-        const freshOrders = StoreService.getOrders();
+    try {
+      const freshOrders = await StoreService.loadCustomerOrders();
+      startTransition(() => {
         
         // Detect status differences to notify user of live progress
         setOrders((prev) => {
@@ -82,12 +82,12 @@ export function RealtimeOrderTracker() {
 
         setLastSyncedTime(new Date());
         setSecondsAgo(0);
-      } catch (err) {
-        console.error("Failed to sync orders in real-time:", err);
-      } finally {
-        setTimeout(() => setIsSyncing(false), isManual ? 400 : 200);
-      }
-    });
+      });
+    } catch (err) {
+      console.error("Failed to refresh orders:", err);
+    } finally {
+      setIsSyncing(false);
+    }
   }, []);
 
   // Event-based Realtime Mechanism: Listen to local events and cross-tab storage
@@ -142,23 +142,6 @@ export function RealtimeOrderTracker() {
     return () => clearInterval(timer);
   }, [lastSyncedTime]);
 
-  // Advance order status to simulate live courier scanning
-  const handleSimulateAdvanceStatus = (order: OrderRecord) => {
-    const currentIndex = getStepIndex(order.orderStatus);
-    const nextIndex = (currentIndex + 1) % ORDER_STEP_KEYS.length;
-    const nextStatus = ORDER_STEP_KEYS[nextIndex];
-
-    const partners = ["Steadfast", "Pathao", "RedX", "Paperfly"] as const;
-    const partner = order.courierPartner || partners[nextIndex % partners.length];
-    const orderNumDigits = order.orderNumber.replace(/[^0-9]/g, "") || "98214";
-    const consignmentId = order.consignmentId || `ST-${orderNumDigits}-BD`;
-
-    StoreService.updateOrderStatus(order.id, nextStatus, {
-      partner,
-      consignmentId,
-    });
-  };
-
   const handleCopyConsignment = (consignmentId: string) => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(consignmentId);
@@ -191,10 +174,10 @@ export function RealtimeOrderTracker() {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-xs text-dark tracking-wide uppercase font-serif">
-                {isPollingActive ? "Live Courier Tracking Active" : "Live Polling Paused"}
+                {isPollingActive ? "Order status refresh active" : "Order status refresh paused"}
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-cream text-deep font-semibold border border-border-gold">
-                5s Interval + Event Stream
+                Refreshes order status every 5 seconds
               </span>
             </div>
             <p className="text-[11px] text-muted">
@@ -207,7 +190,7 @@ export function RealtimeOrderTracker() {
                   ({orders.length} total orders monitored across Bangladesh)
                 </>
               ) : (
-                "Connecting to courier tracking stream..."
+                "Loading your orders from Premily..."
               )}
             </p>
           </div>
@@ -324,11 +307,7 @@ export function RealtimeOrderTracker() {
                       <span className="text-[10px] font-semibold text-deep bg-cream px-2 py-0.5 rounded-full border border-border-gold">
                         {order.storeName}
                       </span>
-                      {order.courierPartner && (
-                        <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                          {order.courierPartner} Express
-                        </span>
-                      )}
+
                     </div>
                     <span className="text-[11px] text-muted block mt-0.5">
                       Booked on {new Date(order.createdAt).toLocaleDateString("en-BD", {
@@ -353,16 +332,6 @@ export function RealtimeOrderTracker() {
                       </span>
                     </div>
 
-                    {/* Quick Simulation Trigger for Testers */}
-                    <button
-                      type="button"
-                      onClick={() => handleSimulateAdvanceStatus(order)}
-                      className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg bg-cream hover:bg-gold/20 text-dark border border-border-gold hover:border-gold transition flex items-center gap-1 cursor-pointer shrink-0"
-                      title="Advance order status to test real-time update mechanics"
-                    >
-                      <Play className="w-2.5 h-2.5 fill-current text-deep" />
-                      <span>Simulate Next Step</span>
-                    </button>
                   </div>
                 </div>
 
@@ -494,7 +463,7 @@ export function RealtimeOrderTracker() {
                             Assigned Logistics Partner
                           </span>
                           <b className="text-dark font-serif text-sm">
-                            {tracking.courierPartner} Express Bangladesh
+                            {tracking.courierPartner}
                           </b>
                           <span className="text-[11px] text-muted block">
                             Consignment ID: <span className="font-mono font-semibold text-dark">{tracking.consignmentId}</span>
@@ -562,32 +531,7 @@ export function RealtimeOrderTracker() {
                         </div>
                       </div>
 
-                      {/* Rider Contact Card if available */}
-                      {tracking.riderName && (
-                        <div className="p-3 rounded-xl bg-white border border-border-gold flex items-center justify-between gap-3 text-xs">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-cream border border-border-gold flex items-center justify-center">
-                              <UserCheck className="w-4 h-4 text-deep" />
-                            </div>
-                            <div>
-                              <span className="text-[10px] text-muted uppercase tracking-wider block font-bold">
-                                Assigned Courier Rider
-                              </span>
-                              <b className="text-dark block">{tracking.riderName}</b>
-                            </div>
-                          </div>
 
-                          {tracking.riderPhone && (
-                            <a
-                              href={`tel:${tracking.riderPhone}`}
-                              className="px-3 py-1.5 rounded-lg bg-dark text-light-gold text-[11px] font-semibold flex items-center gap-1.5 hover:brightness-110 transition"
-                            >
-                              <PhoneCall className="w-3 h-3" />
-                              <span>{tracking.riderPhone}</span>
-                            </a>
-                          )}
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
