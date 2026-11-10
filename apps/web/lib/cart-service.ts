@@ -1,20 +1,9 @@
 import { apiFetch } from "./api";
 
 export interface CartItem {
-  id: string;
-  productId: string;
-  productSlug: string;
-  name: string;
-  variantId: string;
-  variantLabel: string;
-  price: number;
-  compareAtPrice?: number | null;
-  quantity: number;
-  imageUrl: string;
-  storeId: string;
-  storeSlug: string;
-  storeName: string;
-  isPremilyMart?: boolean;
+  id: string; productId: string; productSlug: string; name: string; variantId: string;
+  variantLabel: string; price: number; compareAtPrice?: number | null; quantity: number;
+  imageUrl: string; storeId: string; storeSlug: string; storeName: string; isPremilyMart?: boolean;
 }
 export interface StoreCartGroup {
   storeId: string; storeSlug: string; storeName: string; isPremilyMart: boolean;
@@ -25,20 +14,21 @@ let items: CartItem[] = [];
 let loaded = false;
 let loading: Promise<CartItem[]> | null = null;
 const emit = () => { if (typeof window !== "undefined") window.dispatchEvent(new Event("premily_cart_change")); };
+
 function mapItems(cart: ApiCart): CartItem[] {
-  return (cart?.items ?? []).map((item) => {
+  return (cart?.items ?? []).flatMap((item) => {
     const variant = item.variant ?? {};
     const product = variant.product ?? {};
     const store = product.store ?? {};
-    return {
-      id: item.id, productId: product.id ?? "", productSlug: product.slug ?? "",
-      name: product.name ?? "", variantId: variant.id ?? item.variantId,
-      variantLabel: [variant.color, variant.size].filter(Boolean).join(" / ") || "Standard",
+    if (!variant.id || !product.id || !store.id) return [];
+    return [{
+      id: item.id, productId: product.id, productSlug: product.slug ?? "", name: product.name ?? "",
+      variantId: variant.id, variantLabel: [variant.color, variant.size].filter(Boolean).join(" / ") || "Standard",
       price: Number(variant.price ?? 0), compareAtPrice: variant.compareAtPrice == null ? null : Number(variant.compareAtPrice),
       quantity: Number(item.quantity ?? 0), imageUrl: product.images?.[0]?.url ?? "",
-      storeId: store.id ?? product.storeId ?? "", storeSlug: store.slug ?? "",
-      storeName: store.displayName ?? "", isPremilyMart: Boolean(store.isPremilyMart),
-    };
+      storeId: store.id, storeSlug: store.slug ?? "", storeName: store.displayName ?? "",
+      isPremilyMart: Boolean(store.isPremilyMart),
+    }];
   });
 }
 async function refresh(): Promise<CartItem[]> {
@@ -66,10 +56,13 @@ export const CartService = {
     await apiFetch(`/api/cart/items/${itemId}`, { method: "DELETE" });
     return refresh();
   },
-  async clearCart() { await refresh(); },
+  async clearCart() {
+    await apiFetch("/api/cart", { method: "DELETE" });
+    items = []; loaded = true; emit();
+  },
   getItemCount: () => items.reduce((sum, item) => sum + item.quantity, 0),
   getSubtotal: () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-  getStoreGroups(selectedDistrict = "Dhaka") {
+  getStoreGroups() {
     const stores = new Map<string, StoreCartGroup>();
     for (const item of items) {
       if (!stores.has(item.storeId)) stores.set(item.storeId, {
@@ -79,7 +72,7 @@ export const CartService = {
       const group = stores.get(item.storeId)!;
       group.items.push(item); group.subtotal += item.price * item.quantity;
     }
-    const groups = Array.from(stores.values());
+    const groups = [...stores.values()];
     const totalSubtotal = groups.reduce((sum, group) => sum + group.subtotal, 0);
     return { groups, totalSubtotal, totalShipping: 0, grandTotal: totalSubtotal };
   },

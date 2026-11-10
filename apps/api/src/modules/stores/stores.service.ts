@@ -116,6 +116,7 @@ export async function updateStoreProfile(
 
   const data: any = {};
   if (input.displayName !== undefined) data.displayName = input.displayName;
+  if (input.slug !== undefined) data.slug = input.slug;
   if (input.description !== undefined) data.description = input.description;
   if (input.logoUrl !== undefined) data.logoUrl = input.logoUrl || null;
   if (input.bannerUrl !== undefined) data.bannerUrl = input.bannerUrl || null;

@@ -287,7 +287,7 @@ export const StoreService = {
   async loadAdminData() {
     const [storeResult, orderResult, campaignResult] = await Promise.all([
       apiFetch<{ stores: ApiStore[] }>("/api/admin/stores?limit=100"),
-      apiFetch<{ orders: ApiOrder[] }>("/api/admin/orders?limit=100"),
+      apiFetch<{ orders: ApiOrder[] }>("/api/orders/seller"),
       fetchCampaigns(),
     ]);
     cache.stores = storeResult.stores.map(mapStore);
@@ -306,7 +306,7 @@ export const StoreService = {
     const store = mapStore(rawStore);
     cache.stores = [store];
     cache.products = rawProducts.map((product) => mapProduct({ ...product, store: { ...product.store, ...rawStore } }));
-    cache.orders = rawOrders.orders.filter((order) => order.storeId === rawStore.id).map((order) => mapOrder({ ...order, store: order.store ?? rawStore }));
+    cache.orders = rawOrders.orders.map((order) => mapOrder({ ...order, store: order.store ?? rawStore }));
     notifyDataChanged();
     return { store, products: cache.products, orders: cache.orders };
   },
@@ -379,7 +379,7 @@ export const StoreService = {
   },
 
   async toggleCampaign(id: string): Promise<void> {
-    await apiFetch(`/api/campaigns/${id}/status`, { method: "PATCH", body: JSON.stringify({}) });
+    await apiFetch(`/api/campaigns/${id}/status`, { method: "PATCH", body: JSON.stringify({ isActive: !cache.campaigns.find((campaign) => campaign.id === id)?.isActive }) });
     await this.loadAdminData();
   },
 
@@ -407,6 +407,7 @@ export const StoreService = {
           size: newProduct.sizes[0] || undefined,
           color: newProduct.colors[0] || undefined,
         }],
+        status: newProduct.status === "DRAFT" ? "DRAFT" : "ACTIVE",
         images: [{ url: newProduct.imageUrl, altText: newProduct.name, position: 0 }],
       }),
     });
@@ -430,6 +431,7 @@ export const StoreService = {
         ...(updates.sizes !== undefined && { size: updates.sizes[0] ?? null }),
         ...(updates.colors !== undefined && { color: updates.colors[0] ?? null }),
         ...(updates.imageUrl !== undefined && { imageUrl: updates.imageUrl }),
+        ...(updates.status !== undefined && { status: updates.status }),
       }),
     });
     const result = mapProduct(updated);

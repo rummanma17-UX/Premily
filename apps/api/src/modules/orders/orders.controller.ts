@@ -85,7 +85,7 @@ export async function sellerOrders(
 ) {
   try {
     const orders = await getSellerOrders(req.user!.userId);
-    res.json(orders);
+    res.json({ orders });
   } catch (err) {
     next(err);
   }
@@ -147,6 +147,10 @@ export async function submitProof(
     }
     if (err instanceof Error && err.message === "ALREADY_VERIFIED") {
       res.status(400).json({ error: "Payment already verified" });
+      return;
+    }
+    if (err instanceof Error && err.message === "PROOF_ALREADY_SUBMITTED") {
+      res.status(409).json({ error: "Payment proof has already been submitted" });
       return;
     }
 
