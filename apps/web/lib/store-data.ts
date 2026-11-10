@@ -301,12 +301,12 @@ export const StoreService = {
     const [rawStore, rawProducts, rawOrders] = await Promise.all([
       apiFetch<ApiStore>("/api/stores/mine"),
       apiFetch<ApiProduct[]>("/api/products/mine"),
-      apiFetch<{ orders: ApiOrder[] }>("/api/admin/orders?limit=100"),
+      apiFetch<{ orders: ApiOrder[] }>("/api/orders/seller"),
     ]);
     const store = mapStore(rawStore);
     cache.stores = [store];
     cache.products = rawProducts.map((product) => mapProduct({ ...product, store: { ...product.store, ...rawStore } }));
-    cache.orders = rawOrders.orders.filter((order) => order.storeId === rawStore.id).map((order) => mapOrder({ ...order, store: order.store ?? rawStore }));
+    cache.orders = rawOrders.orders.map((order) => mapOrder({ ...order, store: order.store ?? rawStore }));
     notifyDataChanged();
     return { store, products: cache.products, orders: cache.orders };
   },

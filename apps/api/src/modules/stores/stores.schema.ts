@@ -7,6 +7,7 @@ export const updateStoreProfileSchema = z.object({
   logoUrl: z.union([z.url(), z.literal("")]).optional(),
   bannerUrl: z.union([z.url(), z.literal("")]).optional(),
   primaryColor: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/).optional(),
+  verificationStatus: z.literal("PENDING").optional(),
   tradeLicenseNo: z.string().trim().max(50).optional(),
   nidNumber: z.string().trim().max(30).optional(),
 }).refine((value) => Object.keys(value).length > 0, {

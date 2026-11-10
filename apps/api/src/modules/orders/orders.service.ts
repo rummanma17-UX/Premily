@@ -151,14 +151,12 @@ export async function verifyPayment(verifier: { userId: string; role: "CUSTOMER"
   });
 }
 
-export async function updateSellerOrderStatus(sellerId: string, orderId: string, status: "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED") {
+export async function updateSellerOrderStatus(sellerId: string, orderId: string, status: "PROCESSING" | "SHIPPED" | "DELIVERED") {
   return prisma.$transaction(async (tx) => {
     const order = await tx.order.findFirst({ where: { id: orderId, store: { sellerId } }, include: { payments: true, items: true } });
     if (!order) throw new Error("ORDER_NOT_FOUND");
-    const transitions: Record<string, string> = { PENDING: "CONFIRMED", CONFIRMED: "PROCESSING", PROCESSING: "SHIPPED", SHIPPED: "DELIVERED" };
-    const paymentIsVerified = order.payments.some((payment) => payment.status === "VERIFIED");
-    const isCOD = order.payments.some((payment) => payment.method === "CASH_ON_DELIVERY");
-    if (transitions[order.status] !== status || (status === "CONFIRMED" && !isCOD && !paymentIsVerified)) throw new Error("INVALID_STATUS_TRANSITION");
+    const transitions: Record<string, string> = { CONFIRMED: "PROCESSING", PROCESSING: "SHIPPED", SHIPPED: "DELIVERED" };
+    if (transitions[order.status] !== status) throw new Error("INVALID_STATUS_TRANSITION");
     const result = await tx.order.updateMany({ where: { id: orderId, status: order.status }, data: { status } });
     if (result.count !== 1) throw new Error("ORDER_STATUS_CONFLICT");
     if (status === "DELIVERED") {

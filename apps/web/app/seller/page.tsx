@@ -205,6 +205,7 @@ export default function SellerPanelPage() {
     e.preventDefault();
     const updated = await StoreService.updateStore({
       id: currentStore.id,
+      verificationStatus: "PENDING",
       tradeLicenseNo: tradeLicense.trim(),
       nidNumber: nidNumber.trim(),
       verificationNote: verificationNote.trim() || "Documents submitted by merchant for PREMILY Admin review.",

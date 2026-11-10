@@ -121,6 +121,8 @@ export async function updateStoreProfile(
   if (input.logoUrl !== undefined) data.logoUrl = input.logoUrl || null;
   if (input.bannerUrl !== undefined) data.bannerUrl = input.bannerUrl || null;
   if (input.primaryColor !== undefined) data.primaryColor = input.primaryColor;
+  if (input.verificationStatus !== undefined) data.verificationStatus = input.verificationStatus;
+  if (input.verificationStatus === "PENDING") { data.verifiedAt = null; data.verifiedBy = null; }
   if (input.tradeLicenseNo !== undefined) data.tradeLicenseNo = input.tradeLicenseNo;
   if (input.nidNumber !== undefined) data.nidNumber = input.nidNumber;
 
