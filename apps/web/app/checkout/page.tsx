@@ -17,17 +17,12 @@ import {
   ShoppingBag,
   Store,
 } from "lucide-react";
-import { StoreService } from "@/lib/store-data";
 import { CartService } from "@/lib/cart-service";
 import { MfsPaymentModal } from "@/components/checkout/MfsPaymentModal";
 import { MartBadge } from "@/components/badges/MartBadge";
 
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
-}
-
-function generateMockOrderNumber() {
-  return `PRM-${Date.now().toString(36).toUpperCase()}-DHK`;
 }
 
 export default function CheckoutPage() {
@@ -66,11 +61,13 @@ export default function CheckoutPage() {
 
   // Dynamic Cart and Multi-Store Grouping (AGENT.md Rule 5)
   const [, setCartVersion] = useState(0);
+  const [cartLoading, setCartLoading] = useState(true);
   const [mfsModalOpen, setMfsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleCartUpdate = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartUpdate);
+    void CartService.loadCart().catch((error) => setErrorMessage(error instanceof Error ? error.message : "Unable to load your cart.")).finally(() => setCartLoading(false));
     const savedDistrict = localStorage.getItem("premily_delivery_district");
     if (savedDistrict) setSelectedDistrict(savedDistrict);
     return () => window.removeEventListener("premily_cart_change", handleCartUpdate);
@@ -95,65 +92,43 @@ export default function CheckoutPage() {
   const { groups, totalSubtotal, totalShipping, grandTotal } = CartService.getStoreGroups(selectedDistrict);
   const isDhaka = selectedDistrict.toLowerCase() === "dhaka";
 
-  const executeOrderPlacement = (trxId: string | null = null, paymentStatus: "PENDING" | "VERIFIED" = "PENDING") => {
+  const executeOrderPlacement = async (trxId: string | null = null, senderNumber: string | null = null) => {
     setIsPlacing(true);
+    setErrorMessage(null);
     try {
-      let firstOrderNumber = "";
-
-      for (const group of groups) {
-        const savedOrder = StoreService.addOrder({
-          storeId: group.storeId,
-          storeSlug: group.storeSlug,
-          storeName: group.storeName,
-          customerName: fullName.trim(),
-          customerPhone: phoneNumber.trim(),
+      const order = await apiFetch<any>("/api/orders/checkout", {
+        method: "POST",
+        body: JSON.stringify({
+          shippingName: fullName.trim(),
+          shippingPhone: phoneNumber.trim(),
           shippingAddress: streetAddress.trim(),
-          shippingDistrict: selectedDistrict,
           shippingCity: cityThana.trim() || selectedDistrict,
-          items: group.items.map((c) => ({
-            productId: c.productId,
-            name: c.name,
-            variantLabel: c.variantLabel,
-            price: c.price,
-            quantity: c.quantity,
-            imageUrl: c.imageUrl,
-          })),
-          subtotal: group.subtotal,
-          shippingCost: group.shippingCost,
-          total: group.subtotal + group.shippingCost,
+          shippingDistrict: selectedDistrict,
           paymentMethod,
-          paymentStatus,
-          transactionId: trxId,
-          orderStatus: "PENDING",
+        }),
+      });
+      const createdOrders = Array.isArray(order) ? order : [order];
+      if (trxId && createdOrders[0]?.id) {
+        await apiFetch(`/api/orders/${createdOrders[0].id}/payment-proof`, {
+          method: "POST",
+          body: JSON.stringify({ transactionId: trxId, senderNumber }),
         });
-
-        if (!firstOrderNumber) {
-          firstOrderNumber = savedOrder.orderNumber;
-        }
       }
-
-      // Clear shopping cart after successful checkout
-      CartService.clearCart();
-
+      const first = createdOrders[0];
+      if (!first?.orderNumber) throw new Error("The server did not return a valid order confirmation.");
+      await CartService.loadCart();
       setOrderConfirmed({
-        orderNumber: firstOrderNumber || generateMockOrderNumber(),
-        total: grandTotal,
+        orderNumber: first.orderNumber,
+        total: createdOrders.reduce((sum, item) => sum + Number(item.total ?? 0), 0),
         shippingDistrict: selectedDistrict,
         paymentMethod,
         shippingAddress: streetAddress,
       });
-    } catch {
-      const mockOrderNumber = generateMockOrderNumber();
-      setOrderConfirmed({
-        orderNumber: mockOrderNumber,
-        total: grandTotal,
-        shippingDistrict: selectedDistrict,
-        paymentMethod,
-        shippingAddress: streetAddress,
-      });
+      setMfsModalOpen(false);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Order could not be placed. Please try again.");
     } finally {
       setIsPlacing(false);
-      setMfsModalOpen(false);
     }
   };
 
@@ -185,7 +160,7 @@ export default function CheckoutPage() {
     }
 
     // Otherwise Cash on Delivery
-    executeOrderPlacement(null, "PENDING");
+    void executeOrderPlacement();
   };
 
   if (orderConfirmed) {
@@ -419,25 +394,11 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    CartService.addToCart({
-                      productId: "prod-aura-1",
-                      productSlug: "aura-curved-lounge-chair",
-                      name: "Aura Curved Lounge Chair",
-                      variantId: "var-cream",
-                      variantLabel: "Cream Boucle / Standard",
-                      price: 18500,
-                      compareAtPrice: 24000,
-                      quantity: 1,
-                      imageUrl: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=400&q=80",
-                      storeId: "store-aura",
-                      storeSlug: "aura-home",
-                      storeName: "Aura Home Studio",
-                      isPremilyMart: true,
-                    });
+                    window.location.href = "/products";
                   }}
                   className="px-4 py-2 rounded-xl gbtn text-xs font-semibold cursor-pointer"
                 >
-                  + Add Sample Boutique Chair
+                  Browse Products
                 </button>
               </div>
             ) : (
@@ -532,7 +493,7 @@ export default function CheckoutPage() {
         amount={grandTotal}
         customerPhone={phoneNumber}
         storeName={groups[0]?.storeName || "PREMILY Verified Stores"}
-        onSuccess={(trxId) => executeOrderPlacement(trxId, "VERIFIED")}
+        onSuccess={(trxId, senderNumber) => void executeOrderPlacement(trxId, senderNumber)}
       />
 
     </main>
