@@ -9,6 +9,7 @@ import {
   buyNow,
   checkoutFromCart,
   getMyOrders,
+  getSellerOrders,
   getOrderById,
   OutOfStockError,
   submitPaymentProof,
@@ -77,6 +78,19 @@ export async function myOrders(
   }
 }
 
+export async function sellerOrders(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const orders = await getSellerOrders(req.user!.userId);
+    res.json(orders);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getOrder(
   req: AuthRequest,
   res: Response,
@@ -89,6 +103,7 @@ export async function getOrder(
       res.status(400).json({ error: "Invalid or missing orderId" });
       return;
     }
+
     const userId = req.user!.userId;
     const order = await getOrderById(userId, orderId);
 
@@ -96,6 +111,7 @@ export async function getOrder(
       res.status(404).json({ error: "Order not found" });
       return;
     }
+
     res.json(order);
   } catch (err) {
     next(err);

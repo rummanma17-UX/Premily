@@ -84,38 +84,40 @@ export default function SellerPanelPage() {
     "overview" | "products" | "orders" | "shipping" | "profile" | "verification"
   >("overview");
 
-  // Load current seller store (defaults to aura-home for vendor operations)
-  const [currentStore, setCurrentStore] = useState<StoreRecord>(() => {
-    return StoreService.getStoreBySlug("aura-home") || StoreService.getStores()[0];
-  });
-
-  const [products, setProducts] = useState<ProductRecord[]>(() =>
-    StoreService.getProductsByStore(currentStore?.slug || "aura-home")
-  );
-  const [orders, setOrders] = useState<OrderRecord[]>(() =>
-    StoreService.getOrdersByStore(currentStore?.slug || "aura-home")
-  );
+  const emptyStore: StoreRecord = {
+    id: "", slug: "", displayName: "", sellerName: "", phone: "", email: null,
+    description: "", logoUrl: null, bannerUrl: "", primaryColor: "#000000",
+    isPremilyMart: false, verificationStatus: "UNVERIFIED", homeDistrict: "",
+    insideDistrictCost: 0, outsideDistrictCost: 0, districtOverrides: [],
+    subscription: { status: "EXPIRED", planAmount: 0, trialEndsAt: "", currentPeriodEnd: "" },
+    stats: { totalProducts: 0, totalOrders: 0, avgRating: 0, totalReviews: 0, totalSales: 0, revenue: 0 },
+  };
+  const [currentStore, setCurrentStore] = useState<StoreRecord>(emptyStore);
+  const [products, setProducts] = useState<ProductRecord[]>([]);
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [saveBannerMsg, setSaveBannerMsg] = useState<string | null>(null);
 
   // Profile form state
-  const [displayName, setDisplayName] = useState(currentStore.displayName);
-  const [slug, setSlug] = useState(currentStore.slug);
-  const [description, setDescription] = useState(currentStore.description);
-  const [primaryColor, setPrimaryColor] = useState(currentStore.primaryColor);
-  const [bannerUrl, setBannerUrl] = useState(currentStore.bannerUrl);
+  const [displayName, setDisplayName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [description, setDescription] = useState("");
+  const [primaryColor, setPrimaryColor] = useState("#000000");
+  const [bannerUrl, setBannerUrl] = useState("");
 
   // Shipping form state (AGENT.md Point 5)
-  const [homeDistrict, setHomeDistrict] = useState(currentStore.homeDistrict);
-  const [insideCost, setInsideCost] = useState(currentStore.insideDistrictCost);
-  const [outsideCost, setOutsideCost] = useState(currentStore.outsideDistrictCost);
-  const [districtOverrides, setDistrictOverrides] = useState(currentStore.districtOverrides || []);
+  const [homeDistrict, setHomeDistrict] = useState("");
+  const [insideCost, setInsideCost] = useState(0);
+  const [outsideCost, setOutsideCost] = useState(0);
+  const [districtOverrides, setDistrictOverrides] = useState<StoreRecord["districtOverrides"]>([]);
   const [newOverrideDistrict, setNewOverrideDistrict] = useState("Gazipur");
   const [newOverrideRate, setNewOverrideRate] = useState(90);
 
   // Verification form state (AGENT.md Point 3)
-  const [tradeLicense, setTradeLicense] = useState(currentStore.tradeLicenseNo || "");
-  const [nidNumber, setNidNumber] = useState(currentStore.nidNumber || "");
-  const [verificationNote, setVerificationNote] = useState(currentStore.verificationNote || "");
+  const [tradeLicense, setTradeLicense] = useState("");
+  const [nidNumber, setNidNumber] = useState("");
+  const [verificationNote, setVerificationNote] = useState("");
 
   // Subscription modal state (AGENT.md Business model ৳150/mo)
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
@@ -132,7 +134,7 @@ export default function SellerPanelPage() {
   const [prodStock, setProdStock] = useState(10);
   const [prodSizes, setProdSizes] = useState("Standard");
   const [prodColors, setProdColors] = useState("Ivory, Charcoal");
-  const [prodImage, setProdImage] = useState(LUXURY_IMAGE_PRESETS[0].url);
+  const [prodImage, setProdImage] = useState("");
   const [prodDesc, setProdDesc] = useState("");
 
   const [courierPartner, setCourierPartner] = useState<"Steadfast" | "Pathao" | "RedX" | "Paperfly">("Steadfast");
@@ -140,22 +142,20 @@ export default function SellerPanelPage() {
   const currentStoreSlug = currentStore.slug;
 
   useEffect(() => {
-    const handleSync = () => {
-      const store = StoreService.getStoreBySlug(currentStoreSlug);
-      if (store) {
-        setCurrentStore(store);
-        setProducts(StoreService.getProductsByStore(store.slug));
-        setOrders(StoreService.getOrdersByStore(store.slug));
-      }
-    };
-
+    const load = () => StoreService.loadSellerData().then(({ store, products: loadedProducts, orders: loadedOrders }) => {
+      setCurrentStore(store); setProducts(loadedProducts); setOrders(loadedOrders);
+      setDisplayName(store.displayName); setSlug(store.slug); setDescription(store.description);
+      setPrimaryColor(store.primaryColor); setBannerUrl(store.bannerUrl);
+      setHomeDistrict(store.homeDistrict); setInsideCost(store.insideDistrictCost); setOutsideCost(store.outsideDistrictCost);
+      setTradeLicense(store.tradeLicenseNo ?? ""); setNidNumber(store.nidNumber ?? ""); setVerificationNote(store.verificationNote ?? "");
+      setIsLoaded(true); setLoadError(null);
+    }).catch((error) => { setLoadError(error instanceof Error ? error.message : "Unable to load seller data."); setIsLoaded(true); });
+    void load();
+    const handleSync = () => { void load(); };
     window.addEventListener("premily_data_change", handleSync);
     window.addEventListener("premily_order_created", handleSync);
-    return () => {
-      window.removeEventListener("premily_data_change", handleSync);
-      window.removeEventListener("premily_order_created", handleSync);
-    };
-  }, [currentStoreSlug]);
+    return () => { window.removeEventListener("premily_data_change", handleSync); window.removeEventListener("premily_order_created", handleSync); };
+  }, []);
 
   const showFeedback = (msg: string) => {
     setSaveBannerMsg(msg);
@@ -338,6 +338,9 @@ export default function SellerPanelPage() {
   const totalStoreRevenue = orders
     .filter((o) => o.orderStatus !== "CANCELLED")
     .reduce((acc, o) => acc + o.total, 0);
+
+  if (!isLoaded) return <main className="p-10 text-center text-sm text-muted">Loading seller account…</main>;
+  if (loadError || !currentStore.id) return <main className="mx-auto max-w-xl p-10 text-center"><h1 className="font-serif text-xl font-bold">Seller store unavailable</h1><p className="mt-2 text-sm text-muted">{loadError || "No store is linked to this seller account."}</p><Link href="/login" className="mt-4 inline-block underline">Sign in with your seller account</Link></main>;
 
   return (
     <div className="min-h-screen bg-cream flex flex-col lg:flex-row">

@@ -1,3 +1,4 @@
+
 import { randomBytes } from "node:crypto";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
@@ -87,7 +88,9 @@ async function createOrderFromItemsTx(
     storeGroups.set(item.storeId, existing);
   }
 
-  const destination = (shipping.shippingDistrict || shipping.shippingCity).trim().toLowerCase();
+  const destination = (
+    shipping.shippingDistrict || shipping.shippingCity
+  ).trim().toLowerCase();
 
   // Fetch stores involved in this checkout to determine individual shipping rates
   const storeIds = Array.from(storeGroups.keys());
@@ -111,6 +114,7 @@ async function createOrderFromItemsTx(
 
   for (const [storeId, storeLines] of storeGroups) {
     let storeSubtotal = new Prisma.Decimal(0);
+
     for (const item of storeLines) {
       storeSubtotal = storeSubtotal.plus(item.price.times(item.quantity));
     }
@@ -119,10 +123,16 @@ async function createOrderFromItemsTx(
     const homeDistrict = store?.homeDistrict?.trim().toLowerCase() ?? "dhaka";
     const isHome = destination === homeDistrict;
 
-    const configuredRate = isHome ? store?.insideDistrictCost : store?.outsideDistrictCost;
-    const fee = configuredRate == null
-      ? (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE)
-      : Number(configuredRate);
+    const configuredRate = isHome
+      ? store?.insideDistrictCost
+      : store?.outsideDistrictCost;
+
+    const fee =
+      configuredRate == null
+        ? isHome
+          ? DEFAULT_INSIDE_DHAKA_FEE
+          : DEFAULT_OUTSIDE_DHAKA_FEE
+        : Number(configuredRate);
 
     const storeShipping = new Prisma.Decimal(fee);
     const storeTotal = storeSubtotal.plus(storeShipping);
@@ -181,8 +191,12 @@ async function createOrderFromItemsTx(
               skuAtOrder: line.sku,
               variantLabel: line.variantLabel,
             };
+
             if (line.variantId) itemData.variantId = line.variantId;
-            if (line.imageUrl) itemData.productImageUrlAtOrder = line.imageUrl;
+            if (line.imageUrl) {
+              itemData.productImageUrlAtOrder = line.imageUrl;
+            }
+
             return itemData;
           }),
         },
@@ -214,6 +228,7 @@ async function createOrderFromItemsTx(
         where: { id: line.variantId },
         include: { product: true },
       });
+
       throw new OutOfStockError(variant?.product.name ?? "Product");
     }
 
@@ -221,6 +236,7 @@ async function createOrderFromItemsTx(
       where: { id: line.variantId },
       select: { productId: true },
     });
+
     if (variant) {
       await tx.product.update({
         where: { id: variant.productId },
@@ -278,7 +294,28 @@ export async function getMyOrders(userId: string) {
   });
 }
 
-export async function getOrderById(userId: string, orderId: string) {
+export async function getSellerOrders(sellerId: string) {
+  return prisma.order.findMany({
+    where: { store: { sellerId } },
+    include: {
+      items: true,
+      payments: true,
+      store: true,
+      user: {
+        select: {
+          name: true,
+          phone: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getOrderById(
+  userId: string,
+  orderId: string,
+) {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: { items: true, payments: true, store: true },

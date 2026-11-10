@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  X,
-  ShoppingBag,
-  Trash2,
-  Plus,
-  Minus,
-  Truck,
-  ArrowRight,
-  Store,
-} from "lucide-react";
 import { CartService } from "@/lib/cart-service";
+import {
+  ArrowRight,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Store,
+  Trash2,
+  Truck,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { MartBadge } from "../badges/MartBadge";
 
 interface CartDrawerProps {
@@ -30,15 +30,20 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const cartCount = CartService.getItemCount();
 
   useEffect(() => {
+    void CartService.loadCart().catch((error) =>
+      console.error("Unable to load cart:", error),
+    );
     const handleCartChange = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartChange);
-    return () => window.removeEventListener("premily_cart_change", handleCartChange);
+    return () =>
+      window.removeEventListener("premily_cart_change", handleCartChange);
   }, []);
 
   if (!isOpen) return null;
 
   const { groups, totalSubtotal, totalShipping, grandTotal } = storeData;
-  const isEmpty = groups.length === 0 || groups.every((g) => g.items.length === 0);
+  const isEmpty =
+    groups.length === 0 || groups.every((g) => g.items.length === 0);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -78,9 +83,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <ShoppingBag className="w-8 h-8 opacity-60" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-semibold text-dark text-base">Your cart is empty</h3>
+                  <h3 className="font-serif font-semibold text-dark text-base">
+                    Your cart is empty
+                  </h3>
                   <p className="text-xs text-muted mt-1 max-w-xs mx-auto">
-                    Explore curated architectural decor and boutique storefront collections on PREMILY.
+                    Explore curated architectural decor and boutique storefront
+                    collections on PREMILY.
                   </p>
                 </div>
                 <Link
@@ -114,7 +122,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     {/* Group Items */}
                     <div className="p-3 space-y-3 divide-y divide-border-gold/30">
                       {group.items.map((item) => (
-                        <div key={item.id} className="pt-3 first:pt-0 flex gap-3 items-center">
+                        <div
+                          key={item.id}
+                          className="pt-3 first:pt-0 flex gap-3 items-center"
+                        >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={item.imageUrl}
@@ -139,19 +150,25 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    CartService.updateQuantity(item.id, item.quantity - 1)
+                                    void CartService.updateQuantity(
+                                      item.id,
+                                      item.quantity - 1,
+                                    ).catch((error) => console.error(error))
                                   }
                                   className="px-2 py-0.5 text-muted hover:text-dark hover:bg-cream"
                                 >
                                   <Minus className="w-3 h-3" />
                                 </button>
-                                <span className="px-2 py-0.5 font-semibold text-dark min-w-[20px] text-center">
+                                <span className="px-2 py-0.5 font-semibold text-dark min-w-5 text-center">
                                   {item.quantity}
                                 </span>
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    CartService.updateQuantity(item.id, item.quantity + 1)
+                                    void CartService.updateQuantity(
+                                      item.id,
+                                      item.quantity + 1,
+                                    ).catch((error) => console.error(error))
                                   }
                                   className="px-2 py-0.5 text-muted hover:text-dark hover:bg-cream"
                                 >
@@ -163,7 +180,15 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
                           <button
                             type="button"
-                            onClick={() => CartService.removeFromCart(item.id)}
+                            onClick={() =>
+                              void CartService.removeFromCart(item.id).catch(
+                                (error) =>
+                                  console.error(
+                                    "Unable to remove cart item:",
+                                    error,
+                                  ),
+                              )
+                            }
                             className="text-gray-400 hover:text-rose-600 p-1 transition"
                             title="Remove item"
                           >
@@ -184,15 +209,24 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="space-y-1.5">
                 <div className="flex justify-between text-muted">
                   <span>Subtotal:</span>
-                  <span className="font-semibold text-dark">{formatTaka(totalSubtotal)}</span>
+                  <span className="font-semibold text-dark">
+                    {formatTaka(totalSubtotal)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-muted">
-                  <span>Estimated Delivery ({groups.length} {groups.length > 1 ? "Stores" : "Store"}):</span>
-                  <span className="font-semibold text-dark">{formatTaka(totalShipping)}</span>
+                  <span>
+                    Estimated Delivery ({groups.length}{" "}
+                    {groups.length > 1 ? "Stores" : "Store"}):
+                  </span>
+                  <span className="font-semibold text-dark">
+                    {formatTaka(totalShipping)}
+                  </span>
                 </div>
                 <div className="flex justify-between font-bold text-sm text-dark pt-2 border-t border-border-gold/50">
                   <span>Total Payable:</span>
-                  <span className="font-serif text-base text-deep">{formatTaka(grandTotal)}</span>
+                  <span className="font-serif text-base text-deep">
+                    {formatTaka(grandTotal)}
+                  </span>
                 </div>
               </div>
 

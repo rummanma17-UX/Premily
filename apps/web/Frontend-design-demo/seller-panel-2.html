@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seller Dashboard - Premily</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@0.383.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>tailwind.config={theme:{extend:{colors:{gold:"#D4B375",deep:"#B8924B",dark:"#1E1916",muted:"#68605B",cream:"#FAF3E8"},fontFamily:{serif:["Cinzel"],sans:["Plus Jakarta Sans"]}}}}</script>
+<style>
+body{background:#F3EFE9;color:#1E1916}
+.gbtn{background:linear-gradient(135deg,#E3C793,#B8924B);color:#1E1916;font-weight:600}
+.card{background:#fff;border:1px solid #eadfcd;border-radius:14px;transition:.2s}
+.card:hover{box-shadow:0 12px 28px -12px rgba(184,146,75,.25)}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;color:#68605B;cursor:pointer;transition:.2s}
+.nav-item:hover,.nav-item.active{background:#FAF3E8;color:#B8924B}.nav-item.active{font-weight:600}
+::-webkit-scrollbar{height:6px;width:6px}::-webkit-scrollbar-thumb{background:#D4B375;border-radius:9px}
+</style>
+</head>
+<body class="font-sans min-h-screen flex flex-col lg:flex-row">
+<header class="lg:hidden bg-dark text-cream px-4 py-3 flex justify-between items-center sticky top-0 z-50">
+  <div class="font-serif text-lg tracking-wider text-gold">APEX FASHION</div>
+  <button onclick="sb()" class="p-2 text-gold"><i data-lucide="menu" class="w-6 h-6"></i></button>
+</header>
+<div id="ov" onclick="sb()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+<aside id="sidebar" class="w-72 bg-white border-r border-[#eadfcd] flex flex-col fixed inset-y-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+  <div class="p-6 border-b border-[#eadfcd] flex items-center gap-3">
+    <div id="logo" class="w-10 h-10 rounded-xl bg-dark flex items-center justify-center text-gold font-serif font-bold text-xl">S</div>
+    <div><h2 class="font-serif text-lg tracking-wide text-dark font-bold">APEX FASHION</h2><p class="text-xs text-muted">Verified Seller Center</p></div>
+  </div>
+  <nav id="nav" class="flex-1 p-4 space-y-1.5 overflow-y-auto"></nav>
+  <div class="p-4 border-t border-[#eadfcd] bg-[#FAF3E8]/50 m-4 rounded-xl">
+    <p class="text-xs font-semibold text-dark">Commission Rate: 12%</p>
+    <p id="vs" class="text-[11px] text-muted mt-0.5"></p>
+  </div>
+</aside>
+<main class="flex-1 lg:ml-72 flex flex-col min-h-screen min-w-0">
+  <header class="bg-white border-b border-[#eadfcd] px-4 lg:px-8 py-4 flex justify-between items-center lg:sticky top-0 z-30">
+    <div><h1 id="ttl" class="font-serif text-xl font-bold text-dark"></h1><p id="sub" class="text-xs text-muted"></p></div>
+    <button onclick="addP()" class="gbtn px-4 py-2.5 rounded-xl text-xs hidden sm:flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i>Add New Product</button>
+  </header>
+  <div id="v" class="p-4 lg:p-8 space-y-6 flex-1"></div>
+</main>
+
+<script>
+const $=s=>document.querySelector(s),T=n=>'৳ '+Number(n).toLocaleString('en-IN'),fd=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const CL={green:'bg-emerald-100 text-emerald-800',amber:'bg-amber-100 text-amber-800',red:'bg-red-100 text-red-700',blue:'bg-blue-100 text-blue-700',gray:'bg-stone-200 text-stone-700'};
+const SC={PENDING:'amber',CONFIRMED:'blue',PROCESSING:'blue',SHIPPED:'blue',DELIVERED:'green',CANCELLED:'red',RETURNED:'red',ACTIVE:'green',DRAFT:'gray',ARCHIVED:'gray',VERIFIED:'green',UNVERIFIED:'gray',TRIALING:'amber',REJECTED:'red'};
+const B=s=>`<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold whitespace-nowrap ${CL[SC[s]||'gray']}">${s}</span>`;
+const IN='w-full border border-gold/40 rounded-xl px-3 py-2 text-sm outline-none bg-white';
+const F=(l,h)=>`<label class="block space-y-1"><span class="text-xs font-semibold text-muted">${l}</span>${h}</label>`;
+const btn=(t,f,c='text-deep')=>`<button onclick="${f}" class="${c} font-semibold hover:underline mr-3 whitespace-nowrap">${t}</button>`;
+const kpi=(l,v,s,i)=>`<div class="card p-4"><div class="flex justify-between text-muted text-xs font-semibold"><span>${l}</span><i data-lucide="${i}" class="w-4 h-4 text-deep"></i></div><b class="block text-xl sm:text-2xl font-serif mt-1">${v}</b><span class="text-[10px] text-muted">${s}</span></div>`;
+const card=(t,b,a='')=>`<div class="card p-4 sm:p-5 space-y-4"><div class="flex justify-between items-center flex-wrap gap-2"><h2 class="font-bold text-lg">${t}</h2>${a}</div>${b}</div>`;
+const tbl=(h,r)=>`<div class="overflow-x-auto"><table class="w-full text-left text-xs sm:text-sm"><thead><tr class="border-b border-gold/30 text-muted bg-cream/50">${h.map(x=>`<th class="py-2.5 px-3 font-semibold">${x}</th>`).join('')}</tr></thead><tbody class="divide-y divide-gold/20">${r.map(x=>`<tr class="hover:bg-cream/30">${x.map(c=>`<td class="py-3 px-3">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const toast=m=>{const e=document.createElement('div');e.className='fixed bottom-5 right-5 z-[70] bg-dark text-cream text-xs px-4 py-2.5 rounded-xl shadow-lg';e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),2200)};
+const modal=h=>{const e=document.createElement('div');e.id='m';e.className='fixed inset-0 bg-black/50 z-[60] grid place-items-center p-4';e.innerHTML=`<div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 max-h-[90vh] overflow-y-auto">${h}</div>`;document.body.append(e)};
+const closeM=()=>$('#m')?.remove();
+const sb=()=>{$('#sidebar').classList.toggle('-translate-x-full');$('#ov').classList.toggle('hidden')};
+
+const FL=['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED'],DS=['Dhaka','Chattogram','Sylhet','Rajshahi','Khulna'];
+const S={tab:'dashboard',f:'ALL',cancel:false,ext:null,trialEnds:new Date(Date.now()+9*864e5),
+store:{name:'Apex Fashion',slug:'apex-fashion',about:'Premium Panjabi and everyday menswear from Chattogram.',home:'Chattogram',inside:60,outside:130,pub:true,ver:'VERIFIED',color:'#B8924B'},
+products:[
+ {n:'Premium Cotton Panjabi',cat:'Menswear',st:'ACTIVE',v:[{sku:'PCP-M',s:'M',c:'White',p:2490,k:20},{sku:'PCP-L',s:'L',c:'White',p:2490,k:15},{sku:'PCP-XL',s:'XL',c:'White',p:2590,k:3}]},
+ {n:'Linen Summer Shirt',cat:'Menswear',st:'ACTIVE',v:[{sku:'LSS-M',s:'M',c:'Sand',p:1890,k:12},{sku:'LSS-L',s:'L',c:'Sand',p:1890,k:0}]},
+ {n:'Embroidered Kameez Set',cat:'Womenswear',st:'DRAFT',v:[{sku:'EKS-S',s:'S',c:'Maroon',p:4200,k:8}]}],
+orders:[
+ {id:'ORD-2041',c:'Nusrat Jahan',d:'Dhaka',t:2640,st:'PENDING',pm:'BKASH',ps:'PENDING'},
+ {id:'ORD-2040',c:'Rafi Hossain',d:'Sylhet',t:4620,st:'CONFIRMED',pm:'COD',ps:'PENDING'},
+ {id:'ORD-2039',c:'Sadia Islam',d:'Chattogram',t:2490,st:'PROCESSING',pm:'NAGAD',ps:'VERIFIED'},
+ {id:'ORD-2038',c:'Imran Kabir',d:'Khulna',t:1890,st:'SHIPPED',pm:'COD',ps:'PENDING'},
+ {id:'ORD-2037',c:'Mitu Akter',d:'Dhaka',t:3200,st:'DELIVERED',pm:'BKASH',ps:'VERIFIED'}],
+reviews:[
+ {p:'Premium Cotton Panjabi',u:'Nusrat J.',r:5,t:'Lovely fabric and a great fit.',rep:''},
+ {p:'Linen Summer Shirt',u:'Rafi H.',r:3,t:'Colour is lighter than in the photos.',rep:''},
+ {p:'Premium Cotton Panjabi',u:'Sadia I.',r:5,t:'Delivered in two days.',rep:'Thank you, Sadia!'}],
+camps:[{n:'Eid Special',t:'FESTIVAL',e:'20 Nov',j:false},{n:'Winter Clearance',t:'CLEARANCE',e:'31 Dec',j:true},{n:'Free Delivery Week',t:'FREE_DELIVERY',e:'15 Dec',j:false}]};
+const daysLeft=()=>Math.max(0,Math.ceil((S.trialEnds-Date.now())/864e5));
+const TABS=[['dashboard','Dashboard','layout-dashboard','Your store at a glance'],['orders','Orders','clipboard-list','Confirm, pack and ship customer orders'],['products','Products','boxes','Products, variants, prices and stock'],['reviews','Reviews','message-square','Reply to customer reviews'],['shipping','Shipping','truck','Set your delivery charges'],['campaigns','Campaigns','megaphone','Join Premily sales and festivals'],['subscription','Subscription','credit-card','Plan, free trial and billing'],['settings','Store settings','settings','Profile, branding and verification']];
+
+const V={
+dashboard(){const low=S.products.flatMap(p=>p.v.filter(v=>v.k<=5).map(v=>[`${p.n} <span class="text-muted">· ${v.s}/${v.c}</span>`,B(v.k?v.k+' LEFT':'OUT OF STOCK')]));
+ const pend=S.orders.filter(o=>o.st==='PENDING').length,unr=S.reviews.filter(r=>!r.rep).length,val=S.orders.filter(o=>o.st!=='CANCELLED').reduce((a,o)=>a+o.t,0);
+ return `<div class="card p-5 bg-gradient-to-r from-dark to-[#3A332E] text-cream flex flex-col sm:flex-row justify-between sm:items-center gap-3"><div><span class="text-xs text-gold font-semibold">Free trial</span><h2 class="font-serif text-xl font-bold">${daysLeft()} days left on your trial</h2><p class="text-xs text-cream/70">After that it is ৳150 a month. Need more time? Request an extension.</p></div><button onclick="go('subscription')" class="gbtn px-5 py-2.5 rounded-full text-xs">Manage plan</button></div>
+ <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">${kpi('Order value',T(val),'Excludes cancelled orders','trending-up')}${kpi('New orders',pend,'Waiting for confirmation','shopping-bag')}${kpi('Products',S.products.length,low.length+' variants low on stock','package')}${kpi('Store rating','4.8','450+ reviews','star')}</div>
+ <div class="card p-5"><h3 class="font-bold mb-3">Sales volume (last 7 days)</h3><canvas id="ch" height="90"></canvas></div>
+ <div class="grid lg:grid-cols-2 gap-4">${card('Low stock',low.length?tbl(['Variant','Stock'],low):'<p class="text-sm text-muted">All variants are well stocked.</p>')}${card('Needs your attention',tbl(['Task',''],[[pend+' orders to confirm',btn('Open',"S.f='PENDING';go('orders')")],[unr+' reviews without a reply',btn('Reply',"go('reviews')")],['Eid Special campaign is open',btn('Join',"go('campaigns')")]]))}</div>`},
+orders(){const L=['ALL',...FL,'CANCELLED','RETURNED'];
+ const r=S.orders.filter(o=>S.f==='ALL'||o.st===S.f).map(o=>{const i=FL.indexOf(o.st),nx=i>=0?FL[i+1]:null;return[`<b class="text-deep">${o.id}</b>`,o.c,o.d,T(o.t),o.pm==='COD'?'Cash on delivery':o.pm+' '+B(o.ps),B(o.st),(nx?btn('Mark '+nx.toLowerCase(),`adv('${o.id}')`):'')+(o.st==='PENDING'?btn('Cancel',`adv('${o.id}',1)`,'text-red-600'):'')]});
+ return card('Orders & fulfillment',`<div class="flex gap-2 flex-wrap">${L.map(x=>`<button onclick="S.f='${x}';render()" class="px-3 py-1 rounded-full text-xs font-semibold border ${S.f===x?'gbtn border-transparent':'border-gold/40 text-muted'}">${x[0]+x.slice(1).toLowerCase()}</button>`).join('')}</div>`+(r.length?tbl(['Order','Customer','District','Total','Payment','Status','Action'],r):'<p class="text-sm text-muted">No orders with this status yet.</p>'))},
+products(){return card('Products & variants',tbl(['Product','Category','Variants','Price','Stock','Status',''],S.products.map((p,i)=>{const k=p.v.reduce((a,v)=>a+v.k,0),ps=p.v.map(v=>v.p);return[`<b>${p.n}</b>`,p.cat,p.v.length+' · '+p.v.map(v=>v.s).join(', '),T(Math.min(...ps))+(Math.max(...ps)>Math.min(...ps)?'+':''),B(k+' IN STOCK').replace(CL.gray,k>10?CL.green:CL.red),`<select onchange="S.products[${i}].st=this.value;toast('Status updated')" class="border border-gold/40 rounded-lg px-2 py-1 text-xs bg-white">${['DRAFT','ACTIVE','ARCHIVED'].map(s=>`<option ${s===p.st?'selected':''}>${s}</option>`).join('')}</select>`,btn('Edit',"toast('Editor opens here in the full build')")]})),btn('+ Add product','addP()'))},
+reviews(){return `<div class="grid lg:grid-cols-2 gap-4">${S.reviews.map((r,i)=>`<div class="card p-4 space-y-2"><div class="flex justify-between gap-2"><b>${r.p}</b><span class="text-amber-500 whitespace-nowrap">${'★'.repeat(r.r)+'☆'.repeat(5-r.r)}</span></div><p class="text-sm">${r.t}</p><p class="text-xs text-muted">${r.u} · Verified purchase</p>${r.rep?`<p class="text-sm bg-cream rounded-lg p-2"><b>Your reply:</b> ${r.rep}</p>`:`<div class="flex gap-2"><input id="rp${i}" class="${IN}" placeholder="Write a reply"><button onclick="rep(${i})" class="gbtn px-4 rounded-xl text-xs">Reply</button></div>`}</div>`).join('')}</div>`},
+shipping(){const s=S.store,ni=(k)=>`<input type="number" min="0" value="${s[k]??''}" placeholder="Platform default" oninput="S.store.${k}=this.value===''?null:+this.value;sp()" class="${IN}">`;
+ return card('Delivery charges',`<p class="text-sm text-muted max-w-xl">Set two rates: one for customers in your home district and one for every other district. Leave a rate empty to use Premily's default for that destination.</p><div class="grid sm:grid-cols-3 gap-3 max-w-2xl">${F('Home district',`<select class="${IN}" onchange="S.store.home=this.value;sp()">${DS.map(d=>`<option ${d===s.home?'selected':''}>${d}</option>`).join('')}</select>`)}${F('Inside district (৳)',ni('inside'))}${F('Outside district (৳)',ni('outside'))}</div><h3 class="font-bold text-sm">What customers will pay</h3><div id="sp"></div>`)},
+campaigns(){return card('Premily campaigns',tbl(['Campaign','Type','Ends','Your status',''],S.camps.map((c,i)=>[`<b>${c.n}</b>`,c.t.replace('_',' '),c.e,c.j?B('ACTIVE').replace('ACTIVE','JOINED'):B('DRAFT').replace('DRAFT','NOT JOINED'),btn(c.j?'Leave':'Join',`S.camps[${i}].j=!S.camps[${i}].j;render();toast('${c.j?'Left':'Joined'} ${c.n}')`,c.j?'text-red-600':'text-deep')])))},
+subscription(){const d=daysLeft(),e=S.ext;
+ return `<div class="grid lg:grid-cols-3 gap-4"><div class="lg:col-span-2 space-y-4">${card('Your plan',`<div class="flex flex-wrap justify-between gap-3"><div><b class="font-serif text-xl">seller_monthly</b><p class="text-xs text-muted">৳150 a month. A late renewal gets a 3-day grace period.</p></div>${B('TRIALING')}</div><div><div class="flex justify-between text-xs text-muted mb-1"><span>Trial ends ${fd(S.trialEnds)}</span><span>${d} days left</span></div><div class="h-2 rounded-full bg-cream"><div class="h-2 rounded-full bg-deep" style="width:${Math.min(100,d/30*100)}%"></div></div></div><label class="flex items-center gap-2 text-sm"><input type="checkbox" ${S.cancel?'checked':''} onchange="S.cancel=this.checked;toast(this.checked?'Plan will end after the paid period':'Cancellation removed')"> Cancel at the end of the paid period</label>`)}${card('Payment history',`<p class="text-sm text-muted">No payments yet. Your first charge of ৳150 is on ${fd(S.trialEnds)}.</p>`)}</div>
+ ${card('Extend your trial',e?`<p class="text-sm">Request for ${e.d==='ONE_MONTH'?'1 month':'2 months'} sent.</p>${B('PENDING')}<p class="text-xs text-muted">An admin will review it. Your trial end date updates once approved.</p>`:`${F('Extra time',`<select id="xd" class="${IN}"><option value="ONE_MONTH">1 month</option><option value="TWO_MONTHS">2 months</option></select>`)}${F('Why do you need it?',`<textarea id="xr" rows="3" class="${IN}"></textarea>`)}<button onclick="S.ext={d:$('#xd').value};render();toast('Request sent to admin')" class="gbtn px-5 py-2 rounded-xl text-xs w-full">Send request</button>`)}</div>`},
+settings(){const s=S.store;return `<div class="grid lg:grid-cols-2 gap-4">${card('Store profile',`${F('Store name',`<input value="${s.name}" class="${IN}">`)}${F('Store link',`<input value="premily.com/${s.slug}" class="${IN}" disabled>`)}${F('Description',`<textarea rows="3" class="${IN}">${s.about}</textarea>`)}${F('Brand colour',`<input type="color" value="${s.color}" oninput="S.store.color=this.value;$('#logo').style.background=this.value" class="h-10 w-20 rounded-lg border border-gold/40">`)}<label class="flex items-center gap-2 text-sm"><input type="checkbox" ${s.pub?'checked':''} onchange="S.store.pub=this.checked"> Store is visible to customers</label><button onclick="toast('Store profile saved')" class="gbtn px-5 py-2 rounded-xl text-xs">Save changes</button>`)}
+ ${card('Seller verification',`<div class="flex justify-between items-center"><span class="text-sm text-muted">Current status</span>${B(s.ver)}</div>${F('Trade licence number',`<input class="${IN}" placeholder="TRAD-000000">`)}${F('NID number',`<input class="${IN}" placeholder="Stored securely, only admins can see it">`)}<button onclick="S.store.ver='PENDING';render();toast('Sent for review')" class="gbtn px-5 py-2 rounded-xl text-xs">Submit for review</button>`)}</div>`}};
+
+function render(){const t=TABS.find(x=>x[0]===S.tab);$('#ttl').textContent=t[1];$('#sub').textContent=t[3];
+ $('#nav').innerHTML=TABS.map(x=>`<div onclick="go('${x[0]}')" class="nav-item ${x[0]===S.tab?'active':''}"><i data-lucide="${x[2]}" class="w-4 h-4"></i><span>${x[1]}</span></div>`).join('');
+ $('#v').innerHTML=V[S.tab]();$('#vs').textContent='Status: '+S.store.ver;lucide.createIcons();
+ if(S.tab==='dashboard')new Chart($('#ch'),{type:'bar',data:{labels:['Fri','Sat','Sun','Mon','Tue','Wed','Thu'],datasets:[{label:'Daily sales (৳)',data:[18000,29000,42000,24000,31000,28000,32450],backgroundColor:'#B8924B',borderRadius:8}]},options:{responsive:true,plugins:{legend:{display:false}}}});
+ if(S.tab==='shipping')sp()}
+function go(t){S.tab=t;render();scrollTo(0,0);if(!$('#ov').classList.contains('hidden'))sb()}
+function sp(){const s=S.store;$('#sp').innerHTML=tbl(['Customer district','Rate','Charge'],DS.map(d=>{const i=d===s.home,c=i?s.inside:s.outside;return[d,i?'Inside district':'Outside district',c==null?'Platform default':T(c)]}))}
+function adv(id,cancel){const o=S.orders.find(x=>x.id===id);o.st=cancel?'CANCELLED':FL[FL.indexOf(o.st)+1];if(o.st==='DELIVERED'&&o.pm==='COD')o.ps='VERIFIED';render();toast(id+' is now '+o.st.toLowerCase())}
+function rep(i){const v=$('#rp'+i).value.trim();if(!v)return toast('Write a reply first');S.reviews[i].rep=v;render();toast('Reply posted')}
+function addP(){modal(`<h3 class="font-serif font-bold text-lg">Add product</h3>${F('Product name',`<input id="pn" class="${IN}">`)}<div class="grid grid-cols-2 gap-3">${F('Category',`<select id="pc" class="${IN}">${['Menswear','Womenswear','Accessories','Footwear'].map(c=>`<option>${c}</option>`).join('')}</select>`)}${F('Status',`<select id="ps" class="${IN}"><option>DRAFT</option><option>ACTIVE</option></select>`)}${F('Price (৳)',`<input id="pp" type="number" class="${IN}">`)}${F('Stock',`<input id="pk" type="number" value="10" class="${IN}">`)}${F('Size',`<input id="pz" class="${IN}" placeholder="M">`)}${F('Colour',`<input id="pl" class="${IN}" placeholder="White">`)}</div><div class="flex justify-end gap-2 pt-2"><button onclick="closeM()" class="px-4 py-2 text-xs font-semibold text-muted">Cancel</button><button onclick="saveP()" class="gbtn px-5 py-2 rounded-xl text-xs">Save product</button></div>`)}
+function saveP(){const n=$('#pn').value.trim(),p=+$('#pp').value;if(!n||!p)return toast('Enter a name and a price');S.products.unshift({n,cat:$('#pc').value,st:$('#ps').value,v:[{sku:n.slice(0,3).toUpperCase()+'-'+(S.products.length+1),s:$('#pz').value||'—',c:$('#pl').value||'—',p,k:+$('#pk').value||0}]});closeM();go('products');toast('Product saved')}
+render();
+</script>
+</body>
+</html>

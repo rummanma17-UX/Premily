@@ -1,4 +1,5 @@
 import React from "react";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import type { Product } from "@/types";
@@ -17,64 +18,8 @@ export default async function ProductDetailPage({
 }) {
   const { slug } = await params;
 
-  // Fetch product from backend API
-  let product = await apiFetch<Product>(`/api/products/${slug}`).catch(() => null);
-
-  // If backend not connected or slug not found in DB, provide realistic luxury fallback data
-  if (!product) {
-    product = {
-      id: "prod-demo-1",
-      name: "Aura Curved Lounge Chair",
-      slug: slug || "aura-curved-lounge-chair",
-      description:
-        "A sculptural curved lounge chair in solid oak with soft boucle upholstery. Designed for luxury living rooms, reading corners, and modern boutique suites. Ergonomically contoured for enduring comfort.",
-      categoryId: "cat-1",
-      category: { id: "cat-1", name: "Living Room Furniture", slug: "living-room" },
-      avgRating: 4.9,
-      reviewCount: 312,
-      salesCount: 540,
-      isFeatured: true,
-      store: {
-        id: "store-1",
-        slug: "aura-home",
-        displayName: "Aura Home Studio",
-        isPremilyMart: true,
-        verificationStatus: "VERIFIED",
-        homeDistrict: "Dhaka",
-      },
-      images: [
-        { id: "img-1", url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80", altText: "Aura Lounge Chair Angle", position: 0 },
-        { id: "img-2", url: "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1000&q=80", altText: "Aura Lounge Chair Side", position: 1 },
-        { id: "img-3", url: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=1000&q=80", altText: "Aura Lounge Chair Detail", position: 2 },
-      ],
-      variants: [
-        { id: "var-1", sku: "AURA-CREAM", price: "18500", compareAtPrice: "24000", stock: 12, size: "Standard", color: "Cream Boucle" },
-        { id: "var-2", sku: "AURA-CHARCOAL", price: "19200", compareAtPrice: "24000", stock: 8, size: "Standard", color: "Charcoal Grey" },
-        { id: "var-3", sku: "AURA-OLIVE", price: "18500", compareAtPrice: "24000", stock: 0, size: "Standard", color: "Olive Green" },
-      ],
-      reviews: [
-        {
-          id: "rev-1",
-          productId: "prod-demo-1",
-          rating: 5,
-          comment: "Exceptional craftsmanship. The curved oak frame feels solid and the boucle fabric is top tier. Arrived in Dhaka within 2 days.",
-          isVerifiedPurchase: true,
-          sellerReply: "Thank you for choosing Aura Home! We take great pride in our hand-finished furniture.",
-          createdAt: "2026-10-20T10:00:00Z",
-          user: { name: "Tanvir Ahmed" },
-        },
-        {
-          id: "rev-2",
-          productId: "prod-demo-1",
-          rating: 5,
-          comment: "Looks exactly like the photos. Worth every taka. Looks luxurious in my living room.",
-          isVerifiedPurchase: true,
-          createdAt: "2026-10-18T14:30:00Z",
-          user: { name: "Nusrat Jahan" },
-        },
-      ],
-    };
-  }
+  const product = await apiFetch<Product>(`/api/products/${slug}`).catch(() => null);
+  if (!product) notFound();
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
