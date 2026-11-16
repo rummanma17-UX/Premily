@@ -1,7 +1,7 @@
 "use client";
 
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { RandomBrandLogo } from "@/components/RandomBrandLogo";
+import { BrandLogo } from "@/components/BrandLogo";
 import { apiFetch } from "@/lib/api";
 import { CartService } from "@/lib/cart-service";
 import type { DistrictShippingInfo } from "@/types";
@@ -175,7 +175,7 @@ export function SiteHeader() {
             aria-label="PREMILY home"
             className="inline-flex shrink-0 items-center"
           >
-            <RandomBrandLogo />
+            <BrandLogo width={140} height={50} />
           </Link>
 
           {/* Mobile Language Toggle */}

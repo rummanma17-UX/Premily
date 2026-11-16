@@ -1,24 +1,25 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { apiFetch } from "@/lib/api";
 import {
-  Lock,
+  AlertCircle,
+  ArrowLeft,
+  Check,
+  CheckCircle2,
   Eye,
   EyeOff,
-  User,
-  Phone,
-  Store,
-  ShoppingBag,
-  ArrowLeft,
-  CheckCircle2,
-  AlertCircle,
   HelpCircle,
   Languages,
-  Check,
+  Lock,
+  Phone,
+  ShoppingBag,
+  Store,
+  User,
 } from "lucide-react";
-import { apiFetch } from "@/lib/api";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense, useState } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 type PasswordCriteria = {
   minLength: boolean;
@@ -254,16 +255,18 @@ function LoginContent() {
         <div className="premily-card w-full max-w-md p-6 sm:p-8 space-y-6 bg-white border border-border-gold rounded-2xl shadow-md">
           {/* Brand Header */}
           <div className="text-center space-y-1.5">
-            <Link
-              href="/"
-              className="font-serif text-2xl sm:text-3xl font-bold tracking-widest text-dark block hover:opacity-95"
-            >
-              PREMILY<span className="text-deep">.</span>
-            </Link>
-            <p className="text-xs text-muted max-w-xs mx-auto">
-              Curated artisanal living, boutique storefronts, and frictionless delivery across Bangladesh.
-            </p>
-          </div>
+  <Link
+    href="/"
+    className="inline-flex justify-center hover:opacity-95"
+    aria-label="Premily home"
+  >
+    <BrandLogo width={180} height={60} />
+  </Link>
+
+  <p className="text-x text-muted max-w-xs mx-auto">
+    Shop with a smile
+  </p>
+</div>
 
           {/* Tab Switcher: Login / Create Account */}
           <div className="flex border-b border-border-gold/60">
@@ -329,7 +332,7 @@ function LoginContent() {
                     type="text"
                     value={loginIdentifier}
                     onChange={(e) => setLoginIdentifier(e.target.value)}
-                    placeholder="e.g. 01712345678 or name@example.com"
+                    placeholder="Phone or Email"
                     className="w-full text-xs sm:text-sm outline-none bg-transparent text-dark placeholder:text-muted/60"
                   />
                 </div>
@@ -453,7 +456,7 @@ function LoginContent() {
                     type="text"
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
-                    placeholder="e.g. Abdullah Al Rumman"
+                    placeholder="Your name"
                     className="w-full text-xs sm:text-sm outline-none bg-transparent text-dark placeholder:text-muted/60"
                   />
                 </div>
@@ -461,7 +464,7 @@ function LoginContent() {
 
               <div className="space-y-1.5">
                 <label className="font-semibold text-dark block">
-                  Bangladeshi Mobile Number *
+                  Mobile Number *
                 </label>
                 <div className="flex items-center border border-border-gold rounded-xl px-3 py-2.5 bg-cream/30 focus-within:bg-white focus-within:border-deep transition">
                   <Phone className="w-4 h-4 text-deep mr-2.5 shrink-0" />
@@ -470,7 +473,7 @@ function LoginContent() {
                     type="text"
                     value={signupIdentifier}
                     onChange={(e) => setSignupIdentifier(e.target.value)}
-                    placeholder="01712345678"
+                    placeholder="01XXXXXXXXX"
                     className="w-full text-xs sm:text-sm outline-none bg-transparent text-dark placeholder:text-muted/60"
                   />
                 </div>

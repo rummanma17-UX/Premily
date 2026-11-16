@@ -1,0 +1,208 @@
+<svg class="premily-logo-b" viewBox="66 54 278 88" height="40" role="img" aria-label="Premily" xmlns="http://www.w3.org/2000/svg" xmlns:c2pa="http://c2pa.org/manifest">
+  <!-- Timing knobs (CSS custom properties on the root, see the style block): t0 = when the idle loop starts, loop = idle cycle length, idle = infinite (keeps hopping) or 0 (intro only). -->
+  <defs>
+    <clipPath id="plb-bagclip">
+      <path d="M79 80H100A15 15 0 0 1 115 95V98A15 15 0 0 1 100 113H88Q85 113 85 116V121.5A3.5 3.5 0 0 1 81.5 125H76.5A3.5 3.5 0 0 1 73 121.5V86A6 6 0 0 1 79 80Z"/>
+    </clipPath>
+    <linearGradient id="plb-shine" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#E3C793" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#E3C793" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#E3C793" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .premily-logo-b{display:block;width:auto;height:40px;max-width:100%;overflow:visible;--t0:3.2s;--loop:8s;--idle:infinite}
+
+    .plb-ink{fill:#1E1916}
+    .plb-dot{fill:#B8924B}
+    .plb-shadow{fill:#1E1916;fill-opacity:.14}
+    .plb-ring{fill:none;stroke:#D4B375;stroke-width:2;opacity:0}
+    .plb-handle{fill:none;stroke:#D4B375;stroke-width:3.6;stroke-linecap:round}
+    .plb-smile{fill:none;stroke:#D4B375;stroke-width:3.6;stroke-linecap:round;stroke-dasharray:1 1}
+
+    /* pivots */
+    .plb-drop,.plb-hop,.plb-hsk{transform-box:view-box;transform-origin:0 0}
+    .plb-handle,.plb-smile,.plb-shadow,.plb-ring,.plb-ly,.plb-dotp{transform-box:fill-box}
+    .plb-handle,.plb-ly,.plb-dotp{transform-origin:50% 100%}
+    .plb-smile{transform-origin:50% 0}
+    .plb-shadow,.plb-ring{transform-origin:50% 50%}
+
+    /* intro: bag drops, bounces twice, tosses the letters out */
+    .plb-drop{animation:plb-drop 1.7s both,plb-fade .25s both}
+    .plb-handle{animation:plb-hintro 1.7s ease-in-out both}
+    .plb-smile{animation:plb-draw .5s ease-out .95s both,plb-grin var(--loop) ease-in-out calc(var(--t0) + .2s) var(--idle)}
+    .plb-shadow{animation:plb-sh-in 1.7s ease-in-out both,plb-sh-hop var(--loop) ease-in-out var(--t0) var(--idle)}
+    .plb-r1{animation:plb-ring 1s ease-out .65s both}
+    .plb-r2{animation:plb-ring2 .85s ease-out 1.22s both}
+    .plb-lx{animation:plb-fly .95s cubic-bezier(.25,.8,.3,1) calc(1.15s + var(--i) * .08s) both}
+    .plb-ly{animation:plb-lift .95s linear calc(1.15s + var(--i) * .08s) both,
+                      plb-wave var(--loop) ease-in-out calc(var(--t0) + .84s + var(--i) * .07s) var(--idle)}
+    .plb-dotp{animation:plb-pop .6s 2.3s both,
+                        plb-dotwave var(--loop) ease-in-out calc(var(--t0) + 1.26s) var(--idle)}
+
+    /* idle: one hop, a shockwave ring, a glint, then a ripple through the letters */
+    .plb-hop{animation:plb-hop var(--loop) ease-in-out var(--t0) var(--idle)}
+    .plb-hsk{animation:plb-flop var(--loop) ease-in-out var(--t0) var(--idle)}
+    .plb-r3{animation:plb-ring3 var(--loop) ease-out calc(var(--t0) + .84s) var(--idle)}
+    .plb-sheen{opacity:0;animation:plb-sheen var(--loop) ease-in-out calc(var(--t0) + .25s) var(--idle)}
+
+    @keyframes plb-fade{from{opacity:0}to{opacity:1}}
+
+    @keyframes plb-drop{
+      0%{transform:translateY(-64px) rotate(-12deg) scale(.9,1.12);animation-timing-function:cubic-bezier(.55,0,.9,.5)}
+      38%{transform:translateY(0) rotate(3deg) scale(.95,1.07);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+      44%{transform:translateY(0) rotate(0deg) scale(1.22,.7);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+      58%{transform:translateY(-20px) rotate(-2deg) scale(.94,1.1);animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+      72%{transform:translateY(0) rotate(0deg) scale(1.1,.85);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+      80%{transform:translateY(-4px) rotate(0deg) scale(.99,1.03);animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+      90%{transform:translateY(0) rotate(0deg) scale(1.02,.98);animation-timing-function:ease-out}
+      100%{transform:translateY(0) rotate(0deg) scale(1,1)}
+    }
+    @keyframes plb-hintro{
+      0%{transform:scale(1,.5)}
+      38%{transform:scale(1,.55)}
+      44%{transform:scale(1,.3)}
+      58%{transform:scale(1,1.2)}
+      72%{transform:scale(1,.7)}
+      80%{transform:scale(1,1.12)}
+      90%{transform:scale(1,.97)}
+      100%{transform:scale(1,1)}
+    }
+    @keyframes plb-sh-in{
+      0%{transform:scale(.3,.3);opacity:0}
+      38%{transform:scale(1,1);opacity:1}
+      44%{transform:scale(1.18,1.18);opacity:1}
+      58%{transform:scale(.7,.7);opacity:.55}
+      72%{transform:scale(1.1,1.1);opacity:1}
+      80%{transform:scale(.92,.92);opacity:.85}
+      90%{transform:scale(1.02,1.02);opacity:1}
+      100%{transform:scale(1,1);opacity:1}
+    }
+    @keyframes plb-ring{0%{transform:scale(.25,.25);opacity:0}8%{opacity:.9}100%{transform:scale(1.35,1.35);opacity:0}}
+    @keyframes plb-ring2{0%{transform:scale(.25,.25);opacity:0}8%{opacity:.6}100%{transform:scale(1.1,1.1);opacity:0}}
+    @keyframes plb-draw{0%{stroke-dashoffset:1;opacity:0}3%{opacity:1}100%{stroke-dashoffset:0;opacity:1}}
+
+    /* letters: x travels in a straight ease-out, y follows a toss-and-land arc */
+    @keyframes plb-fly{from{transform:translateX(var(--dx))}to{transform:translateX(0px)}}
+    @keyframes plb-lift{
+      0%{transform:translateY(-20px) scale(.3,.3);opacity:0;animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+      10%{opacity:1}
+      45%{transform:translateY(-36px) scale(1.08,1.08);animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+      74%{transform:translateY(0) scale(1.08,.88);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+      88%{transform:translateY(-4px) scale(.99,1.02);animation-timing-function:ease-in}
+      100%{transform:translateY(0) scale(1,1);opacity:1}
+    }
+    @keyframes plb-pop{
+      0%{transform:scale(0,0)}
+      55%{transform:scale(1.7,1.7)}
+      75%{transform:scale(.85,.85)}
+      90%{transform:scale(1.08,1.08)}
+      100%{transform:scale(1,1)}
+    }
+
+    /* idle loop (8s cycle; the action happens in roughly the first 2s) */
+    @keyframes plb-hop{
+      0%{transform:translateY(0) scale(1,1);animation-timing-function:ease-out}
+      2.5%{transform:translateY(0) scale(1.07,.9);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+      6.5%{transform:translateY(-12px) scale(.95,1.07);animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+      10.5%{transform:translateY(0) scale(1.1,.86);animation-timing-function:ease-out}
+      13%{transform:translateY(0) scale(.98,1.03)}
+      16.5%{transform:translateY(0) scale(1.01,.995)}
+      20%,100%{transform:translateY(0) scale(1,1)}
+    }
+    @keyframes plb-flop{
+      0%{transform:skewX(0deg)}
+      3%{transform:skewX(8deg)}
+      7.5%{transform:skewX(-16deg)}
+      12%{transform:skewX(11deg)}
+      16%{transform:skewX(-5deg)}
+      20%{transform:skewX(2deg)}
+      24%,100%{transform:skewX(0deg)}
+    }
+    @keyframes plb-grin{
+      0%{transform:scale(1,1)}
+      3%{transform:scale(1.22,1.22)}
+      8%{transform:scale(1.22,1.22)}
+      11%{transform:scale(.92,.92)}
+      14%{transform:scale(1.04,1.04)}
+      18%,100%{transform:scale(1,1)}
+    }
+    @keyframes plb-sh-hop{
+      0%{transform:scale(1,1);opacity:1}
+      2.5%{transform:scale(1.06,1.06);opacity:1}
+      6.5%{transform:scale(.75,.75);opacity:.55}
+      10.5%{transform:scale(1.1,1.1);opacity:1}
+      14%,100%{transform:scale(1,1);opacity:1}
+    }
+    @keyframes plb-ring3{
+      0%{transform:scale(.25,.25);opacity:0}
+      .6%{opacity:.8}
+      10%{transform:scale(1.5,1.5);opacity:0}
+      100%{transform:scale(1.5,1.5);opacity:0}
+    }
+    @keyframes plb-sheen{
+      0%{transform:translateX(0);opacity:0}
+      1.5%{opacity:1}
+      9.5%{transform:translateX(112px);opacity:1}
+      10.5%{transform:translateX(112px);opacity:0}
+      100%{transform:translateX(112px);opacity:0}
+    }
+    @keyframes plb-wave{
+      0%{transform:translateY(0) scale(1,1)}
+      2.6%{transform:translateY(-6px) scale(.97,1.06)}
+      5.6%{transform:translateY(0) scale(1.04,.93)}
+      8%,100%{transform:translateY(0) scale(1,1)}
+    }
+    @keyframes plb-dotwave{
+      0%{transform:translateY(0) scale(1,1)}
+      2.8%{transform:translateY(-10px) scale(.9,1.12)}
+      6%{transform:translateY(0) scale(1.18,.82)}
+      9%,100%{transform:translateY(0) scale(1,1)}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      .premily-logo-b *{animation:none!important}
+      .plb-ring,.plb-sheen{display:none}
+    }
+  </style>
+
+  <!-- ground: soft shadow + gold shockwave rings -->
+  <ellipse class="plb-shadow" cx="94" cy="126.5" rx="29" ry="4.5"/>
+  <ellipse class="plb-ring plb-r1" cx="94" cy="126" rx="34" ry="7"/>
+  <ellipse class="plb-ring plb-r2" cx="94" cy="126" rx="34" ry="7"/>
+  <ellipse class="plb-ring plb-r3" cx="94" cy="126" rx="34" ry="7"/>
+
+  <!-- letters sit behind the bag so they pop out from inside it -->
+  <g transform="translate(-5 0)">
+    <g class="plb-lx" style="--i:0;--dx:-38px"><path class="plb-ly plb-ink" d="M127.25 125V90.82H134.86V100.23L133.97 97.48Q135.5 94.02 138.8 92.23Q142.1 90.44 147.02 90.44V98.06Q146.51 97.93 146.06 97.9Q145.62 97.86 145.17 97.86Q140.62 97.86 137.94 100.52Q135.25 103.18 135.25 108.42V125Z"/></g>
+    <g class="plb-lx" style="--i:1;--dx:-69px"><path class="plb-ly plb-ink" d="M169.55 125.45Q163.86 125.45 159.6 123.18Q155.34 120.9 153.01 116.94Q150.67 112.97 150.67 107.91Q150.67 102.79 152.94 98.86Q155.22 94.92 159.22 92.68Q163.22 90.44 168.34 90.44Q173.33 90.44 177.23 92.62Q181.14 94.79 183.38 98.76Q185.62 102.73 185.62 108.1Q185.62 108.62 185.58 109.26Q185.55 109.9 185.49 110.47H157.01V105.16H181.26L178.13 106.82Q178.19 103.88 176.91 101.64Q175.63 99.4 173.42 98.12Q171.22 96.84 168.34 96.84Q165.39 96.84 163.18 98.12Q160.98 99.4 159.73 101.67Q158.48 103.94 158.48 107.02V108.3Q158.48 111.37 159.89 113.74Q161.3 116.1 163.86 117.38Q166.42 118.66 169.74 118.66Q172.62 118.66 174.93 117.77Q177.23 116.87 179.02 114.95L183.31 119.88Q181.01 122.57 177.52 124.01Q174.03 125.45 169.55 125.45Z"/></g>
+    <g class="plb-lx" style="--i:2;--dx:-123px"><path class="plb-ly plb-ink" d="M193.3 125V90.82H200.91V99.91L199.57 97.22Q201.3 93.9 204.59 92.17Q207.89 90.44 212.11 90.44Q216.91 90.44 220.46 92.81Q224.02 95.18 225.17 99.98L222.03 98.89Q223.7 95.05 227.54 92.74Q231.38 90.44 236.43 90.44Q240.53 90.44 243.7 92.04Q246.86 93.64 248.66 96.94Q250.45 100.23 250.45 105.42V125H242.45V106.44Q242.45 101.9 240.46 99.66Q238.48 97.42 234.77 97.42Q232.14 97.42 230.13 98.57Q228.11 99.72 226.99 101.96Q225.87 104.2 225.87 107.66V125H217.87V106.44Q217.87 101.9 215.89 99.66Q213.9 97.42 210.19 97.42Q207.57 97.42 205.55 98.57Q203.54 99.72 202.42 101.96Q201.3 104.2 201.3 107.66V125Z"/></g>
+    <g class="plb-lx" style="--i:3;--dx:-166px"><path class="plb-ly plb-ink" d="M260.69 125V90.82H268.69V125ZM264.72 85.19Q262.48 85.19 261.04 83.78Q259.6 82.38 259.6 80.39Q259.6 78.34 261.04 76.97Q262.48 75.59 264.72 75.59Q266.96 75.59 268.4 76.9Q269.84 78.22 269.84 80.2Q269.84 82.31 268.43 83.75Q267.02 85.19 264.72 85.19Z"/></g>
+    <g class="plb-lx" style="--i:4;--dx:-184px"><path class="plb-ly plb-ink" d="M279.18 125V77.51H287.18V125Z"/></g>
+    <g class="plb-lx" style="--i:5;--dx:-212px"><path class="plb-ly plb-ink" d="M300.5 137.86Q298 137.86 295.5 137.03Q293.01 136.2 291.34 134.73L294.54 128.84Q295.76 129.93 297.3 130.57Q298.83 131.21 300.43 131.21Q302.61 131.21 303.95 130.12Q305.3 129.03 306.45 126.47L308.43 121.99L309.07 121.03L322 90.82H329.68L313.68 127.75Q312.08 131.59 310.13 133.83Q308.18 136.07 305.78 136.97Q303.38 137.86 300.5 137.86ZM307.54 126.22 292.11 90.82H300.43L312.98 120.33Z"/></g>
+    <path class="plb-dot plb-dotp" d="M337.23 125.45Q335.06 125.45 333.52 123.94Q331.98 122.44 331.98 120.14Q331.98 117.7 333.52 116.26Q335.06 114.82 337.23 114.82Q339.41 114.82 340.94 116.26Q342.48 117.7 342.48 120.14Q342.48 122.44 340.94 123.94Q339.41 125.45 337.23 125.45Z"/>
+  </g>
+
+  <!-- the P bag: pivot at its base (94,125) so squash & stretch plant on the ground -->
+  <g transform="translate(94 125)">
+    <g class="plb-drop">
+      <g class="plb-hop">
+        <g transform="translate(-94 -125)">
+          <!-- handle: pivots at its feet (94,83) so it flops without lifting off the bag -->
+          <g transform="translate(94 83)">
+            <g class="plb-hsk">
+              <g transform="translate(-94 -83)">
+                <path class="plb-handle" d="M84 83C84 63 104 63 104 83"/>
+              </g>
+            </g>
+          </g>
+          <path class="plb-ink" d="M79 80H100A15 15 0 0 1 115 95V98A15 15 0 0 1 100 113H88Q85 113 85 116V121.5A3.5 3.5 0 0 1 81.5 125H76.5A3.5 3.5 0 0 1 73 121.5V86A6 6 0 0 1 79 80Z"/>
+          <path class="plb-smile" pathLength="1" d="M86 94.5Q94 104 102 94.5"/>
+          <g clip-path="url(#plb-bagclip)">
+            <polygon class="plb-sheen" points="30,76 66,76 50,126 14,126" fill="url(#plb-shine)"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

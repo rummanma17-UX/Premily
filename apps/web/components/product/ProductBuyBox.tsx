@@ -192,7 +192,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
               >
                 -
               </button>
-              <span className="px-2 py-1 font-semibold text-dark min-w-[20px] text-center">
+              <span className="px-2 py-1 font-semibold text-dark min-w-20px text-center">
                 {quantity}
               </span>
               <button
