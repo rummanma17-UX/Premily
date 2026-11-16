@@ -761,7 +761,7 @@ export default function AdminPanelPage() {
                       }`}
                     >
                       Campaign controls are not available in the API yet
-                    </span>
+                    </button>
                   </div>
                 </div>
               ))}

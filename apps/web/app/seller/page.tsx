@@ -117,7 +117,7 @@ export default function SellerPanelPage() {
 
   // Subscription modal state (AGENT.md Business model ৳150/mo)
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
-  const [subscriptionRenewing, setSubscriptionRenewing] = useState(false);
+  const [subscriptionRenewing] = useState(false);
   const [mfsTrxId, setMfsTrxId] = useState("");
 
   // Product modal state (Add / Edit)
@@ -132,8 +132,6 @@ export default function SellerPanelPage() {
   const [prodColors, setProdColors] = useState("Ivory, Charcoal");
   const [prodImage, setProdImage] = useState("");
   const [prodDesc, setProdDesc] = useState("");
-
-  const currentStoreSlug = currentStore.slug;
 
   useEffect(() => {
     const load = () => StoreService.loadSellerData().then(({ store, products: loadedProducts, orders: loadedOrders }) => {

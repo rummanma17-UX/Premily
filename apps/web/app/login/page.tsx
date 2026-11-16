@@ -317,6 +317,7 @@ function LoginContent() {
 
           {/* TAB 1: LOGIN FORM */}
           {activeTab === "login" && (
+            <>
             <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
               <div className="space-y-1.5">
                 <label className="font-semibold text-dark block">
@@ -399,6 +400,7 @@ function LoginContent() {
               </svg>
               Continue with Google
             </button>
+            </>
           )}
 
           {/* TAB 2: SIGN UP FORM */}

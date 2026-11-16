@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import type { Store, Product, ProductListResponse } from "@/types";
@@ -34,14 +35,14 @@ export default async function SellerStorefrontPage({
         </div>
       </div>
       <div className="relative w-full h-48 sm:h-64 bg-dark overflow-hidden">
-        {store.bannerUrl ? <img src={store.bannerUrl} alt={store.displayName} className="w-full h-full object-cover opacity-60" /> : <div className="w-full h-full" style={{background:`linear-gradient(135deg,#1E1916 0%,${brandAccent} 100%)`}} />}
+        {store.bannerUrl ? <Image src={store.bannerUrl} alt={store.displayName} width={1600} height={640} unoptimized className="w-full h-full object-cover opacity-60" /> : <div className="w-full h-full" style={{background:`linear-gradient(135deg,#1E1916 0%,${brandAccent} 100%)`}} />}
         <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent" />
       </div>
       <div className="max-w-7xl mx-auto px-4 -mt-16 sm:-mt-20 relative z-10">
         <div className="premily-card p-6 rounded-3xl border border-border-gold bg-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-cream border-2 border-border-gold overflow-hidden grid place-items-center shadow-xs shrink-0">
-              {store.logoUrl ? <img src={store.logoUrl} alt={store.displayName} className="w-full h-full object-cover" /> : <span className="font-serif text-3xl font-bold text-deep">{store.displayName.charAt(0)}</span>}
+              {store.logoUrl ? <Image src={store.logoUrl} alt={store.displayName} width={96} height={96} unoptimized className="w-full h-full object-cover" /> : <span className="font-serif text-3xl font-bold text-deep">{store.displayName.charAt(0)}</span>}
             </div>
             <div className="space-y-1.5">
               <h1 className="font-serif text-xl sm:text-2xl font-bold text-dark">{store.displayName}</h1>

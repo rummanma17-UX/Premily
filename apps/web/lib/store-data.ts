@@ -112,10 +112,40 @@ export interface CampaignRecord {
   endsAt: string;
 }
 
-type ApiStore = Record<string, any>;
-type ApiOrder = Record<string, any>;
-type ApiProduct = Record<string, any>;
-type ApiCampaign = Record<string, any>;
+type ApiStore = {
+  id: string; slug: string; displayName: string; sellerName?: string; phone?: string;
+  email?: string | null; description?: string; logoUrl?: string | null; bannerUrl?: string;
+  primaryColor?: string; isPremilyMart?: boolean; verificationStatus?: VerificationStatus;
+  tradeLicenseNo?: string; nidNumber?: string; verificationNote?: string;
+  submittedAt?: string | Date | null; homeDistrict?: string;
+  insideDistrictCost?: number | string; outsideDistrictCost?: number | string;
+  seller?: { name?: string; phone?: string; email?: string | null };
+  subscription?: { status?: SubscriptionStatus; amount?: number | string; trialEndsAt?: string | Date | null; currentPeriodEnd?: string | Date | null };
+  stats?: { totalProducts?: number; totalOrders?: number; avgRating?: number; totalReviews?: number; totalSales?: number; revenue?: number };
+  _count?: { products?: number; orders?: number };
+};
+type ApiVariant = { id?: string; productId?: string; isActive?: boolean; price?: number | string; compareAtPrice?: number | string | null; stock?: number | string; size?: string | null; color?: string | null };
+type ApiProduct = {
+  id: string; storeId?: string; name: string; slug: string; description?: string;
+  categoryId?: string; variants?: ApiVariant[]; images?: Array<{ url?: string }>;
+  store?: { id?: string; slug?: string; displayName?: string };
+  category?: { id?: string; name?: string };
+  status?: ProductRecord["status"]; avgRating?: number; reviewCount?: number; salesCount?: number; isFeatured?: boolean;
+};
+type ApiOrderItem = { variant?: { productId?: string }; productId?: string; productName?: string; variantLabel?: string; priceAtOrder?: number | string; quantity?: number | string; productImageUrlAtOrder?: string };
+type ApiPayment = { method?: PaymentMethod; status?: PaymentStatus; transactionId?: string | null };
+type ApiOrder = {
+  id: string; orderNumber: string; storeId?: string; store?: { id?: string; slug?: string; displayName?: string };
+  user?: { name?: string; phone?: string }; shippingName?: string; shippingPhone?: string;
+  shippingAddress?: string; shippingDistrict?: string; shippingCity?: string; items?: ApiOrderItem[];
+  payments?: ApiPayment[]; subtotal?: number | string; shippingCost?: number | string; total?: number | string;
+  status?: OrderStatus; createdAt?: string | Date | null; updatedAt?: string | Date | null;
+};
+type ApiCampaign = {
+  id: string; name: string; slug: string; description?: string; bannerUrl?: string; badgeText?: string;
+  isActive?: boolean; endsAt?: string | Date | null;
+  items?: Array<{ salePrice?: number | string; product?: { variants?: ApiVariant[] } }>;
+};
 
 const cache = {
   stores: [] as StoreRecord[],
@@ -178,8 +208,8 @@ function mapStore(raw: ApiStore): StoreRecord {
 }
 
 function mapProduct(raw: ApiProduct): ProductRecord {
-  const variants = Array.isArray(raw.variants) ? raw.variants : [];
-  const activeVariants = variants.filter((variant: ApiProduct) => variant.isActive !== false);
+  const variants = raw.variants ?? [];
+  const activeVariants = variants.filter((variant) => variant.isActive !== false);
   const firstVariant = activeVariants[0] ?? variants[0] ?? {};
   const images = Array.isArray(raw.images) ? raw.images : [];
   const store = raw.store ?? {};
@@ -196,9 +226,9 @@ function mapProduct(raw: ApiProduct): ProductRecord {
     categoryName: category.name ?? "",
     price: number(firstVariant.price),
     compareAtPrice: firstVariant.compareAtPrice == null ? null : number(firstVariant.compareAtPrice),
-    stock: variants.reduce((sum: number, variant: ApiProduct) => sum + number(variant.stock), 0),
-    sizes: [...new Set(variants.map((variant: ApiProduct) => variant.size).filter(Boolean))] as string[],
-    colors: [...new Set(variants.map((variant: ApiProduct) => variant.color).filter(Boolean))] as string[],
+    stock: variants.reduce((sum, variant) => sum + number(variant.stock), 0),
+    sizes: [...new Set(variants.map((variant) => variant.size).filter((size): size is string => Boolean(size)))],
+    colors: [...new Set(variants.map((variant) => variant.color).filter((color): color is string => Boolean(color)))],
     imageUrl: images[0]?.url ?? "",
     status: raw.status ?? "DRAFT",
     avgRating: number(raw.avgRating),
@@ -223,7 +253,7 @@ function mapOrder(raw: ApiOrder): OrderRecord {
     shippingAddress: raw.shippingAddress ?? "",
     shippingDistrict: raw.shippingDistrict ?? "",
     shippingCity: raw.shippingCity ?? "",
-    items: (raw.items ?? []).map((item: ApiOrder) => ({
+    items: (raw.items ?? []).map((item) => ({
       productId: item.variant?.productId ?? item.productId ?? "",
       name: item.productName ?? "",
       variantLabel: item.variantLabel ?? "",
@@ -269,7 +299,7 @@ function notifyDataChanged() {
   }
 }
 
-async function fetchCampaigns(admin = false): Promise<CampaignRecord[]> {
+async function fetchCampaigns(): Promise<CampaignRecord[]> {
   const endpoint = "/api/campaigns";
   const records = await apiFetch<ApiCampaign[]>(endpoint);
   return records.map(mapCampaign);

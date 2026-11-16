@@ -55,7 +55,7 @@ export function RealtimeOrderTracker() {
   const [, startTransition] = useTransition();
 
   // Load and refresh orders from StoreService and optional tracking endpoint
-  const syncLatestOrders = useCallback(async (isManual = false) => {
+  const syncLatestOrders = useCallback(async () => {
     setIsSyncing(true);
     try {
       const freshOrders = await StoreService.loadCustomerOrders();

@@ -40,7 +40,6 @@ export function CategoryManagement() {
   const [notice, setNotice] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    setLoading(true);
     try {
       setCategories(await apiFetch<Category[]>("/api/categories"));
       setError(null);
