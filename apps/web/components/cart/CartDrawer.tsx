@@ -18,26 +18,37 @@ import { MartBadge } from "../badges/MartBadge";
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  isAuthenticated: boolean;
 }
-
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
 }
 
-export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+export function CartDrawer({
+  isOpen,
+  onClose,
+  isAuthenticated,
+}: CartDrawerProps) {
   const [, setCartVersion] = useState(0);
   const storeData = CartService.getStoreGroups();
   const cartCount = CartService.getItemCount();
 
   useEffect(() => {
-    void CartService.loadCart().catch((error) =>
-      console.error("Unable to load cart:", error),
-    );
+    // Only fetch the cart for authenticated users.
+    if (isAuthenticated) {
+      void CartService.loadCart().catch((error) => {
+        console.error("Unable to load cart:", error);
+      });
+    }
+
     const handleCartChange = () => setCartVersion((version) => version + 1);
+
     window.addEventListener("premily_cart_change", handleCartChange);
-    return () =>
+
+    return () => {
       window.removeEventListener("premily_cart_change", handleCartChange);
-  }, []);
+    };
+  }, [isAuthenticated]);
 
   if (!isOpen) return null;
 

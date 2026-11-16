@@ -1,25 +1,47 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import {
-  Languages,
-  MapPin,
-  Search,
-  ShoppingCart,
-  UserRound,
-  LogOut,
-  Store,
-  SlidersHorizontal,
-  ChevronDown,
-  ShoppingBag,
-  ExternalLink,
-} from "lucide-react";
-import { apiFetch } from "@/lib/api";
-import type { DistrictShippingInfo } from "@/types";
-import { CartService } from "@/lib/cart-service";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { RandomBrandLogo } from "@/components/RandomBrandLogo";
+import { apiFetch } from "@/lib/api";
+import { CartService } from "@/lib/cart-service";
+import type { DistrictShippingInfo } from "@/types";
+import {
+  ChevronDown,
+  ExternalLink,
+  Languages,
+  LogOut,
+  MapPin,
+  Search,
+  ShoppingBag,
+  ShoppingCart,
+  SlidersHorizontal,
+  Store,
+  UserRound,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+function subscribeToDeliveryDistrict(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener("premily_delivery_change", callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("premily_delivery_change", callback);
+  };
+}
+
+function getDeliveryDistrictSnapshot(): string {
+  try {
+    return localStorage.getItem("premily_delivery_district") || "Dhaka";
+  } catch {
+    return "Dhaka";
+  }
+}
+
+function getServerDeliveryDistrictSnapshot(): string {
+  return "Dhaka";
+}
 
 type AuthUser = {
   id: string;
@@ -37,15 +59,13 @@ export function SiteHeader() {
   const [cartCount, setCartCount] = useState(0);
   const [deliveryOpen, setDeliveryOpen] = useState(false);
   const [districts, setDistricts] = useState<DistrictShippingInfo[]>([]);
-  
+
   // Initialize state directly from localStorage to prevent synchronous setState in useEffect
-  const [selectedDistrict, setSelectedDistrict] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("premily_delivery_district") || "Dhaka";
-    }
-    return "Dhaka";
-  });
-  
+  const selectedDistrict = useSyncExternalStore(
+    subscribeToDeliveryDistrict,
+    getDeliveryDistrictSnapshot,
+    getServerDeliveryDistrictSnapshot,
+  );
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,24 +86,24 @@ export function SiteHeader() {
       .then((records) => {
         setDistricts(records);
         const saved = localStorage.getItem("premily_delivery_district");
-        if (saved && !records.some((district) => district.districtName === saved)) {
+        if (
+          saved &&
+          !records.some((district) => district.districtName === saved)
+        ) {
           localStorage.removeItem("premily_delivery_district");
-          setSelectedDistrict("Dhaka");
+          window.dispatchEvent(new Event("premily_delivery_change"));
         }
       })
-      .catch((error) => console.error("Unable to load delivery districts:", error));
+      .catch((error) =>
+        console.error("Unable to load delivery districts:", error),
+      );
 
     const handleCartUpdate = () => setCartCount(CartService.getItemCount());
     const initialCartSync = window.setTimeout(handleCartUpdate, 0);
-    
+
     window.addEventListener("premily_auth_change", loadUser);
     window.addEventListener("premily_cart_change", handleCartUpdate);
     window.addEventListener("storage", loadUser);
-    
-    const syncDeliveryDistrict = () => {
-      setSelectedDistrict(localStorage.getItem("premily_delivery_district") || "Dhaka");
-    };
-    window.addEventListener("premily_delivery_change", syncDeliveryDistrict);
 
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -96,7 +116,6 @@ export function SiteHeader() {
       window.removeEventListener("premily_auth_change", loadUser);
       window.removeEventListener("premily_cart_change", handleCartUpdate);
       window.removeEventListener("storage", loadUser);
-      window.removeEventListener("premily_delivery_change", syncDeliveryDistrict);
       window.clearTimeout(initialCartSync);
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -170,13 +189,20 @@ export function SiteHeader() {
           </button>
 
           {/* Delivery district selector */}
-          <button type="button" onClick={() => setDeliveryOpen((open) => !open)}
-            aria-expanded={deliveryOpen} aria-label="Choose delivery district"
-            className="hidden cursor-pointer items-center gap-2 rounded-xl border border-gold/40 px-3 py-1.5 transition hover:bg-cream md:flex">
+          <button
+            type="button"
+            onClick={() => setDeliveryOpen((open) => !open)}
+            aria-expanded={deliveryOpen}
+            aria-label="Choose delivery district"
+            className="hidden cursor-pointer items-center gap-2 rounded-xl border border-gold/40 px-3 py-1.5 transition hover:bg-cream md:flex"
+          >
             <MapPin className="size-5 text-deep" aria-hidden="true" />
             <span className="text-left leading-tight">
               <span className="block text-[10px] text-muted">Deliver to</span>
-              <span className="block text-sm font-semibold text-dark">{selectedDistrict} <ChevronDown className="ml-1 inline size-3" /></span>
+              <span className="block text-sm font-semibold text-dark">
+                {selectedDistrict}{" "}
+                <ChevronDown className="ml-1 inline size-3" />
+              </span>
             </span>
           </button>
 
@@ -245,7 +271,9 @@ export function SiteHeader() {
                 {menuOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-white border border-border-gold rounded-2xl shadow-xl py-2 z-50 text-xs animate-in fade-in duration-150">
                     <div className="px-4 py-2.5 border-b border-border-gold/50 bg-cream/40">
-                      <div className="font-bold text-dark truncate">{user.name}</div>
+                      <div className="font-bold text-dark truncate">
+                        {user.name}
+                      </div>
                       <div className="text-[11px] text-muted truncate">
                         {user.email || user.phone}
                       </div>
@@ -327,7 +355,10 @@ export function SiteHeader() {
                   href="/login"
                   className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-dark hover:text-deep transition py-1.5 px-2.5 rounded-xl border border-transparent hover:border-border-gold hover:bg-cream"
                 >
-                  <UserRound className="size-4 sm:size-5 text-deep" aria-hidden="true" />
+                  <UserRound
+                    className="size-4 sm:size-5 text-deep"
+                    aria-hidden="true"
+                  />
                   <span className="hidden sm:inline">Sign In</span>
                   <span className="sm:hidden font-semibold">Login</span>
                 </Link>
@@ -352,30 +383,75 @@ export function SiteHeader() {
         </div>
 
         {/* Sub-header District Delivery Notice for Mobile */}
-        <button type="button" onClick={() => setDeliveryOpen((open) => !open)}
+        <button
+          type="button"
+          onClick={() => setDeliveryOpen((open) => !open)}
           aria-expanded={deliveryOpen}
-          className="flex w-full items-center gap-1 border-t border-border-gold/40 bg-cream px-4 py-2 text-left text-xs text-muted md:hidden">
+          className="flex w-full items-center gap-1 border-t border-border-gold/40 bg-cream px-4 py-2 text-left text-xs text-muted md:hidden"
+        >
           <MapPin className="size-3.5 text-deep" aria-hidden="true" />
-          <span>Deliver to:</span><b className="text-dark">{selectedDistrict}</b>
+          <span>Deliver to:</span>
+          <b className="text-dark">{selectedDistrict}</b>
           <ChevronDown className="size-3 text-deep" />
         </button>
         {deliveryOpen && (
           <div className="absolute left-4 right-4 top-full z-50 rounded-xl border border-border-gold bg-white p-4 shadow-xl md:left-44 md:right-auto md:w-80">
-            <label htmlFor="header-delivery-district" className="mb-2 block text-xs font-semibold text-dark">Select delivery district</label>
-            <select id="header-delivery-district" value={selectedDistrict}
+            <label
+              htmlFor="header-delivery-district"
+              className="mb-2 block text-xs font-semibold text-dark"
+            >
+              Select delivery district
+            </label>
+            <select
+              id="header-delivery-district"
+              value={selectedDistrict}
               onChange={(event) => {
                 const district = event.target.value;
-                setSelectedDistrict(district);
+
                 localStorage.setItem("premily_delivery_district", district);
+
+                window.dispatchEvent(new Event("premily_delivery_change"));
+
                 setDeliveryOpen(false);
               }}
-              className="w-full cursor-pointer rounded-xl border border-border-gold bg-cream/50 px-3 py-2.5 text-sm text-dark outline-none focus:border-deep">
-              {districts.map((district) => <option key={district.districtName} value={district.districtName}>{district.districtName} · {district.division}</option>)}
+              className="w-full cursor-pointer rounded-xl border border-border-gold bg-cream/50 px-3 py-2.5 text-sm text-dark outline-none focus:border-deep"
+            >
+              {districts.map((district) => (
+                <option
+                  key={district.districtName}
+                  value={district.districtName}
+                >
+                  {district.districtName} · {district.division}
+                </option>
+              ))}
             </select>
-            {districts.length === 0 && <p className="mt-2 text-[11px] text-muted">Loading available districts…</p>}
-            {districts.find((district) => district.districtName === selectedDistrict) && (
+            {districts.length === 0 && (
               <p className="mt-2 text-[11px] text-muted">
-                Estimated delivery: {districts.find((district) => district.districtName === selectedDistrict)!.estimatedDaysMin}–{districts.find((district) => district.districtName === selectedDistrict)!.estimatedDaysMax} days · ৳{Number(districts.find((district) => district.districtName === selectedDistrict)!.baseCost).toLocaleString("en-BD")}
+                Loading available districts…
+              </p>
+            )}
+            {districts.find(
+              (district) => district.districtName === selectedDistrict,
+            ) && (
+              <p className="mt-2 text-[11px] text-muted">
+                Estimated delivery:{" "}
+                {
+                  districts.find(
+                    (district) => district.districtName === selectedDistrict,
+                  )!.estimatedDaysMin
+                }
+                –
+                {
+                  districts.find(
+                    (district) => district.districtName === selectedDistrict,
+                  )!.estimatedDaysMax
+                }{" "}
+                days · ৳
+                {Number(
+                  districts.find(
+                    (district) => district.districtName === selectedDistrict,
+                  )!.baseCost,
+                ).toLocaleString("en-BD")}
               </p>
             )}
           </div>
@@ -386,6 +462,7 @@ export function SiteHeader() {
       <CartDrawer
         isOpen={cartDrawerOpen}
         onClose={() => setCartDrawerOpen(false)}
+        isAuthenticated={Boolean(user)}
       />
     </>
   );
