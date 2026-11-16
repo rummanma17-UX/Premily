@@ -26,7 +26,7 @@ function formatTaka(amount: number) {
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const [, setCartVersion] = useState(0);
-  const storeData = CartService.getStoreGroups("Dhaka");
+  const storeData = CartService.getStoreGroups();
   const cartCount = CartService.getItemCount();
 
   useEffect(() => {
