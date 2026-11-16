@@ -62,6 +62,8 @@ export default function CheckoutPage() {
   // Dynamic Cart and Multi-Store Grouping (AGENT.md Rule 5)
   const [, setCartVersion] = useState(0);
   const [cartLoading, setCartLoading] = useState(true);
+  const [shippingQuote, setShippingQuote] = useState<{ totalShippingCost: number; stores: Array<{storeId:string;shippingCost:number}> } | null>(null);
+  const [shippingQuoteError, setShippingQuoteError] = useState<string | null>(null);
   const [mfsModalOpen, setMfsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -89,7 +91,28 @@ export default function CheckoutPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const { groups, totalSubtotal, totalShipping, grandTotal } = CartService.getStoreGroups(selectedDistrict);
+  const cartSummary = CartService.getStoreGroups(selectedDistrict);
+  const groups = cartSummary.groups;
+  const totalSubtotal = cartSummary.totalSubtotal;
+  const totalShipping = shippingQuote?.totalShippingCost ?? 0;
+  const grandTotal = totalSubtotal + totalShipping;
+  useEffect(() => {
+    let cancelled = false;
+    if (!groups.length) { setShippingQuote({ totalShippingCost: 0, stores: [] }); return; }
+    apiFetch<{ totalShippingCost: number; stores: Array<{storeId:string;shippingCost:number}> }>("/api/shipping/calculate", {
+      method: "POST",
+      body: JSON.stringify({ destinationDistrict: selectedDistrict, storeIds: groups.map((group) => group.storeId) }),
+    }).then((quote) => {
+      if (!cancelled) { setShippingQuote(quote); setShippingQuoteError(null); }
+    }).catch((error) => {
+      if (!cancelled) {
+        setShippingQuote(null);
+        setShippingQuoteError(error instanceof Error ? error.message : "Unable to calculate delivery fees.");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [selectedDistrict, groups.map((group) => group.storeId).join(",")]);
+
   const isDhaka = selectedDistrict.toLowerCase() === "dhaka";
 
   const executeOrderPlacement = async (trxId: string | null = null, senderNumber: string | null = null) => {
@@ -145,6 +168,11 @@ export default function CheckoutPage() {
 
     if (!streetAddress.trim()) {
       setErrorMessage("Please enter your detailed delivery address.");
+      return;
+    }
+
+    if (!shippingQuote || shippingQuoteError) {
+      setErrorMessage("Delivery fees are not available yet. Please wait for the shipping quote and try again.");
       return;
     }
 
@@ -446,9 +474,11 @@ export default function CheckoutPage() {
 
             <div className="flex justify-between items-center">
               <span>Delivery Fee ({selectedDistrict} • {groups.length} {groups.length > 1 ? "Stores" : "Store"})</span>
-              <b className="text-dark">{formatTaka(totalShipping)}</b>
+              <b className="text-dark">{shippingQuoteError ? "Unavailable" : formatTaka(totalShipping)}</b>
             </div>
 
+            {shippingQuoteError && <p role="alert" className="text-[11px] text-rose-700">{shippingQuoteError}</p>}
+            {!shippingQuote && !shippingQuoteError && groups.length > 0 && <p className="text-[11px] text-muted">Calculating delivery fees…</p>}
             <div className="text-[11px] text-muted italic flex items-center gap-1">
               <Truck className="w-3 h-3 text-deep" />
               <span>Est. Arrival: {isDhaka ? "1-2 Business Days" : "3-5 Business Days"}</span>
@@ -462,7 +492,7 @@ export default function CheckoutPage() {
 
           <button
             type="submit"
-            disabled={isPlacing || grandTotal === 0}
+            disabled={isPlacing || grandTotal === 0 || !shippingQuote || !!shippingQuoteError}
             className="gbtn w-full py-3.5 rounded-xl text-xs uppercase tracking-wider font-bold shadow-md cursor-pointer transition-all hover:brightness-105 disabled:opacity-50"
           >
             {isPlacing

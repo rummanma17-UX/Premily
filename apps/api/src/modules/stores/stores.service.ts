@@ -116,10 +116,13 @@ export async function updateStoreProfile(
 
   const data: any = {};
   if (input.displayName !== undefined) data.displayName = input.displayName;
+  if (input.slug !== undefined) data.slug = input.slug;
   if (input.description !== undefined) data.description = input.description;
   if (input.logoUrl !== undefined) data.logoUrl = input.logoUrl || null;
   if (input.bannerUrl !== undefined) data.bannerUrl = input.bannerUrl || null;
   if (input.primaryColor !== undefined) data.primaryColor = input.primaryColor;
+  if (input.verificationStatus !== undefined) data.verificationStatus = input.verificationStatus;
+  if (input.verificationStatus === "PENDING") { data.verifiedAt = null; data.verifiedBy = null; }
   if (input.tradeLicenseNo !== undefined) data.tradeLicenseNo = input.tradeLicenseNo;
   if (input.nidNumber !== undefined) data.nidNumber = input.nidNumber;
 

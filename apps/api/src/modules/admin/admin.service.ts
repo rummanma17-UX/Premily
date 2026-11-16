@@ -37,9 +37,8 @@ export async function getAdminDashboard() {
     prisma.order.count({ where: { status: "CANCELLED" } }),
     prisma.order.aggregate({
       where: {
-        payments: {
-          some: { status: "VERIFIED" },
-        },
+        payments: { some: { status: "VERIFIED" } },
+        status: { in: ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"] },
       },
       _sum: { total: true },
     }),
