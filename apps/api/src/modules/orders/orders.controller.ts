@@ -1,4 +1,5 @@
 import type { NextFunction, Response } from "express";
+import { z } from "zod";
 import type { AuthRequest } from "../../middleware/auth.js";
 import {
   buyNowSchema,
@@ -14,6 +15,7 @@ import {
   OutOfStockError,
   submitPaymentProof,
   verifyPayment,
+  updateSellerOrderStatus,
 } from "./orders.service.js";
 
 export async function checkout(
@@ -85,7 +87,7 @@ export async function sellerOrders(
 ) {
   try {
     const orders = await getSellerOrders(req.user!.userId);
-    res.json(orders);
+    res.json({ orders });
   } catch (err) {
     next(err);
   }
@@ -149,6 +151,10 @@ export async function submitProof(
       res.status(400).json({ error: "Payment already verified" });
       return;
     }
+    if (err instanceof Error && err.message === "PROOF_ALREADY_SUBMITTED") {
+      res.status(409).json({ error: "Payment proof has already been submitted" });
+      return;
+    }
 
     next(err);
   }
@@ -174,6 +180,20 @@ export async function verifyOrderPayment(
       res.status(404).json({ error: "Order not found" });
       return;
     }
+    next(err);
+  }
+}
+
+
+export async function updateSellerOrder(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const orderId = req.params.orderId as string;
+    const { status } = z.object({ status: z.enum(["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"]) }).parse(req.body);
+    res.json(await updateSellerOrderStatus(req.user!.userId, orderId, status));
+  } catch (err) {
+    if (err instanceof Error && err.message === "ORDER_NOT_FOUND") { res.status(404).json({ error: "Order not found" }); return; }
+    if (err instanceof Error && err.message === "INVALID_STATUS_TRANSITION") { res.status(409).json({ error: "This order transition is not allowed" }); return; }
+    if (err instanceof Error && err.message === "ORDER_STATUS_CONFLICT") { res.status(409).json({ error: "Order status changed; refresh and try again" }); return; }
     next(err);
   }
 }
