@@ -37,9 +37,9 @@ export function ProductCard({
 
   return (
     <article
-      className={`premily-card premily-card-hover flex flex-col overflow-hidden group bg-white border border-[#EADFCD] rounded-2xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${widthClass}`}
+      className={`premily-card premily-card-hover flex flex-col overflow-hidden group bg-white border border-gold rounded-2xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${widthClass}`}
     >
-      <Link href={`/products/${product.slug}`} className="relative block overflow-hidden aspect-[4/3] bg-surface-subtle">
+      <Link href={`/products/${product.slug}`} className="relative block overflow-hidden aspect-4/3 bg-surface-subtle">
         {/* eslint-disable-next-line @next/next/no-img-element -- external product images */}
         <img
           src={image}
@@ -89,7 +89,7 @@ export function ProductCard({
         <div className="flex flex-wrap items-center gap-1.5 pt-1 mt-auto border-t border-border-gold/30">
           <Link
             href={`/${product.store.slug}`}
-            className="text-[11px] text-muted hover:text-dark truncate max-w-[110px]"
+            className="text-[11px] text-muted hover:text-dark truncate max-w-27.5"
             title={product.store.displayName}
           >
             {product.store.displayName}

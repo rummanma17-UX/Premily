@@ -1,0 +1,87 @@
+<svg class="go" width="135" height="40" viewBox="65 50 270 80" xmlns="http://www.w3.org/2000/svg">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+  <style>
+    .go .bag {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: pop .8s cubic-bezier(.3, 1.2, .5, 1) both, hop 5s 4s infinite ease-in-out;
+    }
+    .go .hd {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: swing .9s .75s ease-in-out, wave 5s 4s infinite ease-in-out;
+    }
+    .go .draw {
+      stroke-dasharray: 1 1;
+      animation: draw .4s 1s ease-out both;
+    }
+    .go .word {
+      stroke: #B8924B;
+      stroke-width: 1.4;
+      stroke-dasharray: 500;
+      animation: outline 1s 1.2s ease-in-out both, fillin .5s 2.05s ease-out both;
+    }
+    .go .sp {
+      animation: spark 1.1s ease-out both;
+    }
+    @keyframes pop {
+      0% { transform: scale(.2); opacity: 0; }
+      45% { transform: scale(1.12, .88); opacity: 1; }
+      72% { transform: scale(.96, 1.06); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes swing {
+      0% { transform: rotate(0); }
+      25% { transform: rotate(-16deg); }
+      55% { transform: rotate(11deg); }
+      80% { transform: rotate(-4deg); }
+      100% { transform: rotate(0); }
+    }
+    @keyframes draw {
+      from { stroke-dashoffset: 1; }
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes outline {
+      from { stroke-dashoffset: 500; }
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes fillin {
+      from { fill: transparent; stroke-opacity: 1; }
+      to { fill: #1E1916; stroke-opacity: 0; }
+    }
+    @keyframes spark {
+      0% { transform: translate(0, 0) scale(0) rotate(0); opacity: 1; }
+      30% { transform: translate(calc(var(--dx)*.4), calc(var(--dy)*.4)) scale(1) rotate(40deg); }
+      100% { transform: translate(var(--dx), var(--dy)) scale(.2) rotate(140deg); opacity: 0; }
+    }
+    @keyframes hop {
+      0%, 84%, 100% { transform: none; }
+      90% { transform: translateY(-7px); }
+      95% { transform: translateY(0) scaleY(.94); }
+    }
+    @keyframes wave {
+      0%, 84%, 100% { transform: rotate(0); }
+      90% { transform: rotate(-14deg); }
+      95% { transform: rotate(9deg); }
+    }
+  </style>
+
+  <!-- Shopping Bag P -->
+  <g class="bag">
+    <rect x="70" y="80" width="12" height="45" rx="2" fill="#1E1916"></rect>
+    <rect x="70" y="80" width="46" height="34" rx="15" fill="#1E1916"></rect>
+    <path class="hd" d="M85 81 C85 61 101 61 101 81" fill="none" stroke="#1E1916" stroke-width="4" stroke-linecap="round"></path>
+    <path class="draw" pathLength="1" d="M85 94 Q93 104 101 94" fill="none" stroke="#D4B375" stroke-width="3.5" stroke-linecap="round"></path>
+  </g>
+
+  <!-- Sparkles -->
+  <g transform="translate(93 68)">
+    <path class="sp" style="--dx:-34px;--dy:-26px;animation-delay:1.35s" fill="#D4B375" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
+    <path class="sp" style="--dx:-8px;--dy:-40px;animation-delay:1.5s" fill="#B8924B" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
+    <path class="sp" style="--dx:22px;--dy:-34px;animation-delay:1.65s" fill="#D4B375" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
+    <path class="sp" style="--dx:46px;--dy:-16px;animation-delay:1.8s" fill="#B8924B" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
+  </g>
+
+  <!-- Wordmark -->
+  <text class="word" x="122" y="125" style="font-family:'Montserrat',sans-serif;font-size:64px;font-weight:600;fill:#1E1916">remily</text>
+</svg>  

@@ -1,0 +1,73 @@
+<svg class="premily-logo" viewBox="56 54 300 92" height="40" role="img" aria-label="Premily" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- shape used to keep the shine inside the letters and the bag -->
+    <clipPath id="pl-shape">
+      <rect x="70" y="80" width="12" height="45" rx="2" />
+      <rect x="70" y="80" width="46" height="34" rx="15" />
+      <text class="pl-word" x="122" y="125">remily.</text>
+    </clipPath>
+    <!-- reveals the wordmark left to right -->
+    <clipPath id="pl-reveal">
+      <rect class="pl-wipe" x="118" y="60" width="260" height="90" />
+    </clipPath>
+    <linearGradient id="pl-shine" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#E3C793" stop-opacity="0" />
+      <stop offset=".5" stop-color="#E3C793" stop-opacity=".95" />
+      <stop offset="1" stop-color="#E3C793" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .premily-logo { display: block; overflow: visible; }
+    .pl-word  { font-family: 'Montserrat', system-ui, sans-serif; font-size: 64px; font-weight: 600; }
+    .pl-text  { fill: var(--color-dark, #1E1916); }
+    .pl-dot   { fill: var(--color-deep, #B8924B); }
+    .pl-ink   { fill: var(--color-dark, #1E1916); }
+    .pl-handle{ fill: none; stroke: var(--color-dark, #1E1916); stroke-width: 4; stroke-linecap: round; }
+    .pl-smile { fill: none; stroke: var(--color-gold, #D4B375); stroke-width: 3.5; stroke-linecap: round; }
+    .pl-ring  { fill: none; stroke: var(--color-gold, #D4B375); stroke-width: 2; }
+
+    /* The bag stamps down, a ring ripples out from the ground */
+    .pl-bag    { transform-box: fill-box; transform-origin: 50% 100%; animation: pl-stamp .55s cubic-bezier(.3,1.3,.5,1) both; }
+    .pl-ring   { transform-box: fill-box; transform-origin: center;    animation: pl-ring .7s .35s ease-out both; }
+    /* Handle swings, smile draws itself */
+    .pl-handle { transform-box: fill-box; transform-origin: 50% 100%;  animation: pl-swing .8s .55s ease-in-out; }
+    .pl-smile  { animation: pl-draw .4s .55s ease-out both; }
+    /* "remily." slides out from behind the bag */
+    .pl-wipe   { transform-box: fill-box; transform-origin: 0 50%;     animation: pl-wipe .7s .55s cubic-bezier(.6,0,.2,1) both; }
+    .pl-text   { animation: pl-slide .7s .55s ease-out both; }
+    /* One gold shine passes over the finished logo */
+    .pl-sheen  { animation: pl-sheen .9s 1.35s ease-in-out both; }
+
+    @keyframes pl-stamp {
+      0%   { transform: scale(1.7); opacity: 0; }
+      55%  { transform: scale(.93); opacity: 1; }
+      78%  { transform: scale(1.04); }
+      100% { transform: none; opacity: 1; }
+    }
+    @keyframes pl-ring  { from { transform: scale(.2); opacity: .9; } to { transform: scale(1.15); opacity: 0; } }
+    @keyframes pl-swing { 0% { transform: rotate(0); } 25% { transform: rotate(-16deg); } 55% { transform: rotate(11deg); } 80% { transform: rotate(-4deg); } 100% { transform: rotate(0); } }
+    @keyframes pl-draw  { from { stroke-dasharray: 1 1; stroke-dashoffset: 1; } to { stroke-dasharray: 1 1; stroke-dashoffset: 0; } }
+    @keyframes pl-wipe  { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    @keyframes pl-slide { from { transform: translateX(-24px); } to { transform: none; } }
+    @keyframes pl-sheen { from { transform: translateX(0) skewX(-20deg); } to { transform: translateX(420px) skewX(-20deg); } }
+  </style>
+
+  <ellipse class="pl-ring" cx="93" cy="126" rx="34" ry="7" />
+
+  <!-- the P: a shopping bag with a smile -->
+  <g class="pl-bag">
+    <rect class="pl-ink" x="70" y="80" width="12" height="45" rx="2" />
+    <rect class="pl-ink" x="70" y="80" width="46" height="34" rx="15" />
+    <path class="pl-handle" d="M85 81 C85 61 101 61 101 81" />
+    <path class="pl-smile" pathLength="1" d="M85 94 Q93 104 101 94" />
+  </g>
+
+  <g clip-path="url(#pl-reveal)">
+    <text class="pl-word pl-text" x="122" y="125">remily<tspan class="pl-dot">.</tspan></text>
+  </g>
+
+  <g clip-path="url(#pl-shape)">
+    <rect class="pl-sheen" x="-20" y="50" width="46" height="100" fill="url(#pl-shine)" />
+  </g>
+</svg>

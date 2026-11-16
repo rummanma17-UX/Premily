@@ -187,7 +187,7 @@
       </div>
     </header>
 
-    <div class="max-w-[1500px] mx-auto p-4 sm:p-7 space-y-6">
+    <div class="max-w-1500px mx-auto p-4 sm:p-7 space-y-6">
 
       <!-- DASHBOARD -->
       <section id="view-dashboard" class="view active space-y-6">
@@ -198,7 +198,7 @@
             <p class="text-xs text-muted mt-2">A consolidated view of marketplace performance and operations.</p>
           </div>
           <div class="flex gap-2">
-            <select class="field !w-auto" id="periodSelect">
+            <select class="field w-auto!" id="periodSelect">
               <option>Last 30 days</option><option>Last 7 days</option><option>This year</option>
             </select>
             <button class="gbtn rounded-xl px-4 py-2 text-[10px] flex items-center gap-2" onclick="window.print()"><i data-lucide="download" class="w-3.5 h-3.5"></i> Export</button>
@@ -321,7 +321,7 @@
         <div class="card p-4">
           <div class="flex flex-col sm:flex-row gap-2 mb-4">
             <input id="orderSearch" class="field sm:max-w-xs" placeholder="Search order, customer or store...">
-            <select id="orderFilter" class="field sm:max-w-[180px]"><option value="">All statuses</option><option>Pending</option><option>Confirmed</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option></select>
+            <select id="orderFilter" class="field sm:max-w-180px"><option value="">All statuses</option><option>Pending</option><option>Confirmed</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option></select>
           </div>
           <div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Store</th><th>District</th><th>Amount</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="ordersTable">
@@ -346,7 +346,7 @@
         <div class="card p-4">
           <div class="flex flex-col sm:flex-row gap-2 mb-4">
             <input id="sellerSearch" class="field sm:max-w-xs" placeholder="Search store or seller...">
-            <select id="sellerFilter" class="field sm:max-w-[180px]"><option value="">All sellers</option><option>Verified</option><option>Pending</option><option>Rejected</option></select>
+            <select id="sellerFilter" class="field sm:max-w-180px"><option value="">All sellers</option><option>Verified</option><option>Pending</option><option>Rejected</option></select>
           </div>
           <div class="table-wrap"><table><thead><tr><th>Store</th><th>Seller</th><th>District</th><th>Verification</th><th>Store status</th><th>Mart badge</th><th>Action</th></tr></thead>
             <tbody id="sellerTable">
