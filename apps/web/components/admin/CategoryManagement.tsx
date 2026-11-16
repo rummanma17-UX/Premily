@@ -50,7 +50,29 @@ export function CategoryManagement() {
     }
   }, []);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => {
+    let cancelled = false;
+
+    void apiFetch<Category[]>("/api/categories")
+      .then((data) => {
+        if (!cancelled) {
+          setCategories(data);
+          setError(null);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Unable to load categories.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const resetForm = () => {
     setForm({ name: "", slug: "", icon: "Shapes" });
