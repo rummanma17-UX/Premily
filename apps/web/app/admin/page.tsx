@@ -52,8 +52,13 @@ export default function AdminPanelPage() {
   // Status message banner
   const [adminBanner, setAdminBanner] = useState<string | null>(null);
 
+  const notify = (msg: string) => {
+    setAdminBanner(msg);
+    setTimeout(() => setAdminBanner(null), 3000);
+  };
+
   useEffect(() => {
-    void StoreService.loadAdminData().catch((error) => notify(error instanceof Error ? error.message : "Unable to load admin data."));
+    void StoreService.loadAdminData().catch((error) => setAdminBanner(error instanceof Error ? error.message : "Unable to load admin data."));
     const handleUpdate = () => {
       setStores(StoreService.getStores());
       setOrders(StoreService.getOrders());
@@ -65,11 +70,6 @@ export default function AdminPanelPage() {
       window.removeEventListener("premily_data_change", handleUpdate);
     };
   }, []);
-
-  const notify = (msg: string) => {
-    setAdminBanner(msg);
-    setTimeout(() => setAdminBanner(null), 3000);
-  };
 
   // Rule 2: Strict Mart Badge Toggling
   const handleConfirmMartToggle = () => {
@@ -753,15 +753,12 @@ export default function AdminPanelPage() {
 
                     <button
                       type="button"
-                      onClick={() => handleToggleCampaign(camp.id)}
-                      className={`px-3 py-1.5 rounded-xl font-semibold text-xs cursor-pointer ${
-                        camp.isActive
-                          ? "border border-border-gold hover:bg-cream text-dark"
-                          : "gbtn"
-                      }`}
+                      disabled
+                      aria-disabled="true"
+                      className="px-3 py-1.5 rounded-xl border border-border-gold text-xs font-semibold text-muted opacity-60 cursor-not-allowed"
                     >
                       Campaign controls are not available in the API yet
-                    </span>
+                    </button>
                   </div>
                 </div>
               ))}

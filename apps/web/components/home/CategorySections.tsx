@@ -9,7 +9,7 @@ const categoryIcons = {
   Sofa, Lamp, Flower2, Utensils, BedDouble, Trees, LayoutGrid, Frame, Shapes, Armchair,
 } as const;
 
-function CategoryIcon({ name, className }: { name: string; className?: string }) {
+function CategoryIcon({ name, className }: { name: string | undefined; className?: string }) {
   const Icon = categoryIcons[name as keyof typeof categoryIcons] ?? Shapes;
   return <Icon className={className} aria-hidden="true" />;
 }

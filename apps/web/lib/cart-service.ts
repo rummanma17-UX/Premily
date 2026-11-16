@@ -9,7 +9,25 @@ export interface StoreCartGroup {
   storeId: string; storeSlug: string; storeName: string; isPremilyMart: boolean;
   items: CartItem[]; subtotal: number; shippingCost: number;
 }
-type ApiCart = { items?: Array<Record<string, any>> } | null;
+type ApiCartItem = {
+  id: string;
+  quantity?: number;
+  variant?: {
+    id?: string;
+    color?: string | null;
+    size?: string | null;
+    price?: number | string;
+    compareAtPrice?: number | string | null;
+    product?: {
+      id?: string;
+      slug?: string;
+      name?: string;
+      store?: { id?: string; slug?: string; displayName?: string; isPremilyMart?: boolean };
+      images?: Array<{ url?: string }>;
+    };
+  };
+};
+type ApiCart = { items?: ApiCartItem[] } | null;
 let items: CartItem[] = [];
 let loaded = false;
 let loading: Promise<CartItem[]> | null = null;

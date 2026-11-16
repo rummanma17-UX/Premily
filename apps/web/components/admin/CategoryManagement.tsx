@@ -40,7 +40,6 @@ export function CategoryManagement() {
   const [notice, setNotice] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    setLoading(true);
     try {
       setCategories(await apiFetch<Category[]>("/api/categories"));
       setError(null);
@@ -51,7 +50,29 @@ export function CategoryManagement() {
     }
   }, []);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => {
+    let cancelled = false;
+
+    void apiFetch<Category[]>("/api/categories")
+      .then((data) => {
+        if (!cancelled) {
+          setCategories(data);
+          setError(null);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Unable to load categories.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const resetForm = () => {
     setForm({ name: "", slug: "", icon: "Shapes" });

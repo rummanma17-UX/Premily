@@ -17,7 +17,7 @@ export default async function StoreProductPage({
   const { storeSlug, productSlug } = await params;
 
   // First attempt backend fetch
-  let product = await apiFetch<Product>(
+  const product = await apiFetch<Product>(
     `/api/products/${storeSlug}/products/${productSlug}`
   ).catch(() => null);
 

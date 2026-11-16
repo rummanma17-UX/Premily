@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BANGLADESH_DISTRICTS } from "@/lib/bangladesh-districts";
 import { apiFetch } from "@/lib/api";
@@ -23,6 +23,23 @@ import { MartBadge } from "@/components/badges/MartBadge";
 
 function formatTaka(amount: number) {
   return "৳" + amount.toLocaleString("en-BD");
+}
+
+function subscribeToDeliveryDistrict(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener("premily_delivery_change", callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener("premily_delivery_change", callback);
+  };
+}
+
+function getDeliveryDistrictSnapshot() {
+  return localStorage.getItem("premily_delivery_district") || "Dhaka";
+}
+
+function getServerDeliveryDistrictSnapshot() {
+  return "Dhaka";
 }
 
 export default function CheckoutPage() {
@@ -49,7 +66,11 @@ export default function CheckoutPage() {
     return "";
   });
   const [streetAddress, setStreetAddress] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("Dhaka");
+  const selectedDistrict = useSyncExternalStore(
+    subscribeToDeliveryDistrict,
+    getDeliveryDistrictSnapshot,
+    getServerDeliveryDistrictSnapshot,
+  );
   const [districts, setDistricts] = useState<Array<Pick<DistrictShippingInfo, "districtName" | "division">>>([]);
   const [districtLoadError, setDistrictLoadError] = useState<string | null>(null);
   const [cityThana, setCityThana] = useState("");
@@ -61,7 +82,6 @@ export default function CheckoutPage() {
 
   // Dynamic Cart and Multi-Store Grouping (AGENT.md Rule 5)
   const [, setCartVersion] = useState(0);
-  const [cartLoading, setCartLoading] = useState(true);
   const [shippingQuote, setShippingQuote] = useState<{ totalShippingCost: number; stores: Array<{storeId:string;shippingCost:number}> } | null>(null);
   const [shippingQuoteError, setShippingQuoteError] = useState<string | null>(null);
   const [mfsModalOpen, setMfsModalOpen] = useState(false);
@@ -69,9 +89,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     const handleCartUpdate = () => setCartVersion((version) => version + 1);
     window.addEventListener("premily_cart_change", handleCartUpdate);
-    void CartService.loadCart().catch((error) => setErrorMessage(error instanceof Error ? error.message : "Unable to load your cart.")).finally(() => setCartLoading(false));
-    const savedDistrict = localStorage.getItem("premily_delivery_district");
-    if (savedDistrict) setSelectedDistrict(savedDistrict);
+    void CartService.loadCart().catch((error) => setErrorMessage(error instanceof Error ? error.message : "Unable to load your cart."));
     return () => window.removeEventListener("premily_cart_change", handleCartUpdate);
   }, []);
 
@@ -91,17 +109,19 @@ export default function CheckoutPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const cartSummary = CartService.getStoreGroups(selectedDistrict);
+  const cartSummary = CartService.getStoreGroups();
   const groups = cartSummary.groups;
   const totalSubtotal = cartSummary.totalSubtotal;
-  const totalShipping = shippingQuote?.totalShippingCost ?? 0;
+  const totalShipping = groups.length === 0 ? 0 : shippingQuote?.totalShippingCost ?? 0;
   const grandTotal = totalSubtotal + totalShipping;
+  const storeIdsKey = groups.map((group) => group.storeId).join(",");
   useEffect(() => {
     let cancelled = false;
-    if (!groups.length) { setShippingQuote({ totalShippingCost: 0, stores: [] }); return; }
+    const storeIds = storeIdsKey ? storeIdsKey.split(",") : [];
+    if (storeIds.length === 0) return () => { cancelled = true; };
     apiFetch<{ totalShippingCost: number; stores: Array<{storeId:string;shippingCost:number}> }>("/api/shipping/calculate", {
       method: "POST",
-      body: JSON.stringify({ destinationDistrict: selectedDistrict, storeIds: groups.map((group) => group.storeId) }),
+      body: JSON.stringify({ destinationDistrict: selectedDistrict, storeIds }),
     }).then((quote) => {
       if (!cancelled) { setShippingQuote(quote); setShippingQuoteError(null); }
     }).catch((error) => {
@@ -111,7 +131,7 @@ export default function CheckoutPage() {
       }
     });
     return () => { cancelled = true; };
-  }, [selectedDistrict, groups.map((group) => group.storeId).join(",")]);
+  }, [selectedDistrict, storeIdsKey]);
 
   const isDhaka = selectedDistrict.toLowerCase() === "dhaka";
 
@@ -119,7 +139,8 @@ export default function CheckoutPage() {
     setIsPlacing(true);
     setErrorMessage(null);
     try {
-      const order = await apiFetch<any>("/api/orders/checkout", {
+      type CheckoutOrderResponse = { id: string; orderNumber: string; total: number };
+      const order = await apiFetch<CheckoutOrderResponse | CheckoutOrderResponse[]>("/api/orders/checkout", {
         method: "POST",
         body: JSON.stringify({
           shippingName: fullName.trim(),
@@ -130,7 +151,7 @@ export default function CheckoutPage() {
           paymentMethod,
         }),
       });
-      const createdOrders = Array.isArray(order) ? order : [order];
+      const createdOrders: CheckoutOrderResponse[] = Array.isArray(order) ? order : [order];
       if (trxId && createdOrders[0]?.id) {
         await apiFetch(`/api/orders/${createdOrders[0].id}/payment-proof`, {
           method: "POST",
@@ -317,7 +338,6 @@ export default function CheckoutPage() {
                 <select
                   value={selectedDistrict}
                   onChange={(e) => {
-                    setSelectedDistrict(e.target.value);
                     localStorage.setItem("premily_delivery_district", e.target.value);
                     window.dispatchEvent(new Event("premily_delivery_change"));
                   }}

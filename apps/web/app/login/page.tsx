@@ -90,7 +90,6 @@ function LoginContent() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [forgotModalOpen, setForgotModalOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotSubmitted, setForgotSubmitted] = useState(false);
 
   // Validation helper for Bangladeshi phone or standard email
   const validateIdentifier = (input: string) => {
@@ -317,6 +316,7 @@ function LoginContent() {
 
           {/* TAB 1: LOGIN FORM */}
           {activeTab === "login" && (
+            <>
             <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
               <div className="space-y-1.5">
                 <label className="font-semibold text-dark block">
@@ -399,6 +399,7 @@ function LoginContent() {
               </svg>
               Continue with Google
             </button>
+            </>
           )}
 
           {/* TAB 2: SIGN UP FORM */}
@@ -645,38 +646,31 @@ function LoginContent() {
               Password recovery is not enabled yet. Contact PREMILY support for help accessing your account.
             </p>
 
-            {forgotSubmitted ? (
-              <div className="p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Instructions sent! Please check your SMS or inbox.
+            <form onSubmit={handleForgotSubmit} className="space-y-3 text-xs">
+              <input
+                required
+                type="text"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="017xxxxxxxx or name@email.com"
+                className="w-full border border-border-gold rounded-xl p-2.5 outline-none focus:border-deep"
+              />
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setForgotModalOpen(false)}
+                  className="px-3 py-1.5 rounded-lg border border-border-gold text-muted hover:text-dark cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="gbtn px-4 py-1.5 rounded-lg font-semibold cursor-pointer"
+                >
+                  Send Link
+                </button>
               </div>
-            ) : (
-              <form onSubmit={handleForgotSubmit} className="space-y-3 text-xs">
-                <input
-                  required
-                  type="text"
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  placeholder="017xxxxxxxx or name@email.com"
-                  className="w-full border border-border-gold rounded-xl p-2.5 outline-none focus:border-deep"
-                />
-                <div className="flex justify-end gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setForgotModalOpen(false)}
-                    className="px-3 py-1.5 rounded-lg border border-border-gold text-muted hover:text-dark cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="gbtn px-4 py-1.5 rounded-lg font-semibold cursor-pointer"
-                  >
-                    Send Link
-                  </button>
-                </div>
-              </form>
-            )}
+            </form>
           </div>
         </div>
       )}

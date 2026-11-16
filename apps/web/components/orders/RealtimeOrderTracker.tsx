@@ -55,7 +55,7 @@ export function RealtimeOrderTracker() {
   const [, startTransition] = useTransition();
 
   // Load and refresh orders from StoreService and optional tracking endpoint
-  const syncLatestOrders = useCallback(async (isManual = false) => {
+  const syncLatestOrders = useCallback(async () => {
     setIsSyncing(true);
     try {
       const freshOrders = await StoreService.loadCustomerOrders();
@@ -212,7 +212,7 @@ export function RealtimeOrderTracker() {
 
           <button
             type="button"
-            onClick={() => syncLatestOrders(true)}
+            onClick={() => syncLatestOrders()}
             disabled={isSyncing}
             className="text-xs px-3.5 py-1.5 rounded-xl font-semibold bg-dark text-light-gold border border-dark hover:brightness-110 active:scale-95 transition cursor-pointer flex items-center gap-1.5"
             title="Perform immediate manual sync with local and courier state"
