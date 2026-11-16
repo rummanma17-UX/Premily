@@ -19,6 +19,7 @@ import { apiFetch } from "@/lib/api";
 import type { DistrictShippingInfo } from "@/types";
 import { CartService } from "@/lib/cart-service";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { RandomBrandLogo } from "@/components/RandomBrandLogo";
 
 type AuthUser = {
   id: string;
@@ -153,9 +154,9 @@ export function SiteHeader() {
           <Link
             href="/"
             aria-label="PREMILY home"
-            className="font-serif text-2xl font-bold tracking-widest text-dark shrink-0"
+            className="inline-flex shrink-0 items-center"
           >
-            PREMILY<span className="text-deep">.</span>
+            <RandomBrandLogo />
           </Link>
 
           {/* Mobile Language Toggle */}
