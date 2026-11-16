@@ -1,87 +1,37 @@
-<svg class="go" width="135" height="40" viewBox="65 50 270 80" xmlns="http://www.w3.org/2000/svg">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+<svg class="premily-logo-a" viewBox="65 50 285 92" height="40" role="img" aria-label="Premily" xmlns="http://www.w3.org/2000/svg" xmlns:c2pa="http://c2pa.org/manifest">
   <style>
-    .go .bag {
-      transform-box: fill-box;
-      transform-origin: 50% 100%;
-      animation: pop .8s cubic-bezier(.3, 1.2, .5, 1) both, hop 5s 4s infinite ease-in-out;
-    }
-    .go .hd {
-      transform-box: fill-box;
-      transform-origin: 50% 100%;
-      animation: swing .9s .75s ease-in-out, wave 5s 4s infinite ease-in-out;
-    }
-    .go .draw {
-      stroke-dasharray: 1 1;
-      animation: draw .4s 1s ease-out both;
-    }
-    .go .word {
-      stroke: #B8924B;
-      stroke-width: 1.4;
-      stroke-dasharray: 500;
-      animation: outline 1s 1.2s ease-in-out both, fillin .5s 2.05s ease-out both;
-    }
-    .go .sp {
-      animation: spark 1.1s ease-out both;
-    }
-    @keyframes pop {
-      0% { transform: scale(.2); opacity: 0; }
-      45% { transform: scale(1.12, .88); opacity: 1; }
-      72% { transform: scale(.96, 1.06); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    @keyframes swing {
-      0% { transform: rotate(0); }
-      25% { transform: rotate(-16deg); }
-      55% { transform: rotate(11deg); }
-      80% { transform: rotate(-4deg); }
-      100% { transform: rotate(0); }
-    }
-    @keyframes draw {
-      from { stroke-dashoffset: 1; }
-      to { stroke-dashoffset: 0; }
-    }
-    @keyframes outline {
-      from { stroke-dashoffset: 500; }
-      to { stroke-dashoffset: 0; }
-    }
-    @keyframes fillin {
-      from { fill: transparent; stroke-opacity: 1; }
-      to { fill: #1E1916; stroke-opacity: 0; }
-    }
-    @keyframes spark {
-      0% { transform: translate(0, 0) scale(0) rotate(0); opacity: 1; }
-      30% { transform: translate(calc(var(--dx)*.4), calc(var(--dy)*.4)) scale(1) rotate(40deg); }
-      100% { transform: translate(var(--dx), var(--dy)) scale(.2) rotate(140deg); opacity: 0; }
-    }
-    @keyframes hop {
-      0%, 84%, 100% { transform: none; }
-      90% { transform: translateY(-7px); }
-      95% { transform: translateY(0) scaleY(.94); }
-    }
-    @keyframes wave {
-      0%, 84%, 100% { transform: rotate(0); }
-      90% { transform: rotate(-14deg); }
-      95% { transform: rotate(9deg); }
-    }
+    .premily-logo-a{display:block;width:auto;height:40px;max-width:100%;overflow:hidden}
+    .premily-logo-a .bag{transform-box:fill-box;transform-origin:50% 100%;animation:pa-pop .8s cubic-bezier(.3,1.2,.5,1) both}
+    .premily-logo-a .hd{transform-box:fill-box;transform-origin:50% 100%;animation:pa-swing .9s .75s ease-in-out}
+    .premily-logo-a .draw{stroke-dasharray:1 1;animation:pa-draw .4s 1s ease-out both}
+    .premily-logo-a .word{fill:#1E1916;stroke:#B8924B;stroke-width:1.4;stroke-dasharray:500;animation:pa-outline 1s 1.2s ease-in-out both,pa-fill .5s 2.05s ease-out both}
+    .premily-logo-a .sp{transform-box:fill-box;transform-origin:center}
+    .premily-logo-a .sp1{animation:pa-s1 1.1s 1.35s ease-out both}
+    .premily-logo-a .sp2{animation:pa-s2 1.1s 1.5s ease-out both}
+    .premily-logo-a .sp3{animation:pa-s3 1.1s 1.65s ease-out both}
+    .premily-logo-a .sp4{animation:pa-s4 1.1s 1.8s ease-out both}
+    @keyframes pa-pop{0%{transform:scale(.2);opacity:0}45%{transform:scale(1.12,.88);opacity:1}72%{transform:scale(.96,1.06)}100%{transform:scale(1);opacity:1}}
+    @keyframes pa-swing{0%{transform:rotate(0)}25%{transform:rotate(-16deg)}55%{transform:rotate(11deg)}80%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
+    @keyframes pa-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+    @keyframes pa-outline{from{stroke-dashoffset:500}to{stroke-dashoffset:0}}
+    @keyframes pa-fill{from{fill:transparent;stroke-opacity:1}to{fill:#1E1916;stroke-opacity:0}}
+    @keyframes pa-s1{0%{transform:translate(0,0) scale(0) rotate(0);opacity:1}30%{transform:translate(-13.6px,-10.4px) scale(1) rotate(40deg)}100%{transform:translate(-34px,-26px) scale(.2) rotate(140deg);opacity:0}}
+    @keyframes pa-s2{0%{transform:translate(0,0) scale(0) rotate(0);opacity:1}30%{transform:translate(-3.2px,-16px) scale(1) rotate(40deg)}100%{transform:translate(-8px,-40px) scale(.2) rotate(140deg);opacity:0}}
+    @keyframes pa-s3{0%{transform:translate(0,0) scale(0) rotate(0);opacity:1}30%{transform:translate(8.8px,-13.6px) scale(1) rotate(40deg)}100%{transform:translate(22px,-34px) scale(.2) rotate(140deg);opacity:0}}
+    @keyframes pa-s4{0%{transform:translate(0,0) scale(0) rotate(0);opacity:1}30%{transform:translate(18.4px,-6.4px) scale(1) rotate(40deg)}100%{transform:translate(46px,-16px) scale(.2) rotate(140deg);opacity:0}}
+    @media (prefers-reduced-motion:reduce){.premily-logo-a *{animation:none!important}.premily-logo-a .sp{display:none}.premily-logo-a .word{stroke:none}}
   </style>
-
-  <!-- Shopping Bag P -->
   <g class="bag">
-    <rect x="70" y="80" width="12" height="45" rx="2" fill="#1E1916"></rect>
-    <rect x="70" y="80" width="46" height="34" rx="15" fill="#1E1916"></rect>
-    <path class="hd" d="M85 81 C85 61 101 61 101 81" fill="none" stroke="#1E1916" stroke-width="4" stroke-linecap="round"></path>
-    <path class="draw" pathLength="1" d="M85 94 Q93 104 101 94" fill="none" stroke="#D4B375" stroke-width="3.5" stroke-linecap="round"></path>
+    <rect x="70" y="80" width="12" height="45" rx="2" fill="#1E1916"/>
+    <rect x="70" y="80" width="46" height="34" rx="15" fill="#1E1916"/>
+    <path class="hd" d="M85 81C85 61 101 61 101 81" fill="none" stroke="#1E1916" stroke-width="4" stroke-linecap="round"/>
+    <path class="draw" pathLength="1" d="M85 94Q93 104 101 94" fill="none" stroke="#D4B375" stroke-width="3.5" stroke-linecap="round"/>
   </g>
-
-  <!-- Sparkles -->
   <g transform="translate(93 68)">
-    <path class="sp" style="--dx:-34px;--dy:-26px;animation-delay:1.35s" fill="#D4B375" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
-    <path class="sp" style="--dx:-8px;--dy:-40px;animation-delay:1.5s" fill="#B8924B" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
-    <path class="sp" style="--dx:22px;--dy:-34px;animation-delay:1.65s" fill="#D4B375" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
-    <path class="sp" style="--dx:46px;--dy:-16px;animation-delay:1.8s" fill="#B8924B" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6Z"></path>
+    <path class="sp sp1" fill="#D4B375" d="M0-6 1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6Z"/>
+    <path class="sp sp2" fill="#B8924B" d="M0-6 1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6Z"/>
+    <path class="sp sp3" fill="#D4B375" d="M0-6 1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6Z"/>
+    <path class="sp sp4" fill="#B8924B" d="M0-6 1.6-1.6 6 0 1.6 1.6 0 6-1.6 1.6-6 0-1.6-1.6Z"/>
   </g>
-
-  <!-- Wordmark -->
-  <text class="word" x="122" y="125" style="font-family:'Montserrat',sans-serif;font-size:64px;font-weight:600;fill:#1E1916">remily</text>
-</svg>  
+  <path class="word" d="M127.25 125V90.82H134.86V100.23L133.97 97.48Q135.5 94.02 138.8 92.23Q142.1 90.44 147.02 90.44V98.06Q146.51 97.93 146.06 97.9Q145.62 97.86 145.17 97.86Q140.62 97.86 137.94 100.52Q135.25 103.18 135.25 108.42V125Z M169.55 125.45Q163.86 125.45 159.6 123.18Q155.34 120.9 153.01 116.94Q150.67 112.97 150.67 107.91Q150.67 102.79 152.94 98.86Q155.22 94.92 159.22 92.68Q163.22 90.44 168.34 90.44Q173.33 90.44 177.23 92.62Q181.14 94.79 183.38 98.76Q185.62 102.73 185.62 108.1Q185.62 108.62 185.58 109.26Q185.55 109.9 185.49 110.47H157.01V105.16H181.26L178.13 106.82Q178.19 103.88 176.91 101.64Q175.63 99.4 173.42 98.12Q171.22 96.84 168.34 96.84Q165.39 96.84 163.18 98.12Q160.98 99.4 159.73 101.67Q158.48 103.94 158.48 107.02V108.3Q158.48 111.37 159.89 113.74Q161.3 116.1 163.86 117.38Q166.42 118.66 169.74 118.66Q172.62 118.66 174.93 117.77Q177.23 116.87 179.02 114.95L183.31 119.88Q181.01 122.57 177.52 124.01Q174.03 125.45 169.55 125.45Z M193.3 125V90.82H200.91V99.91L199.57 97.22Q201.3 93.9 204.59 92.17Q207.89 90.44 212.11 90.44Q216.91 90.44 220.46 92.81Q224.02 95.18 225.17 99.98L222.03 98.89Q223.7 95.05 227.54 92.74Q231.38 90.44 236.43 90.44Q240.53 90.44 243.7 92.04Q246.86 93.64 248.66 96.94Q250.45 100.23 250.45 105.42V125H242.45V106.44Q242.45 101.9 240.46 99.66Q238.48 97.42 234.77 97.42Q232.14 97.42 230.13 98.57Q228.11 99.72 226.99 101.96Q225.87 104.2 225.87 107.66V125H217.87V106.44Q217.87 101.9 215.89 99.66Q213.9 97.42 210.19 97.42Q207.57 97.42 205.55 98.57Q203.54 99.72 202.42 101.96Q201.3 104.2 201.3 107.66V125Z M260.69 125V90.82H268.69V125ZM264.72 85.19Q262.48 85.19 261.04 83.78Q259.6 82.38 259.6 80.39Q259.6 78.34 261.04 76.97Q262.48 75.59 264.72 75.59Q266.96 75.59 268.4 76.9Q269.84 78.22 269.84 80.2Q269.84 82.31 268.43 83.75Q267.02 85.19 264.72 85.19Z M279.18 125V77.51H287.18V125Z M300.5 137.86Q298 137.86 295.5 137.03Q293.01 136.2 291.34 134.73L294.54 128.84Q295.76 129.93 297.3 130.57Q298.83 131.21 300.43 131.21Q302.61 131.21 303.95 130.12Q305.3 129.03 306.45 126.47L308.43 121.99L309.07 121.03L322 90.82H329.68L313.68 127.75Q312.08 131.59 310.13 133.83Q308.18 136.07 305.78 136.97Q303.38 137.86 300.5 137.86ZM307.54 126.22 292.11 90.82H300.43L312.98 120.33Z"/>
+</svg>
