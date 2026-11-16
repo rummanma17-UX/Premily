@@ -58,7 +58,7 @@ export default function AdminPanelPage() {
   };
 
   useEffect(() => {
-    void StoreService.loadAdminData().catch((error) => notify(error instanceof Error ? error.message : "Unable to load admin data."));
+    void StoreService.loadAdminData().catch((error) => setAdminBanner(error instanceof Error ? error.message : "Unable to load admin data."));
     const handleUpdate = () => {
       setStores(StoreService.getStores());
       setOrders(StoreService.getOrders());
