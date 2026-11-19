@@ -6,24 +6,7 @@ settings:
 
 importers:
 
-  .:
-    dependencies:
-      dotenv:
-        specifier: ^18.0.9
-        version: 18.0.9
-      drizzle-orm:
-        specifier: ^0.45.4
-        version: 0.45.4(@electric-sql/pglite@0.4.3)(@opentelemetry/api@1.10.0)(@prisma/client@7.9.1(prisma@7.9.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3))(typescript@5.9.3))(@types/pg@8.23.1)(mysql2@3.15.3)(pg@8.23.1)(postgres@3.4.7)(prisma@7.9.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3))
-      pg:
-        specifier: ^8.23.1
-        version: 8.23.1
-    devDependencies:
-      '@types/pg':
-        specifier: ^8.23.1
-        version: 8.23.1
-      drizzle-kit:
-        specifier: ^0.31.11
-        version: 0.31.11
+  .: {}
 
   apps/api:
     dependencies:
