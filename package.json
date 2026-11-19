@@ -13,14 +13,5 @@
     "start": "npm run start --workspace=web",
     "lint": "npm run lint --workspace=web",
     "seed": "npm run seed --workspace=api"
-  },
-  "dependencies": {
-    "dotenv": "^18.0.9",
-    "drizzle-orm": "^0.45.4",
-    "pg": "^8.23.1"
-  },
-  "devDependencies": {
-    "@types/pg": "^8.23.1",
-    "drizzle-kit": "^0.31.11"
   }
 }
