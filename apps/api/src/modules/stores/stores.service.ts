@@ -96,7 +96,6 @@ export async function getMyStore(sellerId: string) {
   return prisma.store.findUnique({
     where: { sellerId },
     include: {
-      shippingRates: true,
       subscription: true,
     },
   });

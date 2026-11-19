@@ -89,14 +89,31 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
     createdOrders.push(order);
   }
 
-  for (const line of lines) {
+  for (const storeLines of storeGroups.values()) {
+  for (const line of storeLines) {
     const changed = await tx.productVariant.updateMany({
-      where: { id: line.variantId, isActive: true, stock: { gte: line.quantity } },
-      data: { stock: { decrement: line.quantity } },
+      where: {
+        id: line.variantId,
+        isActive: true,
+        stock: { gte: line.quantity },
+      },
+      data: {
+        stock: { decrement: line.quantity },
+      },
     });
-    if (changed.count !== 1) throw new OutOfStockError("Product");
-    await tx.product.update({ where: { id: line.productId }, data: { salesCount: { increment: line.quantity } } });
+
+    if (changed.count !== 1) {
+      throw new OutOfStockError("Product");
+    }
+
+    await tx.product.update({
+      where: { id: line.productId },
+      data: {
+        salesCount: { increment: line.quantity },
+      },
+    });
   }
+}
   return createdOrders.length === 1 ? createdOrders[0] : createdOrders;
 }
 

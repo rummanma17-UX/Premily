@@ -8,9 +8,26 @@ export async function getAllCategories() {
 }
 
 export async function createCategory(data: CreateCategoryInput) {
-  return prisma.category.create({ data });
+  const prismaData = {
+    name: data.name,
+    slug: data.slug,
+    icon: data.icon,
+    ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl } : {}),
+  };
+
+  return prisma.category.create({ data: prismaData });
 }
 
 export async function updateCategory(id: string, data: UpdateCategoryInput) {
-  return prisma.category.update({ where: { id }, data });
+  const prismaData = {
+    ...(data.name !== undefined ? { name: data.name } : {}),
+    ...(data.slug !== undefined ? { slug: data.slug } : {}),
+    ...(data.icon !== undefined ? { icon: data.icon } : {}),
+    ...(data.imageUrl !== undefined ? { imageUrl: data.imageUrl } : {}),
+  };
+
+  return prisma.category.update({
+    where: { id },
+    data: prismaData,
+  });
 }
