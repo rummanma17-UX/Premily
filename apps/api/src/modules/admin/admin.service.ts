@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
+import { canAdminTransitionOrder } from "../orders/order-policy.js";
 import type {
   AdminOrderQuery,
   AdminOrderStatusInput,
@@ -218,29 +219,7 @@ export async function updateAdminOrderStatus(
     }
 
     const target = input.status;
-    const isCOD = order.payments.some(
-      (payment) => payment.method === "CASH_ON_DELIVERY",
-    );
-    const hasVerifiedPayment = order.payments.some(
-      (payment) => payment.status === "VERIFIED",
-    );
-
-    const allowed =
-      (order.status === "PENDING" &&
-        target === "CANCELLED") ||
-      (order.status === "PENDING" &&
-        target === "CONFIRMED" &&
-        (isCOD || hasVerifiedPayment)) ||
-      (order.status === "CONFIRMED" &&
-        target === "PROCESSING") ||
-      (order.status === "PROCESSING" &&
-        target === "SHIPPED") ||
-      (order.status === "SHIPPED" &&
-        target === "DELIVERED") ||
-      (order.status === "DELIVERED" &&
-        target === "RETURNED");
-
-    if (!allowed) {
+    if (!canAdminTransitionOrder(order.status, target, order.payments)) {
       throw new Error("INVALID_STATUS_TRANSITION");
     }
 
