@@ -1,11 +1,11 @@
 export type ShippingRateInput = {
   destinationDistrict: string;
-  homeDistrict?: string | null;
-  insideDistrictCost?: number | string | { toString(): string } | null;
-  outsideDistrictCost?: number | string | { toString(): string } | null;
-  platformBaseCost?: number | string | { toString(): string } | null;
-  estimatedDaysMin?: number | null;
-  estimatedDaysMax?: number | null;
+  homeDistrict?: string | null | undefined;
+  insideDistrictCost?: number | string | { toString(): string } | null | undefined;
+  outsideDistrictCost?: number | string | { toString(): string } | null | undefined;
+  platformBaseCost?: number | string | { toString(): string } | null | undefined;
+  estimatedDaysMin?: number | null | undefined;
+  estimatedDaysMax?: number | null | undefined;
 };
 export type ShippingRateResult = {
   shippingCost: number;
