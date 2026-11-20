@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 import type { CalculateShippingInput, UpdateStoreShippingInput } from "./shipping.schema.js";
+import { calculateShippingRate } from "./shipping-rate.js";
 
 const DEFAULT_INSIDE_DHAKA_FEE = 70;
 const DEFAULT_OUTSIDE_DHAKA_FEE = 150;
@@ -28,21 +29,21 @@ export async function calculateShippingRates(input: CalculateShippingInput) {
   ]);
 
   const breakdown = stores.map((store) => {
-    const isHome = destination.toLocaleLowerCase() ===
-      (store.homeDistrict ?? "dhaka").trim().toLocaleLowerCase();
-    const configured = isHome ? store.insideDistrictCost : store.outsideDistrictCost;
-    const platformRate = district?.baseCost ??
-      (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE);
-    const shippingCost = Number(configured ?? platformRate);
-    const minDays = isHome ? 1 : (district?.estimatedDaysMin ?? 3);
-    const maxDays = isHome ? 2 : (district?.estimatedDaysMax ?? 5);
-
+    const rate = calculateShippingRate({
+      destinationDistrict: destination,
+      homeDistrict: store.homeDistrict,
+      insideDistrictCost: store.insideDistrictCost,
+      outsideDistrictCost: store.outsideDistrictCost,
+      platformBaseCost: district?.baseCost,
+      estimatedDaysMin: district?.estimatedDaysMin,
+      estimatedDaysMax: district?.estimatedDaysMax,
+    });
     return {
       storeId: store.id,
       storeName: store.displayName,
-      shippingCost,
-      estimatedDays: `${minDays}-${maxDays} Business Days`,
-      rateSource: configured == null ? "PLATFORM_DEFAULT" as const : "STORE_CUSTOM" as const,
+      shippingCost: rate.shippingCost,
+      estimatedDays: rate.estimatedDays,
+      rateSource: rate.rateSource,
     };
   });
 
