@@ -5,8 +5,6 @@ import type { CheckoutInput, PaymentProofInput } from "./orders.schema.js";
 import { calculateShippingRate } from "../shipping/shipping-rate.js";
 import { canSellerTransitionOrder } from "./order-policy.js";
 
-const DEFAULT_INSIDE_DHAKA_FEE = 70;
-const DEFAULT_OUTSIDE_DHAKA_FEE = 150;
 function generateOrderNumber() { return `ORD-${Date.now().toString(36).toUpperCase()}-${randomBytes(3).toString("hex").toUpperCase()}`; }
 function generateGroupNumber() { return `GRP-${Date.now().toString(36).toUpperCase()}-${randomBytes(3).toString("hex").toUpperCase()}`; }
 
@@ -44,7 +42,6 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
     storeGroups.set(item.storeId, group);
   }
 
-  const destination = shipping.shippingDistrict.trim().toLocaleLowerCase();
   const storeIds = [...storeGroups.keys()];
   const [stores, destinationRate] = await Promise.all([
     tx.store.findMany({ where: { id: { in: storeIds } } }),
