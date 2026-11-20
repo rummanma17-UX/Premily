@@ -44,7 +44,13 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
 
   const destination = shipping.shippingDistrict.trim().toLocaleLowerCase();
   const storeIds = [...storeGroups.keys()];
-  const stores = await tx.store.findMany({ where: { id: { in: storeIds } } });
+  const [stores, destinationRate] = await Promise.all([
+    tx.store.findMany({ where: { id: { in: storeIds } } }),
+    tx.districtShipping.findFirst({
+      where: { districtName: { equals: shipping.shippingDistrict.trim(), mode: "insensitive" }, isActive: true },
+      select: { baseCost: true },
+    }),
+  ]);
   const storeMap = new Map(stores.map((store) => [store.id, store]));
   const storeOrderData: Array<{ storeId: string; subtotal: Prisma.Decimal; shippingCost: Prisma.Decimal; total: Prisma.Decimal; lines: LineWithProduct[] }> = [];
   let groupSubtotal = new Prisma.Decimal(0);
@@ -56,7 +62,9 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
     const homeDistrict = store?.homeDistrict?.trim().toLocaleLowerCase() ?? "dhaka";
     const isHome = destination === homeDistrict;
     const configuredRate = isHome ? store?.insideDistrictCost : store?.outsideDistrictCost;
-    const fee = configuredRate == null ? (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE) : Number(configuredRate);
+    const platformRate = destinationRate?.baseCost ??
+      (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE);
+    const fee = Number(configuredRate ?? platformRate);
     const shippingCost = new Prisma.Decimal(fee);
     storeOrderData.push({ storeId, subtotal, shippingCost, total: subtotal.plus(shippingCost), lines: storeLines });
     groupSubtotal = groupSubtotal.plus(subtotal);
