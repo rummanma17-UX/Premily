@@ -51,20 +51,20 @@ export async function requireAuth(
   }
 }
 
-export function requireRole(
-  ...allowedRoles: Array<"CUSTOMER" | "SELLER" | "ADMIN">
-) {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      res.status(401).json({ error: "Not authenticated" });
-      return;
-    }
+  export function requireRole(
+    ...allowedRoles: Array<"CUSTOMER" | "SELLER" | "ADMIN">
+  ) {
+    return (req: AuthRequest, res: Response, next: NextFunction) => {
+      if (!req.user) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
 
-    if (!allowedRoles.includes(req.user.role)) {
-      res.status(403).json({ error: "Forbidden" });
-      return;
-    }
+      if (!allowedRoles.includes(req.user.role)) {
+        res.status(403).json({ error: "Forbidden" });
+        return;
+      }
 
-    next();
-  };
-}
+      next();
+    };
+  }

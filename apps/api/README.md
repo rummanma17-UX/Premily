@@ -33,10 +33,14 @@ apps/api/
 │   ├── modules/
 │   │   ├── admin/
 │   │   ├── auth/
+│   │   ├── campaigns/
 │   │   ├── cart/
 │   │   ├── categories/
 │   │   ├── orders/
-│   │   └── products/
+│   │   ├── products/
+│   │   ├── reviews/
+│   │   ├── shipping/
+│   │   └── stores/
 │   ├── app.ts
 │   └── index.ts
 ├── prisma.config.ts

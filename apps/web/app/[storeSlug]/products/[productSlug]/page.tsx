@@ -37,7 +37,7 @@ export default async function StoreProductPage({
           {product.store.displayName}
         </Link>
         <ChevronRight className="w-3 h-3 text-border-gold" />
-        <span className="text-dark font-medium truncate max-w-[200px] sm:max-w-xs">
+        <span className="text-dark font-medium truncate max-w-200px sm:max-w-xs">
           {product.name}
         </span>
       </nav>

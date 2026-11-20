@@ -10,10 +10,14 @@ Each module groups code for a particular business capability. This keeps related
 |---|---|
 | `admin/` | Administrative operations |
 | `auth/` | Authentication-related endpoints and logic |
+| `campaigns/` | Campaign-related endpoints and logic  |
 | `cart/` | Shopping cart operations |
 | `categories/` | Product category operations |
 | `orders/` | Order-related operations |
 | `products/` | Product-related operations |
+| `reviews/` | Review-related operations |
+| `shipping/` | Shipping-related operations |
+| `stores/` | Store-related operations |
 
 The table describes each module's intended responsibility, not a guarantee that every feature is complete.
 

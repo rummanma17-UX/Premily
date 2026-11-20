@@ -36,7 +36,7 @@ export default async function SellerStorefrontPage({
       </div>
       <div className="relative w-full h-48 sm:h-64 bg-dark overflow-hidden">
         {store.bannerUrl ? <Image src={store.bannerUrl} alt={store.displayName} width={1600} height={640} unoptimized className="w-full h-full object-cover opacity-60" /> : <div className="w-full h-full" style={{background:`linear-gradient(135deg,#1E1916 0%,${brandAccent} 100%)`}} />}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-dark/90 via-dark/30 to-transparent" />
       </div>
       <div className="max-w-7xl mx-auto px-4 -mt-16 sm:-mt-20 relative z-10">
         <div className="premily-card p-6 rounded-3xl border border-border-gold bg-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
