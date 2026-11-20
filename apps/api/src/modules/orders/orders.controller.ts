@@ -180,6 +180,22 @@ export async function verifyOrderPayment(
       res.status(404).json({ error: "Order not found" });
       return;
     }
+    if (err instanceof Error && err.message === "NOT_MOBILE_PAYMENT") {
+      res.status(409).json({ error: "This order does not have a mobile payment" });
+      return;
+    }
+    if (err instanceof Error && err.message === "ALREADY_VERIFIED") {
+      res.status(409).json({ error: "Payment is already verified" });
+      return;
+    }
+    if (err instanceof Error && err.message === "PROOF_MISSING") {
+      res.status(409).json({ error: "Payment proof has not been submitted" });
+      return;
+    }
+    if (err instanceof Error && err.message === "ORDER_NOT_PAYABLE") {
+      res.status(409).json({ error: "This order can no longer be paid" });
+      return;
+    }
     next(err);
   }
 }
