@@ -155,6 +155,10 @@ export async function submitProof(
       res.status(409).json({ error: "Payment proof has already been submitted" });
       return;
     }
+    if (typeof err === "object" && err !== null && "code" in err && err.code === "P2002") {
+      res.status(409).json({ error: "This transaction ID has already been used" });
+      return;
+    }
 
     next(err);
   }
