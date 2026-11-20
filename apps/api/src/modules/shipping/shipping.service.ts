@@ -29,7 +29,7 @@ export async function calculateShippingRates(input: CalculateShippingInput) {
 
   const breakdown = stores.map((store) => {
     const isHome = destination.toLocaleLowerCase() ===
-      (store.homeDistrict ?? "").trim().toLocaleLowerCase();
+      (store.homeDistrict ?? "dhaka").trim().toLocaleLowerCase();
     const configured = isHome ? store.insideDistrictCost : store.outsideDistrictCost;
     const platformRate = district?.baseCost ??
       (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE);
