@@ -92,7 +92,7 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
         })) },
         payments: { create: { method: shipping.paymentMethod, amount: storeData.total } },
       },
-      include: { items: true, payments: true, store: true },
+      include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } },
     });
     createdOrders.push(order);
   }
@@ -138,17 +138,17 @@ export async function buyNow(userId: string, shipping: CheckoutInput, variantId:
   return prisma.$transaction((tx) => createOrderFromItemsTx(tx, userId, shipping, [{ variantId, quantity }]));
 }
 export async function getMyOrders(userId: string) {
-  return prisma.order.findMany({ where: { userId }, include: { items: true, payments: true, store: true }, orderBy: { createdAt: "desc" } });
+  return prisma.order.findMany({ where: { userId }, include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } }, orderBy: { createdAt: "desc" } });
 }
 export async function getSellerOrders(sellerId: string) {
   return prisma.order.findMany({
     where: { store: { sellerId } },
-    include: { items: true, payments: true, store: true, user: { select: { name: true, phone: true } } },
+    include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } }, user: { select: { name: true, phone: true } } },
     orderBy: { createdAt: "desc" },
   });
 }
 export async function getOrderById(userId: string, orderId: string) {
-  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, payments: true, store: true } });
+  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } } });
   return order?.userId === userId ? order : null;
 }
 export async function submitPaymentProof(userId: string, orderId: string, proof: PaymentProofInput) {
