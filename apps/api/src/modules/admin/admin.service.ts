@@ -219,6 +219,7 @@ export async function updateAdminOrderStatus(
     }
 
     const target = input.status;
+    const isCOD = order.payments.some((payment) => payment.method === "CASH_ON_DELIVERY");
     if (!canAdminTransitionOrder(order.status, target, order.payments)) {
       throw new Error("INVALID_STATUS_TRANSITION");
     }
