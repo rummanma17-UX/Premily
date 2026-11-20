@@ -5,8 +5,8 @@ const campaignInclude = {
   items: {
     where: { product: {
           is: {
-            status: "ACTIVE",
-            store: { is: { status: "ACTIVE", isPublished: true } },
+            status: "ACTIVE" as const,
+            store: { is: { status: "ACTIVE" as const, isPublished: true } },
           },
         } },
     include: {
@@ -29,8 +29,8 @@ export async function getActiveCampaigns() {
       items: {
         where: { product: {
           is: {
-            status: "ACTIVE",
-            store: { is: { status: "ACTIVE", isPublished: true } },
+            status: "ACTIVE" as const,
+            store: { is: { status: "ACTIVE" as const, isPublished: true } },
           },
         } },
         include: {
