@@ -198,6 +198,6 @@ export async function updateSellerOrderStatus(sellerId: string, orderId: string,
       const codPayment = order.payments.find((payment) => payment.method === "CASH_ON_DELIVERY");
       if (codPayment) await tx.payment.update({ where: { id: codPayment.id }, data: { status: "VERIFIED", verifiedAt: new Date() } });
     }
-    return tx.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true, store: true } });
+    return tx.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } } });
   });
 }
