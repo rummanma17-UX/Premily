@@ -151,7 +151,14 @@ export async function submitPaymentProof(userId: string, orderId: string, proof:
     if (!payment) throw new Error("NOT_MOBILE_PAYMENT");
     if (payment.status === "VERIFIED") throw new Error("ALREADY_VERIFIED");
     if (payment.transactionId) throw new Error("PROOF_ALREADY_SUBMITTED");
-    return tx.payment.update({ where: { id: payment.id }, data: { transactionId: proof.transactionId, senderNumber: proof.senderNumber } });
+    // Compare-and-set prevents two concurrent proof submissions from overwriting
+    // one another. The database unique constraint also prevents transaction reuse.
+    const updated = await tx.payment.updateMany({
+      where: { id: payment.id, status: "PENDING", transactionId: null },
+      data: { transactionId: proof.transactionId, senderNumber: proof.senderNumber },
+    });
+    if (updated.count !== 1) throw new Error("PROOF_ALREADY_SUBMITTED");
+    return tx.payment.findUniqueOrThrow({ where: { id: payment.id } });
   });
 }
 export async function verifyPayment(verifier: { userId: string; role: "CUSTOMER" | "SELLER" | "ADMIN" }, orderId: string) {
@@ -162,6 +169,7 @@ export async function verifyPayment(verifier: { userId: string; role: "CUSTOMER"
     const payment = order.payments.find((entry) => entry.method !== "CASH_ON_DELIVERY");
     if (!payment) throw new Error("NOT_MOBILE_PAYMENT");
     if (payment.status === "VERIFIED") throw new Error("ALREADY_VERIFIED");
+    if (order.status !== "PENDING") throw new Error("ORDER_NOT_PAYABLE");
     if (!payment.transactionId) throw new Error("PROOF_MISSING");
     await tx.payment.update({ where: { id: payment.id }, data: { status: "VERIFIED", verifiedAt: new Date(), verifiedBy: verifier.userId } });
     return tx.order.update({ where: { id: orderId }, data: { status: "CONFIRMED" }, include: { payments: true, items: true } });
