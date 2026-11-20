@@ -1,33 +1,49 @@
 import { prisma } from "../../lib/prisma.js";
 import type { CalculateShippingInput, UpdateStoreShippingInput } from "./shipping.schema.js";
-
-const DEFAULT_INSIDE_DHAKA_FEE = 70;
-const DEFAULT_OUTSIDE_DHAKA_FEE = 150;
+import { calculateShippingRate } from "./shipping-rate.js";
 
 export async function getDistrictsList() {
   return prisma.districtShipping.findMany({ where: { isActive: true }, orderBy: { districtName: "asc" } });
 }
 
 export async function calculateShippingRates(input: CalculateShippingInput) {
-  const destination = input.destinationDistrict.trim().toLocaleLowerCase();
-  const stores = await prisma.store.findMany({
-    where: { id: { in: input.storeIds } },
-    select: { id: true, displayName: true, homeDistrict: true, insideDistrictCost: true, outsideDistrictCost: true },
-  });
+  const destination = input.destinationDistrict.trim();
+  const [stores, district] = await Promise.all([
+    prisma.store.findMany({
+      where: { id: { in: input.storeIds } },
+      select: {
+        id: true,
+        displayName: true,
+        homeDistrict: true,
+        insideDistrictCost: true,
+        outsideDistrictCost: true,
+      },
+    }),
+    prisma.districtShipping.findFirst({
+      where: { districtName: { equals: destination, mode: "insensitive" }, isActive: true },
+      select: { baseCost: true, estimatedDaysMin: true, estimatedDaysMax: true },
+    }),
+  ]);
+
   const breakdown = stores.map((store) => {
-    const isHome = destination === (store.homeDistrict ?? "dhaka").trim().toLocaleLowerCase();
-    const configured = isHome ? store.insideDistrictCost : store.outsideDistrictCost;
-    const shippingCost = configured == null
-      ? (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE)
-      : Number(configured);
+    const rate = calculateShippingRate({
+      destinationDistrict: destination,
+      homeDistrict: store.homeDistrict,
+      insideDistrictCost: store.insideDistrictCost,
+      outsideDistrictCost: store.outsideDistrictCost,
+      platformBaseCost: district?.baseCost,
+      estimatedDaysMin: district?.estimatedDaysMin,
+      estimatedDaysMax: district?.estimatedDaysMax,
+    });
     return {
       storeId: store.id,
       storeName: store.displayName,
-      shippingCost,
-      estimatedDays: isHome ? "1-2 Business Days" : "3-5 Business Days",
-      rateSource: configured == null ? "PLATFORM_DEFAULT" as const : "STORE_CUSTOM" as const,
+      shippingCost: rate.shippingCost,
+      estimatedDays: rate.estimatedDays,
+      rateSource: rate.rateSource,
     };
   });
+
   return {
     destinationDistrict: input.destinationDistrict,
     totalShippingCost: breakdown.reduce((total, item) => total + item.shippingCost, 0),

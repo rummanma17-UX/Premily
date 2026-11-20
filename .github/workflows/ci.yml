@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, "hardening/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma Client
+        run: pnpm --filter api prisma:generate
+        env:
+          DATABASE_URL: postgresql://premily:premily_dev_password@localhost:5432/premily_db?schema=public
+          JWT_SECRET: ci-only-secret-that-is-long-enough-32
+      - name: Test API
+        run: pnpm --filter api test
+      - name: Build API
+        run: pnpm --filter api build
+        env:
+          DATABASE_URL: postgresql://premily:premily_dev_password@localhost:5432/premily_db?schema=public
+          JWT_SECRET: ci-only-secret-that-is-long-enough-32
+      - name: Lint web
+        run: pnpm --filter web lint
+      - name: Build web
+        run: pnpm --filter web build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000

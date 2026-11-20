@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type Express } from "express";
+import { env } from "./config/env.js";
 import { requireAuth, type AuthRequest } from "./middleware/auth.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { adminRouter } from "./modules/admin/admin.routes.js";
@@ -18,7 +19,7 @@ const app: Express = express();
 
 app.use(
   cors({
-    origin: (process.env.WEB_ORIGIN || "http://localhost:3000,http://127.0.0.1:3000")
+    origin: env.WEB_ORIGIN
       .split(",")
       .map((origin) => origin.trim())
       .filter(Boolean),

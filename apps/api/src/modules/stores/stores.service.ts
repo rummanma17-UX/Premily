@@ -2,9 +2,26 @@ import { prisma } from "../../lib/prisma.js";
 import type { UpdateStoreProfileInput } from "./stores.schema.js";
 
 export async function getStoreBySlug(slug: string) {
-  const store = await prisma.store.findUnique({
-    where: { slug },
-    include: {
+  // Public storefront responses must use an explicit allowlist. Never return the
+  // complete Store record: it contains seller IDs and private verification data.
+  const store = await prisma.store.findFirst({
+    where: { slug, status: "ACTIVE", isPublished: true },
+    select: {
+      id: true,
+      slug: true,
+      displayName: true,
+      description: true,
+      logoUrl: true,
+      bannerUrl: true,
+      primaryColor: true,
+      status: true,
+      isPublished: true,
+      isPremilyMart: true,
+      verificationStatus: true,
+      verifiedAt: true,
+      homeDistrict: true,
+      insideDistrictCost: true,
+      outsideDistrictCost: true,
       _count: {
         select: {
           products: { where: { status: "ACTIVE" } },
@@ -51,7 +68,7 @@ export async function getStoreProducts(
   const skip = (page - 1) * limit;
 
   const where: any = {
-    store: { slug: storeSlug },
+    store: { slug: storeSlug, status: "ACTIVE", isPublished: true },
     status: "ACTIVE",
   };
 

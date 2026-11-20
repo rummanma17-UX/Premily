@@ -2,9 +2,9 @@ import { randomBytes } from "node:crypto";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
 import type { CheckoutInput, PaymentProofInput } from "./orders.schema.js";
+import { calculateShippingRate } from "../shipping/shipping-rate.js";
+import { canSellerTransitionOrder } from "./order-policy.js";
 
-const DEFAULT_INSIDE_DHAKA_FEE = 70;
-const DEFAULT_OUTSIDE_DHAKA_FEE = 150;
 function generateOrderNumber() { return `ORD-${Date.now().toString(36).toUpperCase()}-${randomBytes(3).toString("hex").toUpperCase()}`; }
 function generateGroupNumber() { return `GRP-${Date.now().toString(36).toUpperCase()}-${randomBytes(3).toString("hex").toUpperCase()}`; }
 
@@ -42,9 +42,14 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
     storeGroups.set(item.storeId, group);
   }
 
-  const destination = shipping.shippingDistrict.trim().toLocaleLowerCase();
   const storeIds = [...storeGroups.keys()];
-  const stores = await tx.store.findMany({ where: { id: { in: storeIds } } });
+  const [stores, destinationRate] = await Promise.all([
+    tx.store.findMany({ where: { id: { in: storeIds } } }),
+    tx.districtShipping.findFirst({
+      where: { districtName: { equals: shipping.shippingDistrict.trim(), mode: "insensitive" }, isActive: true },
+      select: { baseCost: true },
+    }),
+  ]);
   const storeMap = new Map(stores.map((store) => [store.id, store]));
   const storeOrderData: Array<{ storeId: string; subtotal: Prisma.Decimal; shippingCost: Prisma.Decimal; total: Prisma.Decimal; lines: LineWithProduct[] }> = [];
   let groupSubtotal = new Prisma.Decimal(0);
@@ -53,11 +58,14 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
   for (const [storeId, storeLines] of storeGroups) {
     const subtotal = storeLines.reduce((sum, line) => sum.plus(line.price.times(line.quantity)), new Prisma.Decimal(0));
     const store = storeMap.get(storeId);
-    const homeDistrict = store?.homeDistrict?.trim().toLocaleLowerCase() ?? "dhaka";
-    const isHome = destination === homeDistrict;
-    const configuredRate = isHome ? store?.insideDistrictCost : store?.outsideDistrictCost;
-    const fee = configuredRate == null ? (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE) : Number(configuredRate);
-    const shippingCost = new Prisma.Decimal(fee);
+    const rate = calculateShippingRate({
+      destinationDistrict: shipping.shippingDistrict,
+      homeDistrict: store?.homeDistrict,
+      insideDistrictCost: store?.insideDistrictCost,
+      outsideDistrictCost: store?.outsideDistrictCost,
+      platformBaseCost: destinationRate?.baseCost,
+    });
+    const shippingCost = new Prisma.Decimal(rate.shippingCost);
     storeOrderData.push({ storeId, subtotal, shippingCost, total: subtotal.plus(shippingCost), lines: storeLines });
     groupSubtotal = groupSubtotal.plus(subtotal);
     groupShippingCost = groupShippingCost.plus(shippingCost);
@@ -84,7 +92,7 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
         })) },
         payments: { create: { method: shipping.paymentMethod, amount: storeData.total } },
       },
-      include: { items: true, payments: true, store: true },
+      include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } },
     });
     createdOrders.push(order);
   }
@@ -130,17 +138,17 @@ export async function buyNow(userId: string, shipping: CheckoutInput, variantId:
   return prisma.$transaction((tx) => createOrderFromItemsTx(tx, userId, shipping, [{ variantId, quantity }]));
 }
 export async function getMyOrders(userId: string) {
-  return prisma.order.findMany({ where: { userId }, include: { items: true, payments: true, store: true }, orderBy: { createdAt: "desc" } });
+  return prisma.order.findMany({ where: { userId }, include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } }, orderBy: { createdAt: "desc" } });
 }
 export async function getSellerOrders(sellerId: string) {
   return prisma.order.findMany({
     where: { store: { sellerId } },
-    include: { items: true, payments: true, store: true, user: { select: { name: true, phone: true } } },
+    include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } }, user: { select: { name: true, phone: true } } },
     orderBy: { createdAt: "desc" },
   });
 }
 export async function getOrderById(userId: string, orderId: string) {
-  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, payments: true, store: true } });
+  const order = await prisma.order.findUnique({ where: { id: orderId }, include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } } });
   return order?.userId === userId ? order : null;
 }
 export async function submitPaymentProof(userId: string, orderId: string, proof: PaymentProofInput) {
@@ -151,7 +159,14 @@ export async function submitPaymentProof(userId: string, orderId: string, proof:
     if (!payment) throw new Error("NOT_MOBILE_PAYMENT");
     if (payment.status === "VERIFIED") throw new Error("ALREADY_VERIFIED");
     if (payment.transactionId) throw new Error("PROOF_ALREADY_SUBMITTED");
-    return tx.payment.update({ where: { id: payment.id }, data: { transactionId: proof.transactionId, senderNumber: proof.senderNumber } });
+    // Compare-and-set prevents two concurrent proof submissions from overwriting
+    // one another. The database unique constraint also prevents transaction reuse.
+    const updated = await tx.payment.updateMany({
+      where: { id: payment.id, status: "PENDING", transactionId: null },
+      data: { transactionId: proof.transactionId, senderNumber: proof.senderNumber },
+    });
+    if (updated.count !== 1) throw new Error("PROOF_ALREADY_SUBMITTED");
+    return tx.payment.findUniqueOrThrow({ where: { id: payment.id } });
   });
 }
 export async function verifyPayment(verifier: { userId: string; role: "CUSTOMER" | "SELLER" | "ADMIN" }, orderId: string) {
@@ -162,6 +177,7 @@ export async function verifyPayment(verifier: { userId: string; role: "CUSTOMER"
     const payment = order.payments.find((entry) => entry.method !== "CASH_ON_DELIVERY");
     if (!payment) throw new Error("NOT_MOBILE_PAYMENT");
     if (payment.status === "VERIFIED") throw new Error("ALREADY_VERIFIED");
+    if (order.status !== "PENDING") throw new Error("ORDER_NOT_PAYABLE");
     if (!payment.transactionId) throw new Error("PROOF_MISSING");
     await tx.payment.update({ where: { id: payment.id }, data: { status: "VERIFIED", verifiedAt: new Date(), verifiedBy: verifier.userId } });
     return tx.order.update({ where: { id: orderId }, data: { status: "CONFIRMED" }, include: { payments: true, items: true } });
@@ -172,16 +188,13 @@ export async function updateSellerOrderStatus(sellerId: string, orderId: string,
   return prisma.$transaction(async (tx) => {
     const order = await tx.order.findFirst({ where: { id: orderId, store: { sellerId } }, include: { payments: true, items: true } });
     if (!order) throw new Error("ORDER_NOT_FOUND");
-    const transitions: Record<string, string> = { PENDING: "CONFIRMED", CONFIRMED: "PROCESSING", PROCESSING: "SHIPPED", SHIPPED: "DELIVERED" };
-    const paymentIsVerified = order.payments.some((payment) => payment.status === "VERIFIED");
-    const isCOD = order.payments.some((payment) => payment.method === "CASH_ON_DELIVERY");
-    if (transitions[order.status] !== status || (status === "CONFIRMED" && !isCOD && !paymentIsVerified)) throw new Error("INVALID_STATUS_TRANSITION");
+    if (!canSellerTransitionOrder(order.status, status, order.payments)) throw new Error("INVALID_STATUS_TRANSITION");
     const result = await tx.order.updateMany({ where: { id: orderId, status: order.status }, data: { status } });
     if (result.count !== 1) throw new Error("ORDER_STATUS_CONFLICT");
     if (status === "DELIVERED") {
       const codPayment = order.payments.find((payment) => payment.method === "CASH_ON_DELIVERY");
       if (codPayment) await tx.payment.update({ where: { id: codPayment.id }, data: { status: "VERIFIED", verifiedAt: new Date() } });
     }
-    return tx.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true, store: true } });
+    return tx.order.findUniqueOrThrow({ where: { id: orderId }, include: { items: true, payments: true, store: { select: { id: true, slug: true, displayName: true, logoUrl: true, isPremilyMart: true, verificationStatus: true } } } });
   });
 }

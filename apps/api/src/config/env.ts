@@ -6,6 +6,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   DATABASE_URL: z.url(),
   JWT_SECRET: z.string().min(32),
+  WEB_ORIGIN: z.string().default("http://localhost:3000,http://127.0.0.1:3000"),
 });
 
 const parsed = envSchema.safeParse(process.env);

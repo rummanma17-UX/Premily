@@ -3,6 +3,12 @@ import type { AddCampaignProductInput, CreateCampaignInput } from "./campaigns.s
 
 const campaignInclude = {
   items: {
+    where: { product: {
+          is: {
+            status: "ACTIVE" as const,
+            store: { is: { status: "ACTIVE" as const, isPublished: true } },
+          },
+        } },
     include: {
       product: {
         include: {
@@ -21,6 +27,12 @@ export async function getActiveCampaigns() {
     where: { isActive: true, startsAt: { lte: now }, endsAt: { gte: now } },
     include: {
       items: {
+        where: { product: {
+          is: {
+            status: "ACTIVE" as const,
+            store: { is: { status: "ACTIVE" as const, isPublished: true } },
+          },
+        } },
         include: {
           product: {
             include: {
