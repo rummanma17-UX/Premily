@@ -2,9 +2,6 @@ import { prisma } from "../../lib/prisma.js";
 import type { CalculateShippingInput, UpdateStoreShippingInput } from "./shipping.schema.js";
 import { calculateShippingRate } from "./shipping-rate.js";
 
-const DEFAULT_INSIDE_DHAKA_FEE = 70;
-const DEFAULT_OUTSIDE_DHAKA_FEE = 150;
-
 export async function getDistrictsList() {
   return prisma.districtShipping.findMany({ where: { isActive: true }, orderBy: { districtName: "asc" } });
 }
