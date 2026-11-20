@@ -2,6 +2,8 @@ import { randomBytes } from "node:crypto";
 import { Prisma } from "../../generated/prisma/client.js";
 import { prisma } from "../../lib/prisma.js";
 import type { CheckoutInput, PaymentProofInput } from "./orders.schema.js";
+import { calculateShippingRate } from "../shipping/shipping-rate.js";
+import { canSellerTransitionOrder } from "./order-policy.js";
 
 const DEFAULT_INSIDE_DHAKA_FEE = 70;
 const DEFAULT_OUTSIDE_DHAKA_FEE = 150;
@@ -59,13 +61,14 @@ async function createOrderFromItemsTx(tx: TxClient, userId: string, shipping: Ch
   for (const [storeId, storeLines] of storeGroups) {
     const subtotal = storeLines.reduce((sum, line) => sum.plus(line.price.times(line.quantity)), new Prisma.Decimal(0));
     const store = storeMap.get(storeId);
-    const homeDistrict = store?.homeDistrict?.trim().toLocaleLowerCase() ?? "dhaka";
-    const isHome = destination === homeDistrict;
-    const configuredRate = isHome ? store?.insideDistrictCost : store?.outsideDistrictCost;
-    const platformRate = destinationRate?.baseCost ??
-      (isHome ? DEFAULT_INSIDE_DHAKA_FEE : DEFAULT_OUTSIDE_DHAKA_FEE);
-    const fee = Number(configuredRate ?? platformRate);
-    const shippingCost = new Prisma.Decimal(fee);
+    const rate = calculateShippingRate({
+      destinationDistrict: shipping.shippingDistrict,
+      homeDistrict: store?.homeDistrict,
+      insideDistrictCost: store?.insideDistrictCost,
+      outsideDistrictCost: store?.outsideDistrictCost,
+      platformBaseCost: destinationRate?.baseCost,
+    });
+    const shippingCost = new Prisma.Decimal(rate.shippingCost);
     storeOrderData.push({ storeId, subtotal, shippingCost, total: subtotal.plus(shippingCost), lines: storeLines });
     groupSubtotal = groupSubtotal.plus(subtotal);
     groupShippingCost = groupShippingCost.plus(shippingCost);
@@ -188,10 +191,7 @@ export async function updateSellerOrderStatus(sellerId: string, orderId: string,
   return prisma.$transaction(async (tx) => {
     const order = await tx.order.findFirst({ where: { id: orderId, store: { sellerId } }, include: { payments: true, items: true } });
     if (!order) throw new Error("ORDER_NOT_FOUND");
-    const transitions: Record<string, string> = { PENDING: "CONFIRMED", CONFIRMED: "PROCESSING", PROCESSING: "SHIPPED", SHIPPED: "DELIVERED" };
-    const paymentIsVerified = order.payments.some((payment) => payment.status === "VERIFIED");
-    const isCOD = order.payments.some((payment) => payment.method === "CASH_ON_DELIVERY");
-    if (transitions[order.status] !== status || (status === "CONFIRMED" && !isCOD && !paymentIsVerified)) throw new Error("INVALID_STATUS_TRANSITION");
+    if (!canSellerTransitionOrder(order.status, status, order.payments)) throw new Error("INVALID_STATUS_TRANSITION");
     const result = await tx.order.updateMany({ where: { id: orderId, status: order.status }, data: { status } });
     if (result.count !== 1) throw new Error("ORDER_STATUS_CONFLICT");
     if (status === "DELIVERED") {
