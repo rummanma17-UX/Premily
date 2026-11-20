@@ -28,6 +28,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://premily:premily_dev_password@localhost:5432/premily_db?schema=public
           JWT_SECRET: ci-only-secret-that-is-long-enough-32
+      - name: Test API
+        run: pnpm --filter api test
       - name: Build API
         run: pnpm --filter api build
         env:
